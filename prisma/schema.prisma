@@ -1,0 +1,118 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Organization {
+  id   String @id @default(uuid())
+  name String @unique
+
+  properties Property[]
+  persons    Person[]
+
+  @@map("organizations")
+}
+
+model User {
+  id         String      @id @default(uuid())
+  name       String
+  email      String      @unique()
+  password   String
+  is_active  Boolean     @default(false)
+  is_deleted Boolean     @default(false)
+  created_at DateTime    @default(now())
+  updated_at DateTime    @default(now()) @updatedAt()
+  Checklist  Checklist[]
+
+  @@map("users")
+}
+
+model Person {
+  id              String   @id @default(uuid())
+  organization_id String
+  name            String
+  email           String?  @unique()
+  phone           String?
+  role            String?
+  created_at      DateTime @default(now())
+  updated_at      DateTime @default(now()) @updatedAt()
+
+  organization Organization @relation(fields: [organization_id], references: [id])
+  Checklist    Checklist[]
+
+  @@map("persons")
+}
+
+model Property {
+  id              String   @id @default(uuid())
+  organization_id String
+  name            String
+  address         String?
+  location        String?
+  created_at      DateTime @default(now())
+  updated_at      DateTime @default(now()) @updatedAt()
+
+  organization Organization @relation(fields: [organization_id], references: [id])
+
+  items     Item[]
+  Checklist Checklist[]
+
+  @@map("properties")
+}
+
+model Item {
+  id          String   @id @unique @default(uuid())
+  property_id String
+  item_id     String?
+  level       Int      @default(0)
+  name        String
+  is_deleted  Boolean  @default(false)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @default(now()) @updatedAt()
+
+  property Property @relation(fields: [property_id], references: [id])
+
+  items          Item[]           @relation("items")
+  item           Item?            @relation("items", fields: [item_id], references: [id])
+  checklistItems ChecklistItems[]
+
+  @@map("item")
+}
+
+model Checklist {
+  id          String   @id @unique @default(uuid())
+  sid         String
+  property_id String
+  user_id     String?
+  person_id   String?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @default(now()) @updatedAt()
+
+  property       Property         @relation(fields: [property_id], references: [id])
+  user           User?            @relation(fields: [user_id], references: [id])
+  person         Person?          @relation(fields: [person_id], references: [id])
+  checklistItems ChecklistItems[]
+
+  @@map("checklists")
+}
+
+model ChecklistItems {
+  id           String   @id @default(uuid())
+  checklist_id String
+  item_id      String
+  score        Int?
+  observation  String?
+  images       String?
+  is_inspected Boolean  @default(false)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @default(now()) @updatedAt()
+
+  checklist Checklist @relation(fields: [checklist_id], references: [id])
+  item      Item      @relation(fields: [item_id], references: [id])
+
+  @@map("checklist_items")
+}
