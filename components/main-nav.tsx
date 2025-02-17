@@ -14,7 +14,7 @@ export function MainNav() {
   return (
     <div className="mr-4 hidden sm:flex">
       <Link
-        href="/dashboard"
+        href="/"
         className="mr-4 flex items-center space-x-2 lg:mr-6"
       >
         <Icons.logo className="h-6 w-6" />
@@ -22,10 +22,10 @@ export function MainNav() {
       </Link>
       <nav className="flex items-center gap-4 text-sm lg:gap-6">
         <Link
-          href="/products"
+          href="/checklists"
           className={cn(
             "transition-colors hover:text-foreground/80",
-            pathname === "/products" ? activeLink : "text-foreground/60",
+            pathname === "/checklists" ? activeLink : "text-foreground/60",
           )}
         >
           Checklists

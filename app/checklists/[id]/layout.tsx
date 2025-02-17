@@ -6,7 +6,7 @@ export default function ChecklistLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="space-y-4 p-8">
+    <div className="space-y-4">
       {breadcrumb}
       {children}
     </div>

@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label";
 import { useModal } from "@/hooks/use-modal";
 import { ObservationDialog } from "./observation-dialog";
 import { useParams } from "next/navigation";
+// import { useParams } from "next/navigation";
 
 export const ChecklistCard = ({
   checklistItem,
@@ -28,7 +29,7 @@ export const ChecklistCard = ({
     };
   };
 }) => {
-  const { id } = useParams();
+  const { itemId } = useParams<{ itemId?: string[] }>();
   const observationDialog = useModal();
 
   const handleChangeValue = (value: string, id: string) => {
@@ -43,7 +44,7 @@ export const ChecklistCard = ({
       <CardHeader className="flex-row items-center space-y-0">
         <CardTitle>{checklistItem.item.name}</CardTitle>
       </CardHeader>
-      <CardContent className="grid gap-4">
+      <CardContent className="grid pb-4 gap-4">
         {checklistItem.images ? (
           <div className="h-40 w-full bg-red-300"></div>
         ) : (
@@ -72,7 +73,7 @@ export const ChecklistCard = ({
         <div className="overflow-hidden">
           {checklistItem.observation ? (
             <p
-              className="line-clamp-2 border-dashed border cursor-pointer min-h-9 text-wrap rounded-md px-4 py-1 text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+              className="line-clamp-2 min-h-9 cursor-pointer text-wrap rounded-md border border-dashed px-4 py-1 text-muted-foreground hover:bg-accent hover:text-accent-foreground"
               onClick={observationDialog.show}
             >
               {checklistItem.observation}
@@ -97,13 +98,10 @@ export const ChecklistCard = ({
         >
           <Link
             href={
-              "/checklists/" +
-              id?.toString().replaceAll(",", "/") +
-              "/" +
-              checklistItem.item_id
+              itemId ? checklistItem.item_id : "items/" + checklistItem.item_id
             }
           >
-            Listar Subitem
+            Listar Subitens
           </Link>
         </Button>
       </CardFooter>

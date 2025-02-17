@@ -1,6 +1,5 @@
 "use server";
 import { prisma } from "@/lib/prisma";
-import { redirect } from "next/navigation";
 
 export const createItem = async (values: {
   name: string;
@@ -38,5 +37,4 @@ export const createItem = async (values: {
       item_id: item.id,
     },
   });
-  redirect("/checklists/" + checklist_id);
 };

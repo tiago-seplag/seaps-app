@@ -2,11 +2,12 @@ import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { ChecklistCard } from "@/components/checklist-card";
 import { GoBack } from "@/components/go-back";
-import { CreateItemButton } from "../_components/create-item-button";
+import { CreateItemButton } from "@/app/checklists/_components/create-item-button";
 
 type ProjectPageProps = {
   params: Promise<{
-    id: string[];
+    id: string;
+    itemId?: string[];
   }>;
   searchParams: Promise<{
     item_id: string;
@@ -14,7 +15,7 @@ type ProjectPageProps = {
 };
 
 export default async function Page({ params }: ProjectPageProps) {
-  const { id } = await params;
+  const { id, itemId } = await params;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
   const recursive = (level = 1): any => {
@@ -34,7 +35,7 @@ export default async function Page({ params }: ProjectPageProps) {
   };
 
   const checklist = await prisma.checklist.findUnique({
-    where: { id: id[0] },
+    where: { id: id },
     include: {
       property: {
         include: {
@@ -53,8 +54,8 @@ export default async function Page({ params }: ProjectPageProps) {
         },
         where: {
           item: {
-            level: id.length === 1 ? 0 : undefined,
-            item_id: id.length === 1 ? undefined : id[id.length - 1],
+            level: itemId ? undefined : 0,
+            item_id: !itemId ? undefined : itemId[itemId.length - 1],
           },
         },
       },
@@ -83,13 +84,7 @@ export default async function Page({ params }: ProjectPageProps) {
           </h2>
         </div>
         <div className="flex gap-2 self-end">
-          <CreateItemButton
-            item={
-              checklist.checklistItems.find(
-                (checklistItem) => checklistItem.item_id === id[id.length - 1],
-              )?.item
-            }
-          />
+          <CreateItemButton />
         </div>
       </div>
       <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

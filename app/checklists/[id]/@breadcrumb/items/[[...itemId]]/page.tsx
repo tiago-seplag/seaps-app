@@ -13,9 +13,9 @@ import { Fragment } from "react";
 export default async function BreadcrumbSlot({
   params,
 }: {
-  params: Promise<{ id: string[] }>;
+  params: Promise<{ id: string; itemId?: string[] }>;
 }) {
-  const { id } = await params;
+  const { id, itemId } = await params;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
   const recursive = (level = 1): any => {
     if (level === 0) {
@@ -34,13 +34,13 @@ export default async function BreadcrumbSlot({
   };
 
   const checklist = await prisma.checklist.findUnique({
-    where: { id: id[0] },
+    where: { id: id },
     include: {
       property: {
         include: {
           items: {
             where: {
-              id: id[id.length - 1],
+              id: id,
             },
             select: {
               name: true,
@@ -55,21 +55,21 @@ export default async function BreadcrumbSlot({
 
   let items = [];
 
-  if (id.length > 1) {
+  if (itemId) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     items = await prisma.$queryRaw<any[]>(Prisma.sql`
-    WITH RECURSIVE ancestors(id, name, item_id, level) AS (
-        SELECT id, name, item_id, level
-        FROM items
-        WHERE id = ${id[id.length - 1]} 
-        UNION ALL
-        SELECT i.id, i.name, i.item_id, i.level
-        FROM items i
-        JOIN ancestors a ON i.id = a.item_id
-      )
-    SELECT id, name, level
-    FROM ancestors
-    order by level asc;
+      WITH RECURSIVE ancestors(id, name, item_id, level) AS (
+          SELECT id, name, item_id, level
+          FROM items
+          WHERE id = ${itemId[itemId.length - 1]} 
+          UNION ALL
+          SELECT i.id, i.name, i.item_id, i.level
+          FROM items i
+          JOIN ancestors a ON i.id = a.item_id
+        )
+      SELECT id, name, level
+        FROM ancestors
+      ORDER BY level ASC;
     `);
   }
 
@@ -77,22 +77,19 @@ export default async function BreadcrumbSlot({
     <BreadcrumbList>
       <BreadcrumbItem>
         <BreadcrumbLink asChild>
-          <Link href="/" replace>
-            Checklists
-          </Link>
+          <Link href="/checklists">Checklists</Link>
         </BreadcrumbLink>
       </BreadcrumbItem>
       <BreadcrumbSeparator />
       <BreadcrumbItem>
-        {items.length > 0 ? (
-          <BreadcrumbLink href={"/checklists/" + checklist?.id}>
+        <BreadcrumbLink asChild>
+          <Link href={"/checklists/" + checklist?.id + "/items/"} replace>
             {checklist?.property.name}
-          </BreadcrumbLink>
-        ) : (
-          <BreadcrumbPage>{checklist?.property.name}</BreadcrumbPage>
-        )}
+          </Link>
+        </BreadcrumbLink>
       </BreadcrumbItem>
       {items &&
+        itemId &&
         items.map((item, index) => {
           return (
             <Fragment key={index}>
@@ -102,16 +99,7 @@ export default async function BreadcrumbSlot({
                   <BreadcrumbPage>{item.name}</BreadcrumbPage>
                 ) : (
                   <BreadcrumbLink asChild>
-                    <Link
-                      href={
-                        "/checklists/" +
-                        id
-                          .slice(0, id.length - 1)
-                          .toString()
-                          .replaceAll(",", "/")
-                      }
-                      replace
-                    >
+                    <Link href={item.id} replace>
                       {item.name}
                     </Link>
                   </BreadcrumbLink>
