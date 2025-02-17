@@ -26,7 +26,7 @@ const formSchema = z.object({
   }),
 });
 
-export function CreateItemForm({ item }: { item?: Item }) {
+export function CreateItemForm({ }: { item?: Item }) {
   const { id } = useParams<{ id: string[] }>();
   const router = useRouter();
 
@@ -37,15 +37,12 @@ export function CreateItemForm({ item }: { item?: Item }) {
     },
   });
 
-  console.log(item);
-
   async function onSubmit(values: z.infer<typeof formSchema>) {
     createItem({
       ...values,
       checklist_id: id[0],
-      item_id: item ? item.id : undefined,
-      level: item ? Number(item.level + 1) : undefined,
-    }).then(() => router.back());
+      item_id: id.length > 1 ? id[id.length - 1] : undefined,
+    }).then(() => router.refresh());
   }
 
   return (

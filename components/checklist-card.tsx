@@ -24,6 +24,7 @@ export const ChecklistCard = ({
   checklistItem: ChecklistItems & {
     item: {
       name: string;
+      level: number;
     };
   };
 }) => {
@@ -71,7 +72,7 @@ export const ChecklistCard = ({
         <div className="overflow-hidden">
           {checklistItem.observation ? (
             <p
-              className="line-clamp-2 text-wrap text-muted-foreground"
+              className="line-clamp-2 border-dashed border cursor-pointer min-h-9 text-wrap rounded-md px-4 py-1 text-muted-foreground hover:bg-accent hover:text-accent-foreground"
               onClick={observationDialog.show}
             >
               {checklistItem.observation}
@@ -88,10 +89,18 @@ export const ChecklistCard = ({
         </div>
       </CardContent>
       <CardFooter className="flex-col gap-2 sm:flex-row">
-        <Button asChild className="w-full" variant="secondary">
+        <Button
+          asChild={checklistItem.item.level < 3}
+          disabled={checklistItem.item.level === 3}
+          className="w-full"
+          variant="secondary"
+        >
           <Link
             href={
-              id?.toString().replaceAll(",", "/") + "/" + checklistItem.item_id
+              "/checklists/" +
+              id?.toString().replaceAll(",", "/") +
+              "/" +
+              checklistItem.item_id
             }
           >
             Listar Subitem

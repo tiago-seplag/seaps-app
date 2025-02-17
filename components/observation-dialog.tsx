@@ -27,7 +27,7 @@ import { Textarea } from "./ui/textarea";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-interface DeleteDialogProps extends DialogProps {
+interface ObservationDialogProps extends DialogProps {
   item: ChecklistItems & {
     item: {
       name: string;
@@ -39,7 +39,7 @@ const formSchema = z.object({
   observation: z.string({ message: "Insira uma descrição" }).max(255),
 });
 
-export function ObservationDialog({ item, ...props }: DeleteDialogProps) {
+export function ObservationDialog({ item, ...props }: ObservationDialogProps) {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -88,17 +88,23 @@ export function ObservationDialog({ item, ...props }: DeleteDialogProps) {
               name="observation"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Descrição</FormLabel>
+                  <FormLabel>Observação</FormLabel>
                   <FormControl>
                     <Textarea
                       maxLength={255}
+                      className="min-h-32"
                       placeholder="insira a observação do item"
                       {...field}
                     />
                   </FormControl>
-                  <FormDescription>
-                    Observerção do item se necessária.
-                  </FormDescription>
+                  <div className="flex items-center justify-between">
+                    <FormDescription>
+                      Observerção do item se necessária.
+                    </FormDescription>
+                    <span className="text-xs">
+                      {field.value?.length || 0}/255
+                    </span>
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}

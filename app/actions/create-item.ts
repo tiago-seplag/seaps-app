@@ -4,30 +4,39 @@ import { redirect } from "next/navigation";
 
 export const createItem = async (values: {
   name: string;
-  checklist_id?: string;
+  checklist_id: string;
   property_id?: string;
   item_id?: string;
-  level?: number;
 }) => {
-  const { checklist_id, ...data } = values;
+  const { checklist_id, item_id, ...data } = values;
 
-  if (checklist_id) {
-    const checklist = await prisma.checklist.findFirstOrThrow({
+  const checklist = await prisma.checklist.findFirstOrThrow({
+    where: {
+      id: checklist_id,
+    },
+  });
+
+  let level;
+
+  if (item_id) {
+    const item = await prisma.item.findFirstOrThrow({
       where: {
-        id: checklist_id,
+        id: item_id,
       },
     });
 
-    const item = await prisma.item.create({
-      data: { ...data, property_id: checklist?.property_id },
-    });
-
-    await prisma.checklistItems.create({
-      data: {
-        checklist_id,
-        item_id: item.id,
-      },
-    });
-    redirect("/checklists/" + checklist_id);
+    level = item.level + 1;
   }
+
+  const item = await prisma.item.create({
+    data: { ...data, property_id: checklist?.property_id, level, item_id },
+  });
+
+  await prisma.checklistItems.create({
+    data: {
+      checklist_id,
+      item_id: item.id,
+    },
+  });
+  redirect("/checklists/" + checklist_id);
 };

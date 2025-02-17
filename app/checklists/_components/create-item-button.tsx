@@ -22,7 +22,7 @@ export const CreateItemButton = ({ item }: { item?: Item }) => {
     <>
       <Button onClick={modal.show}>
         <Plus />
-        Adicionar Observação
+        Adicionar Item
       </Button>
       <Dialog onOpenChange={modal.toggle} open={modal.visible}>
         <DialogContent className="sm:max-w-[425px]">

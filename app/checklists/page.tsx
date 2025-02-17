@@ -4,7 +4,16 @@ import { Plus } from "lucide-react";
 import Link from "next/link";
 
 export default async function Page() {
-  const posts = await prisma.checklist.findMany();
+  const checklists = await prisma.checklist.findMany({
+    include: {
+      property: {
+        select: {
+          name: true,
+          address: true,
+        },
+      },
+    },
+  });
 
   return (
     <div className="flex flex-col gap-y-4 p-4">
@@ -16,16 +25,19 @@ export default async function Page() {
           <Button asChild>
             <Link href={"checklists/create"}>
               <Plus />
-              Adicionar Projeto
+              Criar Checklist
             </Link>
           </Button>
         </div>
       </div>
 
       <ul className="flex flex-col gap-y-2">
-        {posts.map((post) => (
-          <li key={post.id}>
-            <Link href={"/checklists/" + post.id}>{post.id}</Link> - {post.sid}
+        {checklists.map((checklist) => (
+          <li key={checklist.id}>
+            <Link href={"/checklists/" + checklist.id}>
+              {checklist.property.name}
+            </Link>
+            -{checklist.sid}
           </li>
         ))}
       </ul>

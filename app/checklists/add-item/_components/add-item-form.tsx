@@ -119,7 +119,6 @@ const Field = ({
   const [items, setItems] = useState<Item[]>([]);
 
   useEffect(() => {
-    console.log();
     if (!disabled) {
       const url = itemId ? `item_id=${itemId}` : `property_id=${propertyId}`;
       fetch("/api/items?" + url)
