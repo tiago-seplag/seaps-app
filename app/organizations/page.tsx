@@ -1,6 +1,4 @@
 import { prisma } from "@/lib/prisma";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
 import Link from "next/link";
 
 export default async function Page() {
@@ -14,15 +12,7 @@ export default async function Page() {
     <div className="flex flex-col gap-y-4">
       <div className="flex justify-between">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">Orgão</h2>
-        </div>
-        <div className="self-end">
-          <Button asChild>
-            <Link href={"organizations/create"}>
-              <Plus />
-              Criar Checklist
-            </Link>
-          </Button>
+          <h2 className="text-2xl font-bold tracking-tight">Orgãos</h2>
         </div>
       </div>
 
