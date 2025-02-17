@@ -56,9 +56,11 @@ export function CreateCheckListForm() {
   }, []);
 
   useEffect(() => {
-    fetch("/api/organizations/" + organization_id + "/properties")
-      .then((response) => response.json())
-      .then((data) => setProperties(data));
+    if (organization_id) {
+      fetch("/api/organizations/" + organization_id + "/properties")
+        .then((response) => response.json())
+        .then((data) => setProperties(data));
+    }
   }, [organization_id]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -66,80 +68,78 @@ export function CreateCheckListForm() {
   }
 
   return (
-    <div className="p-4">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <FormField
-            control={form.control}
-            name="organization_id"
-            render={({ field }) => (
-              <FormItem className="w-full">
-                <FormLabel>Orgão</FormLabel>
-                <Select onValueChange={field.onChange}>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="organization_id"
+          render={({ field }) => (
+            <FormItem className="w-full">
+              <FormLabel>Orgão</FormLabel>
+              <Select onValueChange={field.onChange}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione o Período do item" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {organizations.map((item) => (
+                    <SelectItem key={item.id} value={String(item.id)}>
+                      {item.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="property_id"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Imóvel</FormLabel>
+              <div className="flex w-full items-center gap-2">
+                <Select
+                  onValueChange={field.onChange}
+                  disabled={!form.getValues("organization_id")}
+                >
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Selecione o Período do item" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {organizations.map((item) => (
+                    {properties.map((item) => (
                       <SelectItem key={item.id} value={String(item.id)}>
                         {item.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="property_id"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Imóvel</FormLabel>
-                <div className="flex w-full items-center gap-2">
-                  <Select
-                    onValueChange={field.onChange}
-                    disabled={!form.getValues("organization_id")}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione o Período do item" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {properties.map((item) => (
-                        <SelectItem key={item.id} value={String(item.id)}>
-                          {item.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <Button
-                    type="button"
-                    disabled={!form.getValues("organization_id")}
-                    variant={"default"}
-                    onClick={() => {
-                      router.push(
-                        "/organizations/" +
-                          form.getValues("organization_id") +
-                          "/properties/create",
-                      );
-                    }}
-                    size="icon"
-                  >
-                    <Plus />
-                  </Button>
-                </div>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button type="submit">Submit</Button>
-        </form>
-      </Form>
-    </div>
+                <Button
+                  type="button"
+                  disabled={!form.getValues("organization_id")}
+                  variant={"default"}
+                  onClick={() => {
+                    router.push(
+                      "/organizations/" +
+                        form.getValues("organization_id") +
+                        "/properties/create",
+                    );
+                  }}
+                  size="icon"
+                >
+                  <Plus />
+                </Button>
+              </div>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button type="submit">Submit</Button>
+      </form>
+    </Form>
   );
 }

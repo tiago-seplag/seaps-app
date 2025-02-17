@@ -3,6 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 
+const ENUM = {
+  OPEN: "ABERTO",
+  CLOSED: "FECHADO",
+};
+
 export default async function Page() {
   const checklists = await prisma.checklist.findMany({
     include: {
@@ -36,8 +41,8 @@ export default async function Page() {
           <li key={checklist.id}>
             <Link href={"/checklists/" + checklist.id}>
               {checklist.property.name}
-            </Link>
-            {" "}- {checklist.sid}
+            </Link>{" "}
+            - {checklist.sid} - {ENUM[checklist.status]}
           </li>
         ))}
       </ul>

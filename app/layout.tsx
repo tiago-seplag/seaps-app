@@ -1,9 +1,9 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { ThemeProvider } from "@/components/theme-provider";
-import { ModeToggle } from "@/components/mode-toggle";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
+import { SiteHeader } from "@/components/site-header";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,10 +39,8 @@ export default function RootLayout({
           enableColorScheme
           disableTransitionOnChange
         >
-          {children}
-          <div className="fixed bottom-4 right-8">
-            <ModeToggle />
-          </div>
+          <SiteHeader />
+          <div className="container mx-auto">{children}</div>
         </ThemeProvider>
         <Toaster closeButton richColors />
       </body>

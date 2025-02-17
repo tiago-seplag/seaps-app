@@ -84,13 +84,15 @@ model Item {
 }
 
 model Checklist {
-  id          String   @id @unique @default(uuid())
+  id          String    @id @unique @default(uuid())
   sid         String
+  status      Status    @default(OPEN)
   property_id String
   user_id     String?
   person_id   String?
-  created_at  DateTime @default(now())
-  updated_at  DateTime @default(now()) @updatedAt()
+  finished_at DateTime?
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @default(now()) @updatedAt()
 
   property       Property         @relation(fields: [property_id], references: [id])
   user           User?            @relation(fields: [user_id], references: [id])
@@ -98,6 +100,11 @@ model Checklist {
   checklistItems ChecklistItems[]
 
   @@map("checklists")
+}
+
+enum Status {
+  OPEN
+  CLOSED
 }
 
 model ChecklistItems {
