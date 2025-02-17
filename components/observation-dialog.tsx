@@ -92,7 +92,7 @@ export function ObservationDialog({ item, ...props }: DeleteDialogProps) {
                   <FormControl>
                     <Textarea
                       maxLength={255}
-                      placeholder="insira a descrição do produto"
+                      placeholder="insira a observação do item"
                       {...field}
                     />
                   </FormControl>

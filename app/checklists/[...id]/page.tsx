@@ -1,23 +1,20 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
-import Link from "next/link";
 import { ChecklistCard } from "@/components/checklist-card";
 import { GoBack } from "@/components/go-back";
+import { CreateItemButton } from "../_components/create-item-button";
 
 type ProjectPageProps = {
-  params: {
-    id: string;
-  };
-  searchParams: {
+  params: Promise<{
+    id: string[];
+  }>;
+  searchParams: Promise<{
     item_id: string;
-  };
+  }>;
 };
 
-export default async function Page({ params, searchParams }: ProjectPageProps) {
+export default async function Page({ params, }: ProjectPageProps) {
   const { id } = await params;
-  const { item_id } = await searchParams;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
   const recursive = (level = 1): any => {
@@ -37,7 +34,7 @@ export default async function Page({ params, searchParams }: ProjectPageProps) {
   };
 
   const checklist = await prisma.checklist.findUnique({
-    where: { id: id },
+    where: { id: id[0] },
     include: {
       property: {
         include: {
@@ -52,16 +49,12 @@ export default async function Page({ params, searchParams }: ProjectPageProps) {
       user: true,
       checklistItems: {
         include: {
-          item: {
-            select: {
-              name: true,
-            },
-          },
+          item: true,
         },
         where: {
           item: {
-            level: item_id ? undefined : 0,
-            item_id: item_id ? item_id : undefined,
+            level: id.length === 1 ? 0 : undefined,
+            item_id: id.length === 1 ? undefined : id[id.length - 1],
           },
         },
       },
@@ -78,7 +71,7 @@ export default async function Page({ params, searchParams }: ProjectPageProps) {
   }
 
   return (
-    <div className="flex h-full flex-1 flex-col gap-8 p-8">
+    <div className="flex h-full flex-1 flex-col gap-8">
       <div className="flex justify-between gap-2">
         <div className="flex items-center truncate">
           <GoBack />
@@ -90,26 +83,18 @@ export default async function Page({ params, searchParams }: ProjectPageProps) {
           </h2>
         </div>
         <div className="flex gap-2 self-end">
-          <Button asChild>
-            <Link
-              href={id + "/create-item?property_id=" + checklist.property_id}
-            >
-              <Plus />
-              Criar Item
-            </Link>
-          </Button>
+          <CreateItemButton item={checklist.checklistItems.find(checklistItem => checklistItem.item_id === id[id.length - 1])?.item} />
         </div>
       </div>
-      <ul className="flex flex-col gap-y-2">
+      <div className="grid gap-2 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {checklist.checklistItems.map((checklistItem) => (
-          <li key={checklistItem.id}>
-            <ChecklistCard
-              checklistItem={checklistItem}
-              propertyId={checklist.property_id}
-            />
-          </li>
+          <ChecklistCard
+            key={checklistItem.id}
+            checklistItem={checklistItem}
+            propertyId={checklist.property_id}
+          />
         ))}
-      </ul>
+      </div>
     </div>
   );
 }

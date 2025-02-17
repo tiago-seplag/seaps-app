@@ -3,20 +3,20 @@ import { prisma } from "@/lib/prisma";
 import { GoBack } from "@/components/go-back";
 
 type AddItemPageProps = {
-  params: {
-    id: string;
-  };
-  searchParams: {
+  params: Promise<{
+    id: string[];
+  }>;
+  searchParams: Promise<{
     item_id?: string;
     level: string;
-  };
+  }>;
 };
 
 export default async function AddItem({ params }: AddItemPageProps) {
   const { id } = await params;
 
   const checklist = await prisma.checklist.findUniqueOrThrow({
-    where: { id },
+    where: { id: id[0] },
   });
 
   return (

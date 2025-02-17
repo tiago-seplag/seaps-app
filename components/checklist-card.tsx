@@ -15,10 +15,10 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { useModal } from "@/hooks/use-modal";
 import { ObservationDialog } from "./observation-dialog";
+import { useParams } from "next/navigation";
 
 export const ChecklistCard = ({
   checklistItem,
-  propertyId,
 }: {
   propertyId: string;
   checklistItem: ChecklistItems & {
@@ -27,6 +27,7 @@ export const ChecklistCard = ({
     };
   };
 }) => {
+  const { id } = useParams()
   const observationDialog = useModal();
 
   const handleChangeValue = (value: string, id: string) => {
@@ -54,15 +55,15 @@ export const ChecklistCard = ({
           onValueChange={(e) => handleChangeValue(e, checklistItem.id)}
           defaultValue={String(checklistItem.score)}
         >
-          <div className="flex w-full items-center space-x-2 rounded bg-green-300 px-1 py-4 dark:bg-green-800">
+          <div className="flex flex-col md:flex-row gap-2 justify-center w-full items-center rounded bg-green-300 px-1 py-4 dark:bg-green-800">
             <RadioGroupItem value="2" id={checklistItem.id + `2`} />
             <Label htmlFor={checklistItem.id + `2`}>Bom</Label>
           </div>
-          <div className="flex w-full items-center space-x-2 rounded bg-yellow-300 px-1 py-4 dark:bg-yellow-800">
+          <div className="flex flex-col md:flex-row gap-2 justify-center w-full items-center rounded bg-yellow-300 px-1 py-4 dark:bg-yellow-800">
             <RadioGroupItem value="1" id={checklistItem.id + `1`} />
             <Label htmlFor={checklistItem.id + `1`}>Regular</Label>
           </div>
-          <div className="flex w-full items-center space-x-2 rounded bg-red-300 px-1 py-4 dark:bg-red-800">
+          <div className="flex flex-col md:flex-row gap-2 justify-center w-full items-center rounded bg-red-300 px-1 py-4 dark:bg-red-800">
             <RadioGroupItem value="0" id={checklistItem.id + `0`} />
             <Label htmlFor={checklistItem.id + `0`}>Ruim</Label>
           </div>
@@ -86,9 +87,9 @@ export const ChecklistCard = ({
           )}
         </div>
       </CardContent>
-      <CardFooter className="gap-2">
-        <Button asChild className="w-full">
-          <Link
+      <CardFooter className="gap-2 flex-col sm:flex-row">
+        {/* <Button asChild className="w-full">
+        <Link
             href={
               checklistItem.checklist_id +
               "/create-item?property_id=" +
@@ -99,12 +100,10 @@ export const ChecklistCard = ({
           >
             Criar Subitem
           </Link>
-        </Button>
+        </Button> */}
         <Button asChild className="w-full" variant="secondary">
           <Link
-            href={
-              checklistItem.checklist_id + "?item_id=" + checklistItem.item_id
-            }
+            href={id?.toString().replaceAll(',', '/') + '/' + checklistItem.item_id}
           >
             Listar Subitem
           </Link>

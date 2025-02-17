@@ -1,4 +1,4 @@
-import { CreateItemForm } from "./_components/create-item-form";
+import { CreateItemForm } from "../_components/create-item-form";
 import { prisma } from "@/lib/prisma";
 import { GoBack } from "@/components/go-back";
 

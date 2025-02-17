@@ -62,7 +62,7 @@ export function CreateCheckListForm() {
   }, [organization_id]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    createChecklist(values).then(() => router.back());
+    createChecklist(values).then(() => router.replace('/'));
   }
 
   return (
@@ -124,8 +124,8 @@ export function CreateCheckListForm() {
                     onClick={() => {
                       router.push(
                         "/organizations/" +
-                          form.getValues("organization_id") +
-                          "/properties/create",
+                        form.getValues("organization_id") +
+                        "/properties/create",
                       );
                     }}
                     size="icon"
@@ -137,51 +137,6 @@ export function CreateCheckListForm() {
               </FormItem>
             )}
           />
-          {/* {fields.map((field, index) => {
-            return (
-              <div
-                key={field.id}
-                className="relative flex w-full gap-4 rounded border border-dashed p-2"
-              >
-                <FormField
-                  control={form.control}
-                  name={`steps.${index}.name`}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Nome da etapa</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="insira o nome da etapa..."
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button
-                  size="icon"
-                  className="absolute -right-5 -top-5 h-8 w-8 rounded-full"
-                  onClick={() => remove(index)}
-                  variant="destructive"
-                >
-                  <Trash width={16} />
-                </Button>
-              </div>
-            );
-          })}
-          <Button
-            type="button"
-            variant="outline"
-            className="col-span-2 w-full border-dashed"
-            onClick={() =>
-              append({
-                name: undefined as unknown as string,
-              })
-            }
-          >
-            Adicionar Etapa
-          </Button> */}
           <Button type="submit">Submit</Button>
         </form>
       </Form>

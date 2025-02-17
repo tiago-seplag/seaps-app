@@ -80,7 +80,7 @@ model Item {
   item           Item?            @relation("items", fields: [item_id], references: [id])
   checklistItems ChecklistItems[]
 
-  @@map("item")
+  @@map("items")
 }
 
 model Checklist {

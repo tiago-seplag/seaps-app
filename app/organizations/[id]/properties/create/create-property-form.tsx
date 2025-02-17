@@ -50,6 +50,7 @@ export function CreatePropertyForm({
     defaultValues: {
       organization_id: organizationId,
       address: "",
+      name: "",
     },
   });
 
