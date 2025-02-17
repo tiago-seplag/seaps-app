@@ -13,7 +13,7 @@ type ProjectPageProps = {
   }>;
 };
 
-export default async function Page({ params, }: ProjectPageProps) {
+export default async function Page({ params }: ProjectPageProps) {
   const { id } = await params;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
@@ -83,10 +83,16 @@ export default async function Page({ params, }: ProjectPageProps) {
           </h2>
         </div>
         <div className="flex gap-2 self-end">
-          <CreateItemButton item={checklist.checklistItems.find(checklistItem => checklistItem.item_id === id[id.length - 1])?.item} />
+          <CreateItemButton
+            item={
+              checklist.checklistItems.find(
+                (checklistItem) => checklistItem.item_id === id[id.length - 1],
+              )?.item
+            }
+          />
         </div>
       </div>
-      <div className="grid gap-2 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {checklist.checklistItems.map((checklistItem) => (
           <ChecklistCard
             key={checklistItem.id}

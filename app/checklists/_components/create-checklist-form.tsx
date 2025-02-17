@@ -62,7 +62,7 @@ export function CreateCheckListForm() {
   }, [organization_id]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    createChecklist(values).then(() => router.replace('/'));
+    createChecklist(values).then(() => router.replace("/"));
   }
 
   return (
@@ -124,8 +124,8 @@ export function CreateCheckListForm() {
                     onClick={() => {
                       router.push(
                         "/organizations/" +
-                        form.getValues("organization_id") +
-                        "/properties/create",
+                          form.getValues("organization_id") +
+                          "/properties/create",
                       );
                     }}
                     size="icon"

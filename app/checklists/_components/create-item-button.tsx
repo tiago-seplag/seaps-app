@@ -15,18 +15,16 @@ import {
 import { CreateItemForm } from "./create-item-form";
 import { Plus } from "lucide-react";
 
-export const CreateItemButton = ({ item, }: { item?: Item, }) => {
+export const CreateItemButton = ({ item }: { item?: Item }) => {
   const modal = useModal();
 
   return (
     <>
-      <Button
-        onClick={modal.show} >
+      <Button onClick={modal.show}>
         <Plus />
         Adicionar Observação
       </Button>
-      <Dialog onOpenChange={modal.toggle}
-        open={modal.visible}>
+      <Dialog onOpenChange={modal.toggle} open={modal.visible}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Adicionar Item</DialogTitle>

@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { createItem } from "@/app/actions/create-item";
 import { Item } from "@prisma/client";
-import { useParams, useRouter, } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { DialogFooter } from "@/components/ui/dialog";
 import { DialogClose } from "@radix-ui/react-dialog";
 
@@ -26,19 +26,18 @@ const formSchema = z.object({
   }),
 });
 
-
-export function CreateItemForm({ item, }: { item?: Item, }) {
-  const { id } = useParams<{ id: string[]; }>();
+export function CreateItemForm({ item }: { item?: Item }) {
+  const { id } = useParams<{ id: string[] }>();
   const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: ''
+      name: "",
     },
   });
 
-  console.log(item)
+  console.log(item);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     createItem({
@@ -60,10 +59,7 @@ export function CreateItemForm({ item, }: { item?: Item, }) {
               <FormItem className="w-full">
                 <FormLabel>Nome do Item</FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder="Insira o nome do item..."
-                    {...field}
-                  />
+                  <Input placeholder="Insira o nome do item..." {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -81,9 +77,7 @@ export function CreateItemForm({ item, }: { item?: Item, }) {
               Cancelar
             </Button>
           </DialogClose>
-          <Button type="submit">
-            Salvar
-          </Button>
+          <Button type="submit">Salvar</Button>
         </DialogFooter>
       </form>
     </Form>

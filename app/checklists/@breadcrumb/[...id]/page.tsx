@@ -8,7 +8,11 @@ import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import { Fragment } from "react";
 
-export default async function BreadcrumbSlot({ params }: { params: Promise<{ id: string[] }> }) {
+export default async function BreadcrumbSlot({
+  params,
+}: {
+  params: Promise<{ id: string[] }>;
+}) {
   const { id } = await params;
   // Fetch dog from the api
 
@@ -29,7 +33,6 @@ export default async function BreadcrumbSlot({ params }: { params: Promise<{ id:
     };
   };
 
-
   //   WITH RECURSIVE
   //    cnt(x) AS (
   //     SELECT 1
@@ -45,21 +48,19 @@ export default async function BreadcrumbSlot({ params }: { params: Promise<{ id:
       property: {
         include: {
           items: {
-
             where: {
-              id: id[id.length - 1]
+              id: id[id.length - 1],
             },
             select: {
-              name: true
-            }
-          }
+              name: true,
+            },
+          },
         },
       },
       person: true,
       user: true,
     },
   });
-
 
   if (id.length > 1) {
     const items = await prisma.$queryRaw(Prisma.sql`
@@ -74,9 +75,9 @@ export default async function BreadcrumbSlot({ params }: { params: Promise<{ id:
         )
         SELECT id, name
         FROM ascs;
-    `)
+    `);
 
-    console.log(items)
+    console.log(items);
   }
 
   return (
@@ -86,12 +87,14 @@ export default async function BreadcrumbSlot({ params }: { params: Promise<{ id:
       </BreadcrumbItem>
       <BreadcrumbSeparator />
       {checklist?.property.items.map((item, index) => {
-        return <Fragment key={index}>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem >
-            <BreadcrumbLink href="/dogs">{item.name}</BreadcrumbLink>
-          </BreadcrumbItem>
-        </Fragment>
+        return (
+          <Fragment key={index}>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/dogs">{item.name}</BreadcrumbLink>
+            </BreadcrumbItem>
+          </Fragment>
+        );
       })}
     </BreadcrumbList>
   );

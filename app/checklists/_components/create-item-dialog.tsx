@@ -18,9 +18,7 @@ interface DeleteDialogProps extends DialogProps {
   };
 }
 
-
 export function CreateItemDialog({ item, ...props }: DeleteDialogProps) {
-
   return (
     <Dialog {...props}>
       <DialogContent className="sm:max-w-[425px]">

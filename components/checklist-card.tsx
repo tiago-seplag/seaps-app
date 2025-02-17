@@ -27,7 +27,7 @@ export const ChecklistCard = ({
     };
   };
 }) => {
-  const { id } = useParams()
+  const { id } = useParams();
   const observationDialog = useModal();
 
   const handleChangeValue = (value: string, id: string) => {
@@ -55,15 +55,15 @@ export const ChecklistCard = ({
           onValueChange={(e) => handleChangeValue(e, checklistItem.id)}
           defaultValue={String(checklistItem.score)}
         >
-          <div className="flex flex-col md:flex-row gap-2 justify-center w-full items-center rounded bg-green-300 px-1 py-4 dark:bg-green-800">
+          <div className="flex w-full flex-col items-center justify-center gap-2 rounded bg-green-300 px-1 py-4 dark:bg-green-800 md:flex-row">
             <RadioGroupItem value="2" id={checklistItem.id + `2`} />
             <Label htmlFor={checklistItem.id + `2`}>Bom</Label>
           </div>
-          <div className="flex flex-col md:flex-row gap-2 justify-center w-full items-center rounded bg-yellow-300 px-1 py-4 dark:bg-yellow-800">
+          <div className="flex w-full flex-col items-center justify-center gap-2 rounded bg-yellow-300 px-1 py-4 dark:bg-yellow-800 md:flex-row">
             <RadioGroupItem value="1" id={checklistItem.id + `1`} />
             <Label htmlFor={checklistItem.id + `1`}>Regular</Label>
           </div>
-          <div className="flex flex-col md:flex-row gap-2 justify-center w-full items-center rounded bg-red-300 px-1 py-4 dark:bg-red-800">
+          <div className="flex w-full flex-col items-center justify-center gap-2 rounded bg-red-300 px-1 py-4 dark:bg-red-800 md:flex-row">
             <RadioGroupItem value="0" id={checklistItem.id + `0`} />
             <Label htmlFor={checklistItem.id + `0`}>Ruim</Label>
           </div>
@@ -87,23 +87,12 @@ export const ChecklistCard = ({
           )}
         </div>
       </CardContent>
-      <CardFooter className="gap-2 flex-col sm:flex-row">
-        {/* <Button asChild className="w-full">
-        <Link
-            href={
-              checklistItem.checklist_id +
-              "/create-item?property_id=" +
-              propertyId +
-              "&item_id=" +
-              checklistItem.item_id
-            }
-          >
-            Criar Subitem
-          </Link>
-        </Button> */}
+      <CardFooter className="flex-col gap-2 sm:flex-row">
         <Button asChild className="w-full" variant="secondary">
           <Link
-            href={id?.toString().replaceAll(',', '/') + '/' + checklistItem.item_id}
+            href={
+              id?.toString().replaceAll(",", "/") + "/" + checklistItem.item_id
+            }
           >
             Listar Subitem
           </Link>
