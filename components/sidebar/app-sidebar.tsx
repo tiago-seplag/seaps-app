@@ -16,7 +16,7 @@ import {
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
-import Logo from "../../assets/logo-spleag.png";
+import Logo from "../../assets/logo-gov.png";
 import Image from "next/image";
 
 const data = {
@@ -46,14 +46,22 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
 
   return (
-    <Sidebar variant="sidebar" {...props}>
+    <Sidebar variant="sidebar" collapsible="icon" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" className="h-full hover:bg-zinc-600/80" asChild>
-              <Link href="/" className="flex flex-col dark:bg-card bg-foreground">
-                <Image src={Logo} alt="logo" />
-              </Link>
+            <SidebarMenuButton size="lg">
+              <Image
+                src={Logo}
+                alt="logo"
+                className="flex aspect-square size-8 items-center justify-center rounded-lg"
+              />
+              <div className="grid flex-1 text-left text-sm leading-tight">
+                <span className="truncate font-semibold">SEAPS</span>
+                <span className="truncate text-xs">
+                  Sistema de Manutenção Predial
+                </span>
+              </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
