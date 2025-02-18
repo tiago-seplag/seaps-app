@@ -17,35 +17,10 @@ type ProjectPageProps = {
 export default async function Page({ params }: ProjectPageProps) {
   const { id, itemId } = await params;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
-  const recursive = (level = 1): any => {
-    if (level === 0) {
-      return {
-        include: {
-          steps: true,
-        },
-      };
-    }
-
-    return {
-      include: {
-        steps: recursive(level - 1),
-      },
-    };
-  };
-
   const checklist = await prisma.checklist.findUnique({
     where: { id: id },
     include: {
-      property: {
-        include: {
-          _count: {
-            select: {
-              items: true,
-            },
-          },
-        },
-      },
+      property: true,
       person: true,
       user: true,
       checklistItems: {

@@ -1,6 +1,11 @@
 "use client";
 import * as React from "react";
-import { ChartColumnIncreasing, ClipboardList, Landmark } from "lucide-react";
+import {
+  Boxes,
+  ChartColumnIncreasing,
+  ClipboardList,
+  Landmark,
+} from "lucide-react";
 import { NavUser } from "@/components/sidebar/nav-user";
 import {
   Sidebar,
@@ -36,6 +41,11 @@ const data = {
       title: "Orgãos",
       url: "/organizations",
       icon: Landmark,
+    },
+    {
+      title: "Modelos",
+      url: "/models",
+      icon: Boxes,
     },
   ],
 };

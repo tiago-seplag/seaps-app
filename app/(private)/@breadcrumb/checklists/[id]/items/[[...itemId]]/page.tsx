@@ -36,18 +36,8 @@ export default async function BreadcrumbSlot({
   const checklist = await prisma.checklist.findUnique({
     where: { id: id },
     include: {
-      property: {
-        include: {
-          items: {
-            where: {
-              id: id,
-            },
-            select: {
-              name: true,
-            },
-          },
-        },
-      },
+      property: true,
+      checklistItems: true,
       person: true,
       user: true,
     },

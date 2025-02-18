@@ -58,27 +58,37 @@ model Property {
 
   organization Organization @relation(fields: [organization_id], references: [id])
 
-  items     Item[]
   Checklist Checklist[]
 
   @@map("properties")
 }
 
-model Item {
+model Model {
   id          String   @id @unique @default(uuid())
-  property_id String
-  item_id     String?
-  level       Int      @default(0)
   name        String
+  description String?
   is_deleted  Boolean  @default(false)
   created_at  DateTime @default(now())
   updated_at  DateTime @default(now()) @updatedAt()
 
-  property Property @relation(fields: [property_id], references: [id])
+  modelItems ModelItems[]
+
+  @@map("models")
+}
+
+model Item {
+  id         String   @id @unique @default(uuid())
+  item_id    String?
+  level      Int      @default(0)
+  name       String
+  is_deleted Boolean  @default(false)
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt()
 
   items          Item[]           @relation("items")
   item           Item?            @relation("items", fields: [item_id], references: [id])
   checklistItems ChecklistItems[]
+  modelItems     ModelItems[]
 
   @@map("items")
 }
@@ -100,6 +110,17 @@ model Checklist {
   checklistItems ChecklistItems[]
 
   @@map("checklists")
+}
+
+model ModelItems {
+  id         String   @id @default(uuid())
+  model_id   String
+  item_id    String
+  order      Float
+  created_at DateTime @default(now())
+
+  model Model @relation(fields: [model_id], references: [id])
+  item  Item  @relation(fields: [item_id], references: [id])
 }
 
 enum Status {

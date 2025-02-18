@@ -8,7 +8,7 @@ export const GoBack = () => {
   const router = useRouter();
 
   return (
-    <Button onClick={() => router.back()} variant={"ghost"} size="icon">
+    <Button onClick={() => router.back()} variant={"outline"} size="icon">
       <ArrowLeft />
     </Button>
   );
