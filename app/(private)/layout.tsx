@@ -17,15 +17,15 @@ export default function Layout({
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center justify-between gap-2 px-4 shadow">
+      <SidebarInset className="gap-2 py-2">
+        <header className="mx-2 flex h-16 items-center justify-between gap-2 rounded border bg-card px-4 shadow">
           <div className="flex items-center gap-2">
             <SidebarTrigger className="-ml-1" />
             {breadcrumb}
           </div>
           <ModeToggle />
         </header>
-        <div className="m-2 rounded border p-4 shadow dark:bg-card-foreground/5 h-full">
+        <div className="mx-2 h-full rounded border bg-card p-4 shadow">
           {children}
         </div>
       </SidebarInset>
