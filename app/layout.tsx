@@ -3,7 +3,15 @@ import type { Metadata } from "next";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
-import { SiteHeader } from "@/components/site-header";
+
+import { AppSidebar } from "@/components/sidebar/app-sidebar";
+
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
+import { ModeToggle } from "@/components/mode-toggle";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,14 +42,25 @@ export default function RootLayout({
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
-          themes={["dark", "light", "red", "dark-red"]}
+          themes={["dark", "light"]}
           enableSystem
           enableColorScheme
           disableTransitionOnChange
         >
-          <SiteHeader />
-          <div className="container mx-auto">{children}</div>
+          <SidebarProvider>
+            <AppSidebar />
+            <SidebarInset>
+              <header className="flex h-16 shrink-0 items-center justify-between gap-2 px-4">
+                <div className="flex items-center gap-2">
+                  <SidebarTrigger className="-ml-1" />
+                </div>
+                <ModeToggle />
+              </header>
+              <div className="px-4">{children}</div>
+            </SidebarInset>
+          </SidebarProvider>
         </ThemeProvider>
+
         <Toaster closeButton richColors />
       </body>
     </html>
