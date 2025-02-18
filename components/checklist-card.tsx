@@ -44,7 +44,7 @@ export const ChecklistCard = ({
       <CardHeader className="flex-row items-center space-y-0">
         <CardTitle>{checklistItem.item.name}</CardTitle>
       </CardHeader>
-      <CardContent className="grid pb-4 gap-4">
+      <CardContent className="grid gap-4 pb-4">
         {checklistItem.images ? (
           <div className="h-40 w-full bg-red-300"></div>
         ) : (
@@ -57,17 +57,17 @@ export const ChecklistCard = ({
           onValueChange={(e) => handleChangeValue(e, checklistItem.id)}
           defaultValue={String(checklistItem.score)}
         >
-          <div className="flex w-full flex-col items-center justify-center gap-2 rounded bg-green-300 px-1 py-4 dark:bg-green-800 md:flex-row">
-            <RadioGroupItem value="2" id={checklistItem.id + `2`} />
-            <Label htmlFor={checklistItem.id + `2`}>Bom</Label>
+          <div className="flex w-full flex-col items-center justify-center gap-2 rounded bg-red-300 px-1 py-4 dark:bg-red-800 md:flex-row">
+            <RadioGroupItem value="0" id={checklistItem.id + `0`} />
+            <Label htmlFor={checklistItem.id + `0`}>Ruim</Label>
           </div>
           <div className="flex w-full flex-col items-center justify-center gap-2 rounded bg-yellow-300 px-1 py-4 dark:bg-yellow-800 md:flex-row">
             <RadioGroupItem value="1" id={checklistItem.id + `1`} />
             <Label htmlFor={checklistItem.id + `1`}>Regular</Label>
           </div>
-          <div className="flex w-full flex-col items-center justify-center gap-2 rounded bg-red-300 px-1 py-4 dark:bg-red-800 md:flex-row">
-            <RadioGroupItem value="0" id={checklistItem.id + `0`} />
-            <Label htmlFor={checklistItem.id + `0`}>Ruim</Label>
+          <div className="flex w-full flex-col items-center justify-center gap-2 rounded bg-green-300 px-1 py-4 dark:bg-green-800 md:flex-row">
+            <RadioGroupItem value="2" id={checklistItem.id + `2`} />
+            <Label htmlFor={checklistItem.id + `2`}>Bom</Label>
           </div>
         </RadioGroup>
         <div className="overflow-hidden">

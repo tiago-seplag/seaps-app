@@ -82,11 +82,15 @@ export default async function BreadcrumbSlot({
       </BreadcrumbItem>
       <BreadcrumbSeparator />
       <BreadcrumbItem>
-        <BreadcrumbLink asChild>
-          <Link href={"/checklists/" + checklist?.id + "/items/"} replace>
-            {checklist?.property.name}
-          </Link>
-        </BreadcrumbLink>
+        {itemId && items ? (
+          <BreadcrumbLink asChild>
+            <Link href={"/checklists/" + checklist?.id + "/items/"} replace>
+              {checklist?.property.name}
+            </Link>
+          </BreadcrumbLink>
+        ) : (
+          <BreadcrumbPage>{checklist?.property.name}</BreadcrumbPage>
+        )}
       </BreadcrumbItem>
       {items &&
         itemId &&

@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { ChecklistCard } from "@/components/checklist-card";
 import { GoBack } from "@/components/go-back";
-import { CreateItemButton } from "@/app/checklists/_components/create-item-button";
+import { CreateItemButton } from "../../../_components/create-item-button";
 
 type ProjectPageProps = {
   params: Promise<{

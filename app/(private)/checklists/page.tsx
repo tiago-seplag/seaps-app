@@ -1,12 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
+import { DataTable } from "./data-table";
+import { columns } from "./columns";
 import Link from "next/link";
-
-const ENUM = {
-  OPEN: "ABERTO",
-  CLOSED: "FECHADO",
-};
 
 export default async function Page() {
   const checklists = await prisma.checklist.findMany({
@@ -15,6 +12,11 @@ export default async function Page() {
         select: {
           name: true,
           address: true,
+          organization: {
+            select: {
+              name: true,
+            },
+          },
         },
       },
     },
@@ -36,16 +38,7 @@ export default async function Page() {
         </div>
       </div>
 
-      <ul className="flex flex-col gap-y-2">
-        {checklists.map((checklist) => (
-          <li key={checklist.id}>
-            <Link href={"/checklists/" + checklist.id + "/items"}>
-              {checklist.property.name}
-            </Link>{" "}
-            - {checklist.sid} - {ENUM[checklist.status]}
-          </li>
-        ))}
-      </ul>
+      <DataTable columns={columns} data={checklists} />
     </div>
   );
 }
