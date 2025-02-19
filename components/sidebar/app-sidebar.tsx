@@ -60,17 +60,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg">
+            <SidebarMenuButton size="lg" className="h-full">
               <Image
                 src={Logo}
                 alt="logo"
                 className="flex aspect-square size-8 items-center justify-center rounded-lg"
               />
-              <div className="grid flex-1 text-left text-sm leading-tight">
+              <div className="grid flex-1 text-left text-lg leading-tight">
                 <span className="truncate font-semibold">SEAPS</span>
-                <span className="truncate text-xs">
-                  Sistema de Manutenção Predial
-                </span>
+                <span className="text-sm">Sistema de Manutenção Predial</span>
               </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -83,6 +81,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <SidebarMenuItem>
               <SidebarMenuButton
                 asChild
+                size="lg"
                 tooltip={{
                   children: "Dashboard",
                   hidden: false,
@@ -102,6 +101,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               <SidebarMenuItem key={item.title}>
                 <SidebarMenuButton
                   asChild
+                  size="lg"
                   tooltip={{
                     children: item.title,
                     hidden: false,

@@ -2,7 +2,7 @@
 
 import { ChecklistItems } from "@prisma/client";
 import { Button } from "@/components/ui/button";
-import { CameraIcon } from "lucide-react";
+// import { CameraIcon } from "lucide-react";
 // import Link from "next/link";
 import {
   Card,
@@ -15,6 +15,8 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { useModal } from "@/hooks/use-modal";
 import { ObservationDialog } from "./observation-dialog";
+import { FileUploader } from "./file-uploader";
+import { ImageDialog } from "./image-dialog";
 // import { useParams } from "next/navigation";
 // import { useParams } from "next/navigation";
 
@@ -31,6 +33,7 @@ export const ChecklistCard = ({
 }) => {
   // const { itemId } = useParams<{ itemId?: string[] }>();
   const observationDialog = useModal();
+  const imageDialog = useModal();
 
   const handleChangeValue = (value: string, id: string) => {
     fetch("/api/checklist-item/" + id, {
@@ -48,9 +51,22 @@ export const ChecklistCard = ({
         {checklistItem.images ? (
           <div className="h-40 w-full bg-red-300"></div>
         ) : (
-          <div className="flex h-40 w-full items-center justify-center rounded bg-muted">
-            <CameraIcon size={42} className="text-muted-foreground" />
-          </div>
+          <FileUploader
+            // value={field.value}
+            // onValueChange={field.onChange}
+            maxFileCount={4}
+            accept={{
+              "image/*": [],
+            }}
+            // progresses={progresses}
+            maxSize={1024 * 1024 * 1024 * 2}
+            // pass the onUpload function here for direct upload
+            // onUpload={onUpload}
+            // disabled={isUploading}
+          />
+          // <div className="flex h-40 w-full items-center justify-center rounded bg-muted">
+          //   <CameraIcon size={42} className="text-muted-foreground" />
+          // </div>
         )}
         <RadioGroup
           className="flex w-full"
@@ -89,6 +105,13 @@ export const ChecklistCard = ({
               Adicionar Observação
             </Button>
           )}
+          <Button
+            variant="ghost"
+            onClick={imageDialog.show}
+            className="w-full border border-dashed"
+          >
+            image{" "}
+          </Button>
         </div>
         {/* <Button
           asChild={checklistItem.item.level < 3}
@@ -105,6 +128,11 @@ export const ChecklistCard = ({
           </Link>
         </Button> */}
       </CardFooter>
+      <ImageDialog
+        item={checklistItem}
+        onOpenChange={imageDialog.toggle}
+        open={imageDialog.visible}
+      />
       <ObservationDialog
         item={checklistItem}
         onOpenChange={observationDialog.toggle}
