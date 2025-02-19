@@ -2,7 +2,6 @@ import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { ChecklistCard } from "@/components/checklist-card";
 import { GoBack } from "@/components/go-back";
-import { CreateItemButton } from "../../../_components/create-item-button";
 
 type ProjectPageProps = {
   params: Promise<{
@@ -48,21 +47,16 @@ export default async function Page({ params }: ProjectPageProps) {
 
   return (
     <div className="flex h-full flex-1 flex-col gap-8">
-      <div className="flex justify-between gap-2">
-        <div className="flex items-center truncate">
-          <GoBack />
-          <h2
-            className="truncate text-2xl font-bold tracking-tight"
-            title={checklist.property.name}
-          >
-            {checklist.property.name}
-          </h2>
-        </div>
-        <div className="flex gap-2 self-end">
-          <CreateItemButton />
-        </div>
+      <div className="flex items-center gap-3 truncate">
+        <GoBack />
+        <h2
+          className="truncate text-2xl font-bold tracking-tight"
+          title={checklist.property.name}
+        >
+          {checklist.property.name}
+        </h2>
       </div>
-      <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
         {checklist.checklistItems.map((checklistItem) => (
           <ChecklistCard
             key={checklistItem.id}

@@ -3,7 +3,7 @@
 import { ChecklistItems } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { CameraIcon } from "lucide-react";
-import Link from "next/link";
+// import Link from "next/link";
 import {
   Card,
   CardContent,
@@ -15,7 +15,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { useModal } from "@/hooks/use-modal";
 import { ObservationDialog } from "./observation-dialog";
-import { useParams } from "next/navigation";
+// import { useParams } from "next/navigation";
 // import { useParams } from "next/navigation";
 
 export const ChecklistCard = ({
@@ -29,7 +29,7 @@ export const ChecklistCard = ({
     };
   };
 }) => {
-  const { itemId } = useParams<{ itemId?: string[] }>();
+  // const { itemId } = useParams<{ itemId?: string[] }>();
   const observationDialog = useModal();
 
   const handleChangeValue = (value: string, id: string) => {
@@ -57,20 +57,22 @@ export const ChecklistCard = ({
           onValueChange={(e) => handleChangeValue(e, checklistItem.id)}
           defaultValue={String(checklistItem.score)}
         >
-          <div className="flex w-full flex-col items-center justify-center gap-2 rounded bg-red-300 px-1 py-4 dark:bg-red-800 md:flex-row">
+          <div className="flex w-full flex-col items-center justify-center gap-2 rounded bg-red-300 px-1 py-3 dark:bg-red-800 md:flex-row">
             <RadioGroupItem value="0" id={checklistItem.id + `0`} />
             <Label htmlFor={checklistItem.id + `0`}>Ruim</Label>
           </div>
-          <div className="flex w-full flex-col items-center justify-center gap-2 rounded bg-yellow-300 px-1 py-4 dark:bg-yellow-800 md:flex-row">
+          <div className="flex w-full flex-col items-center justify-center gap-2 rounded bg-yellow-300 px-1 py-3 dark:bg-yellow-800 md:flex-row">
             <RadioGroupItem value="1" id={checklistItem.id + `1`} />
             <Label htmlFor={checklistItem.id + `1`}>Regular</Label>
           </div>
-          <div className="flex w-full flex-col items-center justify-center gap-2 rounded bg-green-300 px-1 py-4 dark:bg-green-800 md:flex-row">
+          <div className="flex w-full flex-col items-center justify-center gap-2 rounded bg-green-300 px-1 py-3 dark:bg-green-800 md:flex-row">
             <RadioGroupItem value="2" id={checklistItem.id + `2`} />
             <Label htmlFor={checklistItem.id + `2`}>Bom</Label>
           </div>
         </RadioGroup>
-        <div className="overflow-hidden">
+      </CardContent>
+      <CardFooter className="flex-col gap-2">
+        <div className="w-full overflow-hidden">
           {checklistItem.observation ? (
             <p
               className="line-clamp-2 min-h-9 cursor-pointer text-wrap rounded-md border border-dashed px-4 py-1 text-muted-foreground hover:bg-accent hover:text-accent-foreground"
@@ -88,9 +90,7 @@ export const ChecklistCard = ({
             </Button>
           )}
         </div>
-      </CardContent>
-      <CardFooter className="flex-col gap-2 sm:flex-row">
-        <Button
+        {/* <Button
           asChild={checklistItem.item.level < 3}
           disabled={checklistItem.item.level === 3}
           className="w-full"
@@ -103,7 +103,7 @@ export const ChecklistCard = ({
           >
             Listar Subitens
           </Link>
-        </Button>
+        </Button> */}
       </CardFooter>
       <ObservationDialog
         item={checklistItem}

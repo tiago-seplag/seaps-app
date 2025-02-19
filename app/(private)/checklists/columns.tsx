@@ -5,17 +5,9 @@ import { Button } from "@/components/ui/button";
 import { $Enums } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
-import { ChevronRight, Pen, Printer, Trash } from "lucide-react";
+import { ChevronRight } from "lucide-react";
+// import { Pen, Printer, Trash } from "lucide-react";
 import Link from "next/link";
-
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
-export type Payment = {
-  id: string;
-  amount: number;
-  status: "pending" | "processing" | "success" | "failed";
-  email: string;
-};
 
 const ENUM = {
   OPEN: {
@@ -106,7 +98,7 @@ export const columns: ColumnDef<Column>[] = [
               <ChevronRight size={16} />
             </Link>
           </Button>
-          <Button variant="outline" className="h-6 w-6 p-2">
+          {/* <Button variant="outline" className="h-6 w-6 p-2">
             <Pen size={16} />
           </Button>
           <Button variant="outline" className="h-6 w-6 p-2">
@@ -114,7 +106,7 @@ export const columns: ColumnDef<Column>[] = [
           </Button>
           <Button variant="destructive" className="h-6 w-6 p-2">
             <Trash size={16} />
-          </Button>
+          </Button> */}
         </div>
       );
     },

@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { createProperty } from "@/app/actions/create-property";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const formSchema = z.object({
   organization_id: z.string({
@@ -39,19 +39,16 @@ const formSchema = z.object({
   }),
 });
 
-export function CreatePropertyForm({
-  organizationId,
-}: {
-  organizationId?: string;
-}) {
+export function CreatePropertyForm() {
   const router = useRouter();
+  const searhParams = useSearchParams();
 
   const [organizations, setOrganizations] = useState<Organization[]>([]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      organization_id: organizationId,
+      organization_id: searhParams.get("organization_id") || undefined,
       address: "",
       name: "",
     },
@@ -69,9 +66,12 @@ export function CreatePropertyForm({
   }
 
   return (
-    <div className="p-4">
+    <div>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="flex flex-col gap-4"
+        >
           <FormField
             control={form.control}
             name="organization_id"
@@ -80,12 +80,11 @@ export function CreatePropertyForm({
                 <FormLabel>Orgão</FormLabel>
                 <Select
                   onValueChange={field.onChange}
-                  defaultValue={organizationId}
-                  disabled
+                  defaultValue={searhParams.get("organization_id") || undefined}
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue />
+                      <SelectValue placeholder="Selecione o Orgão" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -106,10 +105,7 @@ export function CreatePropertyForm({
             render={({ field }) => (
               <FormItem className="w-full">
                 <FormLabel>Tipo de Imóvel</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={organizationId}
-                >
+                <Select onValueChange={field.onChange}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Selecione o tipo imóvel" />
@@ -154,7 +150,9 @@ export function CreatePropertyForm({
               </FormItem>
             )}
           />
-          <Button type="submit">Submit</Button>
+          <Button type="submit" className="self-end">
+            Criar
+          </Button>
         </form>
       </Form>
     </div>

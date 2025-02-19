@@ -20,7 +20,7 @@ export default async function Page() {
           <Button asChild>
             <Link href={"models/create"}>
               <Plus />
-              Criar Checklist
+              Criar Modelo
             </Link>
           </Button>
         </div>
@@ -29,10 +29,8 @@ export default async function Page() {
       <ul className="flex flex-col gap-y-2">
         {models.map((checklist) => (
           <li key={checklist.id}>
-            <Link href={"/models/" + checklist.id + "/properties"}>
-              {checklist.id}
-            </Link>{" "}
-            - {checklist.name}
+            <Link href={"/models/" + checklist.id}>{checklist.id}</Link> -{" "}
+            {checklist.name}
           </li>
         ))}
       </ul>

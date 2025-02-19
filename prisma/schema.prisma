@@ -52,6 +52,7 @@ model Property {
   organization_id String
   name            String
   address         String?
+  type            String   @default("OWN")
   location        String?
   created_at      DateTime @default(now())
   updated_at      DateTime @default(now()) @updatedAt()
@@ -72,6 +73,7 @@ model Model {
   updated_at  DateTime @default(now()) @updatedAt()
 
   modelItems ModelItems[]
+  checklist  Checklist[]
 
   @@map("models")
 }
@@ -97,6 +99,7 @@ model Checklist {
   id          String    @id @unique @default(uuid())
   sid         String
   status      Status    @default(OPEN)
+  model_id    String
   property_id String
   user_id     String?
   person_id   String?
@@ -107,6 +110,7 @@ model Checklist {
   property       Property         @relation(fields: [property_id], references: [id])
   user           User?            @relation(fields: [user_id], references: [id])
   person         Person?          @relation(fields: [person_id], references: [id])
+  model          Model?           @relation(fields: [model_id], references: [id])
   checklistItems ChecklistItems[]
 
   @@map("checklists")
@@ -119,8 +123,8 @@ model ModelItems {
   order      Float
   created_at DateTime @default(now())
 
-  model Model @relation(fields: [model_id], references: [id])
-  item  Item  @relation(fields: [item_id], references: [id])
+  model Model @relation(fields: [model_id], references: [id], onDelete: Cascade)
+  item  Item  @relation(fields: [item_id], references: [id], onDelete: Cascade)
 }
 
 enum Status {
@@ -139,8 +143,8 @@ model ChecklistItems {
   created_at   DateTime @default(now())
   updated_at   DateTime @default(now()) @updatedAt()
 
-  checklist Checklist @relation(fields: [checklist_id], references: [id])
-  item      Item      @relation(fields: [item_id], references: [id])
+  checklist Checklist @relation(fields: [checklist_id], references: [id], onDelete: Cascade)
+  item      Item      @relation(fields: [item_id], references: [id], onDelete: Cascade)
 
   @@map("checklist_items")
 }

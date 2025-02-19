@@ -5,6 +5,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+
 import Link from "next/link";
 
 export default async function BreadcrumbSlot() {
@@ -12,12 +13,12 @@ export default async function BreadcrumbSlot() {
     <BreadcrumbList>
       <BreadcrumbItem>
         <BreadcrumbLink asChild>
-          <Link href="/models">Modelos</Link>
+          <Link href="/properties">Imóveis</Link>
         </BreadcrumbLink>
       </BreadcrumbItem>
       <BreadcrumbSeparator />
       <BreadcrumbItem>
-        <BreadcrumbPage>Criar Modelo</BreadcrumbPage>
+        <BreadcrumbPage>Criar Imóvel</BreadcrumbPage>
       </BreadcrumbItem>
     </BreadcrumbList>
   );

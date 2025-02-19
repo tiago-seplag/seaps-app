@@ -1,14 +1,11 @@
 import { prisma } from "@/lib/prisma";
 
 export async function GET() {
-  const items = await prisma.item.findMany({
-    where: {
-      level: 0,
-    },
+  const models = await prisma.model.findMany({
     orderBy: {
       name: "asc",
     },
   });
 
-  return Response.json(items);
+  return Response.json(models);
 }

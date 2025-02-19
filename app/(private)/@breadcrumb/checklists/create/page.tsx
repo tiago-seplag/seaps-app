@@ -12,12 +12,12 @@ export default async function BreadcrumbSlot() {
     <BreadcrumbList>
       <BreadcrumbItem>
         <BreadcrumbLink asChild>
-          <Link href="/models">Modelos</Link>
+          <Link href="/checklists">Checklists</Link>
         </BreadcrumbLink>
       </BreadcrumbItem>
       <BreadcrumbSeparator />
       <BreadcrumbItem>
-        <BreadcrumbPage>Criar Modelo</BreadcrumbPage>
+        <BreadcrumbPage>Criar Checklist</BreadcrumbPage>
       </BreadcrumbItem>
     </BreadcrumbList>
   );

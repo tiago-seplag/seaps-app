@@ -2,6 +2,7 @@
 import { prisma } from "@/lib/prisma";
 
 export const createChecklist = async (values: {
+  model_id: string;
   organization_id: string;
   property_id: string;
 }) => {
@@ -21,12 +22,20 @@ export const createChecklist = async (values: {
   }
 
   const checklist = await prisma.checklist.create({
-    data: { property_id: values.property_id, sid: sid },
+    data: {
+      property_id: values.property_id,
+      sid: sid,
+      model_id: values.model_id,
+    },
   });
 
   const items = await prisma.item.findMany({
     where: {
-      property_id: values.property_id,
+      modelItems: {
+        some: {
+          model_id: values.model_id,
+        },
+      },
     },
   });
 

@@ -92,7 +92,7 @@ export function ObservationDialog({ item, ...props }: ObservationDialogProps) {
                   <FormControl>
                     <Textarea
                       maxLength={255}
-                      className="min-h-32"
+                      className="min-h-24"
                       placeholder="insira a observação do item"
                       {...field}
                     />

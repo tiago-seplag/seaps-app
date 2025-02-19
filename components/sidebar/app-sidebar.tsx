@@ -38,8 +38,8 @@ const data = {
       icon: ClipboardList,
     },
     {
-      title: "Orgãos",
-      url: "/organizations",
+      title: "Imóveis",
+      url: "/properties",
       icon: Landmark,
     },
     {
