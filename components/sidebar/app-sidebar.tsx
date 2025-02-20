@@ -28,8 +28,7 @@ const data = {
   user: {
     name: "User Name",
     email: "username@seplag.mt.gov.br",
-    avatar:
-      "https://lh3.googleusercontent.com/a/ACg8ocIk7vnKxUOaeEVoaQkzQ1s11ExqrTUUBKOWOu0oPx57covk9Q4=s288-c-no",
+    avatar: "http://localhost.com",
   },
   navMain: [
     {

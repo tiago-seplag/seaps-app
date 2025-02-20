@@ -6,6 +6,7 @@ import {
   Dialog,
   //   DialogClose,
   DialogContent,
+  DialogDescription,
   //   DialogDescription,
   //   DialogFooter,
   DialogHeader,
@@ -68,6 +69,7 @@ export function ImageDialog({ ...props }: ObservationDialogProps) {
       >
         <DialogHeader>
           <DialogTitle hidden>Imagens</DialogTitle>
+          <DialogDescription hidden>Imagens</DialogDescription>
         </DialogHeader>
         <div className="mx-auto flex max-w-lg flex-col gap-4">
           <Carousel className="max-w-lg" setApi={setApi}>

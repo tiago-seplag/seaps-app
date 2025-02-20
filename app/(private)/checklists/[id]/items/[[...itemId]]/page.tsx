@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { ChecklistCard } from "@/components/checklist-card";
 import { GoBack } from "@/components/go-back";
+import { ENUM_PROPERTY, PropertyBadge } from "@/components/property-badge";
 
 type ProjectPageProps = {
   params: Promise<{
@@ -50,12 +51,16 @@ export default async function Page({ params }: ProjectPageProps) {
     <div className="flex h-full flex-1 flex-col gap-8">
       <div className="flex items-center gap-3 truncate">
         <GoBack />
-        <h2
-          className="truncate text-2xl font-bold tracking-tight"
-          title={checklist.property.name}
-        >
-          {checklist.property.name}
-        </h2>
+        <div>
+          <h2
+            className="flex items-center gap-2 truncate text-2xl font-bold tracking-tight"
+            title={checklist.property.name}
+          >
+            {checklist.property.name}
+            <PropertyBadge type={checklist.property.type as ENUM_PROPERTY} />
+          </h2>
+          <p>{checklist.property.address}</p>
+        </div>
       </div>
       <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
         {checklist.checklistItems.map((checklistItem) => (

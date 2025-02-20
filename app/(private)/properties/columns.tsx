@@ -1,27 +1,10 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
+import { ENUM_PROPERTY, PropertyBadge } from "@/components/property-badge";
 import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { ChevronRight } from "lucide-react";
-
-const ENUM = {
-  OWN: {
-    label: "PRÓPRIO",
-    style: "",
-  },
-  RENTED: {
-    label: "ALUGADO",
-    style: "bg-yellow-600 hover:bg-yellow/80",
-  },
-  GRANT: {
-    label: "CONCESSÃO",
-    style: "bg-red-600 hover:bg-red/80",
-  },
-};
-
-type ENUM_OPT = "GRANT" | "RENTED" | "OWN";
 
 type Column = {
   id: string;
@@ -68,11 +51,7 @@ export const columns: ColumnDef<Column>[] = [
     accessorKey: "type",
     header: "Tipo",
     cell({ row }) {
-      return (
-        <Badge className={ENUM[row.original.type as ENUM_OPT].style}>
-          {ENUM[row.original.type as ENUM_OPT].label}
-        </Badge>
-      );
+      return <PropertyBadge type={row.original.type as ENUM_PROPERTY} />;
     },
   },
   {

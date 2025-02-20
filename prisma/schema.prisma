@@ -42,7 +42,8 @@ model Person {
   updated_at      DateTime @default(now()) @updatedAt()
 
   organization Organization @relation(fields: [organization_id], references: [id])
-  Checklist    Checklist[]
+  checklist    Checklist[]
+  property     Property[]
 
   @@map("persons")
 }
@@ -50,6 +51,7 @@ model Person {
 model Property {
   id              String   @id @default(uuid())
   organization_id String
+  person_id       String?
   name            String
   address         String?
   type            String   @default("OWN")
@@ -58,8 +60,9 @@ model Property {
   updated_at      DateTime @default(now()) @updatedAt()
 
   organization Organization @relation(fields: [organization_id], references: [id])
+  person       Person?      @relation(fields: [person_id], references: [id])
 
-  Checklist Checklist[]
+  checklist Checklist[]
 
   @@map("properties")
 }
