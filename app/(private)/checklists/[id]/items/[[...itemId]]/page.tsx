@@ -25,6 +25,7 @@ export default async function Page({ params }: ProjectPageProps) {
       checklistItems: {
         include: {
           item: true,
+          images: true,
         },
         where: {
           item: {

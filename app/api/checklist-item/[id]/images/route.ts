@@ -7,15 +7,22 @@ export async function PUT(
   const { id } = await params;
   const data = await request.json();
 
+  const images = data.images;
+
   await prisma.checklistItems.update({
     data: {
-      score: Number(data.score) ?? Number(data.score),
-      is_inspected: true,
-      observation: data.observation ?? data.observation,
+      image: images[0],
     },
     where: {
       id,
     },
+  });
+
+  await prisma.checklistItemImages.createMany({
+    data: images.map((image: string) => ({
+      checklist_item_id: id,
+      image: image,
+    })),
   });
 
   return Response.json({ ok: "ok" });

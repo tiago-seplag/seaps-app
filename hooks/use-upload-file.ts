@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as React from "react";
 import axios from "axios";
 import { toast } from "sonner";
@@ -7,12 +8,12 @@ import { getErrorMessage } from "@/lib/handle-error";
 export function useUploadFile(
   endpoint: string,
   { defaultUploadedFiles = [] }: any,
-  folder: string
+  folder: string,
 ) {
   const [uploadedFiles, setUploadedFiles] =
     React.useState<any[]>(defaultUploadedFiles);
   const [progresses, setProgresses] = React.useState<Record<string, number>>(
-    {}
+    {},
   );
   const [isUploading, setIsUploading] = React.useState(false);
 
@@ -21,7 +22,10 @@ export function useUploadFile(
 
     const data = new FormData();
     data.append("folder", folder);
-    data.append("file", files[0]);
+
+    files.forEach((img) => {
+      data.append("file", img);
+    });
 
     try {
       const res = await axios.post(endpoint, data, {
@@ -37,7 +41,7 @@ export function useUploadFile(
       });
 
       setUploadedFiles((prev) => (prev ? [...prev, res.data] : [res.data]));
-      return [res.data];
+      return res.data;
     } catch (err) {
       toast.error(getErrorMessage(err));
     } finally {

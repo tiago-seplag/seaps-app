@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/dialog";
 import { ChecklistItems } from "@prisma/client";
 import { useCallback, useEffect, useState } from "react";
-import useEmblaCarousel from "embla-carousel-react";
 import {
   Carousel,
   CarouselApi,
@@ -22,113 +21,96 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "./ui/carousel";
-import { Card, CardContent } from "./ui/card";
 
 interface ObservationDialogProps extends DialogProps {
   item: ChecklistItems & {
     item: {
       name: string;
     };
+    images: {
+      id: string;
+      image: string | null;
+      created_at: Date;
+      checklist_item_id: string;
+    }[];
   };
   slides?: any;
   config?: any;
 }
-const SLIDES = Array.from(Array(10).keys());
 
-export function ImageDialog({
-  slides = SLIDES,
-  ...props
-}: ObservationDialogProps) {
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const [emblaMainApi, setApi] = useState<CarouselApi>();
-  const [emblaThumbsRef, emblaThumbsApi] = useEmblaCarousel({
-    containScroll: "keepSnaps",
-    dragFree: true,
-  });
+export function ImageDialog({ ...props }: ObservationDialogProps) {
+  const [select, setSelected] = useState(0);
+  const [mainCaroselApi, setApi] = useState<CarouselApi>();
+  const [thumbsCaroselApi, setThumbApi] = useState<CarouselApi>();
 
   const onSelect = useCallback(() => {
-    if (!emblaMainApi || !emblaThumbsApi) return;
-    setSelectedIndex(emblaMainApi.selectedScrollSnap());
-    emblaThumbsApi.scrollTo(emblaMainApi.selectedScrollSnap());
-  }, [emblaMainApi, emblaThumbsApi, setSelectedIndex]);
+    if (!mainCaroselApi || !thumbsCaroselApi) return;
+    thumbsCaroselApi.scrollTo(mainCaroselApi.selectedScrollSnap());
+    setSelected(mainCaroselApi.selectedScrollSnap());
+  }, [mainCaroselApi, thumbsCaroselApi]);
 
   useEffect(() => {
-    if (!emblaMainApi) return;
-    onSelect();
-
-    emblaMainApi.on("select", onSelect).on("reInit", onSelect);
-  }, [emblaMainApi, onSelect]);
-
-  useEffect(() => {
-    if (!emblaMainApi) {
+    if (!mainCaroselApi) {
       return;
     }
 
-    emblaMainApi.on("select", () => {
-      setSelectedIndex(emblaMainApi.selectedScrollSnap() + 1);
-    });
-  }, [emblaMainApi]);
+    mainCaroselApi
+      .on("select", onSelect)
+      .on("reInit", onSelect)
+      .on("init", onSelect);
+  }, [mainCaroselApi, onSelect]);
 
   return (
     <Dialog {...props}>
-      <DialogContent className="flex h-full w-full flex-col border-none bg-transparent">
+      <DialogContent
+        className="w-full max-w-xl border-none bg-transparent shadow-none"
+        aria-describedby="content"
+      >
         <DialogHeader>
           <DialogTitle hidden>Imagens</DialogTitle>
         </DialogHeader>
-        <Carousel className="max-w-lg" setApi={setApi}>
-          <CarouselContent>
-            {Array.from({ length: 10 }).map((_, index) => (
-              <CarouselItem key={index}>
-                <div className="p-1">
-                  <Card>
-                    <CardContent className="flex aspect-square items-center justify-center p-6">
-                      <span className="text-4xl font-semibold">
-                        {index + 1}
-                      </span>
-                    </CardContent>
-                  </Card>
-                </div>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <CarouselPrevious />
-          <CarouselNext />
-        </Carousel>
-        <div className="embla-thumbs">
-          <div className="embla-thumbs__viewport" ref={emblaThumbsRef}>
-            <div className="embla-thumbs__container">
-              {slides.map((index: number) => (
-                <Thumb
-                  key={index}
-                  onClick={() => emblaMainApi?.scrollTo(index)}
-                  selected={index === selectedIndex}
-                  index={index}
-                />
+        <div className="mx-auto flex max-w-lg flex-col gap-4">
+          <Carousel className="max-w-lg" setApi={setApi}>
+            <CarouselContent aria-describedby="content">
+              {props.item.images.map((image, index) => (
+                <CarouselItem key={index}>
+                  <div className="aspect-square p-1">
+                    <img
+                      src={"http://172.16.146.58:3333/" + image.image}
+                      className="h-full w-full rounded object-cover"
+                      alt=""
+                    />
+                  </div>
+                </CarouselItem>
               ))}
-            </div>
-          </div>
+            </CarouselContent>
+            <CarouselPrevious className="hidden md:flex" />
+            <CarouselNext className="hidden md:flex" />
+          </Carousel>
+          <Carousel setApi={setThumbApi}>
+            <CarouselContent aria-describedby="content">
+              {props.item.images.map((image, index) => (
+                <CarouselItem key={index} className={"basis-1/5"}>
+                  <button
+                    onClick={() => mainCaroselApi?.scrollTo(index)}
+                    type="button"
+                    className={
+                      "h-24 w-24 rounded" +
+                      ` ${select === index ? "border border-sky-400" : ""}`
+                    }
+                  >
+                    <img
+                      src={"http://172.16.146.58:3333/" + image.image}
+                      className="h-full w-full object-fill"
+                      alt=""
+                    />
+                  </button>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+          </Carousel>
         </div>
       </DialogContent>
     </Dialog>
   );
 }
-
-export const Thumb = (props: any) => {
-  const { selected, onClick } = props;
-
-  return (
-    <div
-      className={"embla-thumbs__slide".concat(
-        selected ? "embla-thumbs__slide--selected" : "",
-      )}
-    >
-      <button onClick={onClick} type="button" className="">
-        <img
-          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRawvj3AK7RB1XwVOeoYT79xjgejLyE7SGvIA&s"
-          className="w-24 object-cover"
-          alt=""
-        />
-      </button>
-    </div>
-  );
-};

@@ -2,7 +2,6 @@
 
 import { ChecklistItems } from "@prisma/client";
 import { Button } from "@/components/ui/button";
-// import { CameraIcon } from "lucide-react";
 // import Link from "next/link";
 import {
   Card,
@@ -17,7 +16,7 @@ import { useModal } from "@/hooks/use-modal";
 import { ObservationDialog } from "./observation-dialog";
 import { FileUploader } from "./file-uploader";
 import { ImageDialog } from "./image-dialog";
-// import { useParams } from "next/navigation";
+import Image from "next/image";
 // import { useParams } from "next/navigation";
 
 export const ChecklistCard = ({
@@ -29,6 +28,12 @@ export const ChecklistCard = ({
       name: string;
       level: number;
     };
+    images: {
+      id: string;
+      image: string | null;
+      created_at: Date;
+      checklist_item_id: string;
+    }[];
   };
 }) => {
   // const { itemId } = useParams<{ itemId?: string[] }>();
@@ -48,25 +53,27 @@ export const ChecklistCard = ({
         <CardTitle>{checklistItem.item.name}</CardTitle>
       </CardHeader>
       <CardContent className="grid gap-4 pb-4">
-        {checklistItem.images ? (
-          <div className="h-40 w-full bg-red-300"></div>
-        ) : (
+        {!checklistItem.image ? (
           <FileUploader
-            // value={field.value}
-            // onValueChange={field.onChange}
-            maxFileCount={4}
-            accept={{
-              "image/*": [],
-            }}
-            // progresses={progresses}
+            id={checklistItem.id}
+            maxFileCount={10}
+            accept={{ "image/*": [] }}
             maxSize={1024 * 1024 * 1024 * 2}
-            // pass the onUpload function here for direct upload
-            // onUpload={onUpload}
-            // disabled={isUploading}
           />
-          // <div className="flex h-40 w-full items-center justify-center rounded bg-muted">
-          //   <CameraIcon size={42} className="text-muted-foreground" />
-          // </div>
+        ) : (
+          <Button
+            variant="ghost"
+            onClick={imageDialog.show}
+            className="h-40 min-h-40 w-full overflow-hidden border bg-muted-foreground/10 object-cover p-0"
+          >
+            <Image
+              src={"http://172.16.146.58:3333/" + checklistItem.image}
+              alt="checklist-image"
+              width={388}
+              height={160}
+              className="pointer-events-none h-full w-full object-cover"
+            />
+          </Button>
         )}
         <RadioGroup
           className="flex w-full"
@@ -91,7 +98,7 @@ export const ChecklistCard = ({
         <div className="w-full overflow-hidden">
           {checklistItem.observation ? (
             <p
-              className="line-clamp-2 min-h-9 cursor-pointer text-wrap rounded-md border border-dashed px-4 py-1 text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+              className="line-clamp-2 min-h-9 cursor-pointer text-wrap rounded-md border px-4 py-1 text-muted-foreground hover:bg-accent hover:text-accent-foreground"
               onClick={observationDialog.show}
             >
               {checklistItem.observation}
@@ -105,13 +112,6 @@ export const ChecklistCard = ({
               Adicionar Observação
             </Button>
           )}
-          <Button
-            variant="ghost"
-            onClick={imageDialog.show}
-            className="w-full border border-dashed"
-          >
-            image{" "}
-          </Button>
         </div>
         {/* <Button
           asChild={checklistItem.item.level < 3}

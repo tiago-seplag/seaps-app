@@ -138,13 +138,26 @@ model ChecklistItems {
   item_id      String
   score        Int?
   observation  String?
-  images       String?
+  image        String?
   is_inspected Boolean  @default(false)
   created_at   DateTime @default(now())
   updated_at   DateTime @default(now()) @updatedAt()
 
-  checklist Checklist @relation(fields: [checklist_id], references: [id], onDelete: Cascade)
-  item      Item      @relation(fields: [item_id], references: [id], onDelete: Cascade)
+  checklist Checklist             @relation(fields: [checklist_id], references: [id], onDelete: Cascade)
+  item      Item                  @relation(fields: [item_id], references: [id], onDelete: Cascade)
+  images    ChecklistItemImages[]
 
   @@map("checklist_items")
+}
+
+model ChecklistItemImages {
+  id                String   @id @default(uuid())
+  checklist_item_id String
+  image             String
+  observation       String?
+  created_at        DateTime @default(now())
+
+  checklistItemId ChecklistItems @relation(fields: [checklist_item_id], references: [id], onDelete: Cascade)
+
+  @@map("checklist_item_images")
 }

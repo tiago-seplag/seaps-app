@@ -5,17 +5,19 @@ import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { ChevronRight } from "lucide-react";
-import Link from "next/link";
 
 const ENUM = {
   OWN: {
     label: "PRÓPRIO",
+    style: "",
   },
   RENTED: {
     label: "ALUGADO",
+    style: "bg-yellow-600 hover:bg-yellow/80",
   },
   GRANT: {
     label: "CONCESSÃO",
+    style: "bg-red-600 hover:bg-red/80",
   },
 };
 
@@ -67,7 +69,7 @@ export const columns: ColumnDef<Column>[] = [
     header: "Tipo",
     cell({ row }) {
       return (
-        <Badge className={""}>
+        <Badge className={ENUM[row.original.type as ENUM_OPT].style}>
           {ENUM[row.original.type as ENUM_OPT].label}
         </Badge>
       );
@@ -83,13 +85,11 @@ export const columns: ColumnDef<Column>[] = [
   {
     accessorKey: "actions",
     header: "Ações",
-    cell({ row }) {
+    cell({}) {
       return (
         <div className="flex gap-1">
-          <Button variant="outline" className="h-6 w-6 p-2" asChild>
-            <Link href={"/checklists/" + row.original.id + "/items"}>
-              <ChevronRight size={16} />
-            </Link>
+          <Button variant="outline" className="h-6 w-6 p-2">
+            <ChevronRight size={16} />
           </Button>
         </div>
       );

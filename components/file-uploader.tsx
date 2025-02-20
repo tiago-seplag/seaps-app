@@ -14,91 +14,30 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useControllableState } from "@/hooks/use-controllable-state";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useUploadFile } from "@/hooks/use-upload-file";
+import { useRouter } from "next/navigation";
 
 interface FileUploaderProps extends React.HTMLAttributes<HTMLDivElement> {
-  /**
-   * Value of the uploader.
-   * @type File[]
-   * @default undefined
-   * @example value={files}
-   */
+  id: string;
   value?: File[];
-
-  /**
-   * Function to be called when the value changes.
-   * @type (files: File[]) => void
-   * @default undefined
-   * @example onValueChange={(files) => setFiles(files)}
-   */
   onValueChange?: (files: File[]) => void;
-
-  /**
-   * Function to be called when files are uploaded.
-   * @type (files: File[]) => Promise<void>
-   * @default undefined
-   * @example onUpload={(files) => uploadFiles(files)}
-   */
   onUpload?: (files: File[]) => Promise<void>;
-
-  /**
-   * Progress of the uploaded files.
-   * @type Record<string, number> | undefined
-   * @default undefined
-   * @example progresses={{ "file1.png": 50 }}
-   */
   progresses?: Record<string, number>;
-
-  /**
-   * Accepted file types for the uploader.
-   * @type { [key: string]: string[]}
-   * @default
-   * ```ts
-   * { "image/*": [] }
-   * ```
-   * @example accept={["image/png", "image/jpeg"]}
-   */
   accept?: DropzoneProps["accept"];
-
-  /**
-   * Maximum file size for the uploader.
-   * @type number | undefined
-   * @default 1024 * 1024 * 2 // 2MB
-   * @example maxSize={1024 * 1024 * 2} // 2MB
-   */
   maxSize?: DropzoneProps["maxSize"];
-
-  /**
-   * Maximum number of files for the uploader.
-   * @type number | undefined
-   * @default 1
-   * @example maxFileCount={4}
-   */
   maxFileCount?: DropzoneProps["maxFiles"];
-
-  /**
-   * Whether the uploader should accept multiple files.
-   * @type boolean
-   * @default false
-   * @example multiple
-   */
   multiple?: boolean;
-
-  /**
-   * Whether the uploader is disabled.
-   * @type boolean
-   * @default false
-   * @example disabled
-   */
   disabled?: boolean;
 }
 
 export function FileUploader({ ...props }: FileUploaderProps) {
   const {
+    id,
     value: valueProp,
     onValueChange,
-    onUpload,
+    // onUpload,
     accept,
-    progresses,
+    // progresses,
     maxSize = 1024 * 1024 * 2,
     maxFileCount = 1,
     multiple = false,
@@ -107,10 +46,34 @@ export function FileUploader({ ...props }: FileUploaderProps) {
     ...dropzoneProps
   } = props;
 
+  const router = useRouter();
+
+  const { onUpload, progresses } = useUploadFile(
+    "http://172.16.146.58:3333/upload/images",
+    { defaultUploadedFiles: [] },
+    "images",
+  );
+
   const [files, setFiles] = useControllableState({
     prop: valueProp,
     onChange: onValueChange,
   });
+
+  const handleUpload = React.useCallback(
+    async (files: File[]) => {
+      const uploadedFiles = await onUpload(files);
+
+      if (uploadedFiles) {
+        fetch("/api/checklist-item/" + id + "/images", {
+          method: "PUT",
+          body: JSON.stringify({
+            images: uploadedFiles.files.map((file: any) => file.url),
+          }),
+        });
+      }
+    },
+    [id, onUpload],
+  );
 
   const onDrop = React.useCallback(
     (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
@@ -141,17 +104,18 @@ export function FileUploader({ ...props }: FileUploaderProps) {
       }
 
       if (
-        onUpload &&
+        handleUpload &&
         updatedFiles.length > 0 &&
         updatedFiles.length <= maxFileCount
       ) {
         const target =
           updatedFiles.length > 0 ? `${updatedFiles.length} files` : `file`;
 
-        toast.promise(onUpload(updatedFiles), {
+        toast.promise(handleUpload(updatedFiles), {
           loading: `Uploading ${target}...`,
           success: () => {
             setFiles([]);
+            router.refresh();
             return `${target} uploaded`;
           },
           error: `Failed to upload ${target}`,
@@ -159,7 +123,7 @@ export function FileUploader({ ...props }: FileUploaderProps) {
       }
     },
 
-    [files, maxFileCount, multiple, onUpload, setFiles],
+    [files, handleUpload, maxFileCount, multiple, router, setFiles],
   );
 
   function onRemove(index: number) {
@@ -198,7 +162,7 @@ export function FileUploader({ ...props }: FileUploaderProps) {
           <div
             {...getRootProps()}
             className={cn(
-              "group relative grid h-40 min-h-40 bg-muted-foreground/10 w-full cursor-pointer place-items-center rounded-lg border-2 border-dashed px-5 py-2.5 text-center transition hover:bg-muted/25",
+              "group relative grid h-40 min-h-40 w-full cursor-pointer place-items-center rounded-lg border-2 border-dashed bg-muted-foreground/10 px-5 py-2.5 text-center transition hover:bg-muted/25",
               "ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
               isDragActive && "border-muted-foreground/50",
               isDisabled && "pointer-events-none opacity-60",
