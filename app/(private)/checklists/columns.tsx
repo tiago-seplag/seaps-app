@@ -93,20 +93,11 @@ export const columns: ColumnDef<Column>[] = [
     cell({ row }) {
       return (
         <div className="flex gap-1">
-          <Button variant="outline" className="h-6 w-6 p-2" asChild>
+          <Button variant="green" className="h-6 w-6 p-2" asChild>
             <Link href={"/checklists/" + row.original.id + "/items"}>
               <ChevronRight size={16} />
             </Link>
           </Button>
-          {/* <Button variant="outline" className="h-6 w-6 p-2">
-            <Pen size={16} />
-          </Button>
-          <Button variant="outline" className="h-6 w-6 p-2">
-            <Printer size={16} />
-          </Button>
-          <Button variant="destructive" className="h-6 w-6 p-2">
-            <Trash size={16} />
-          </Button> */}
         </div>
       );
     },

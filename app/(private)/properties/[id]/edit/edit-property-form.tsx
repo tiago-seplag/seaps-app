@@ -116,7 +116,7 @@ export function EditPropertyForm({ property }: { property: Property }) {
           name="person_id"
           render={({ field }) => (
             <FormItem className="w-full">
-              <FormLabel>Responsavel</FormLabel>
+              <FormLabel>Responsável</FormLabel>
               <div className="flex w-full items-center gap-2">
                 <Select
                   defaultValue={property.person_id || ""}
@@ -124,7 +124,7 @@ export function EditPropertyForm({ property }: { property: Property }) {
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Selecione o Orgão" />
+                      <SelectValue placeholder="Selecione o Responsável pelo Imóvel" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>

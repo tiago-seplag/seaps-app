@@ -35,16 +35,24 @@ export function NavUser({
   const router = useRouter();
 
   const createAvatarFallback = (name: string) => {
-    const split = name.split(" ");
+    const names = name.trim().toUpperCase().split(/\s+/); // Remove espaços extras e divide por espaços
+    if (names.length === 1) return names[0][0];
 
-    if (split.length < 2) {
-      return split[0][0].toUpperCase();
-    }
+    return `${names[0][0]}${names[names.length - 1][0]}`;
+  };
 
-    return (split[0][0] + split[1][0]).toString().toUpperCase();
+  const getFirstAndLastName = (name: string) => {
+    const names = name.trim().split(/\s+/); // Remove espaços extras e divide por espaços
+    if (names.length === 1) return names[0];
+
+    const firstName = names[0];
+    const lastName = names[names.length - 1];
+
+    return `${firstName} ${lastName}`;
   };
 
   const avatarFallback = createAvatarFallback(user.name);
+  const name = getFirstAndLastName(user.name);
 
   return (
     <SidebarMenu>
@@ -62,7 +70,7 @@ export function NavUser({
                 </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">{user.name}</span>
+                <span className="truncate font-semibold">{name}</span>
                 <span className="truncate text-xs">{user.email}</span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
@@ -77,13 +85,13 @@ export function NavUser({
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user.avatar} alt={user.name} />
+                  <AvatarImage src={user.avatar} alt={name} />
                   <AvatarFallback className="rounded-lg">
                     {avatarFallback}
                   </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">{user.name}</span>
+                  <span className="truncate font-semibold">{name}</span>
                   <span className="truncate text-xs">{user.email}</span>
                 </div>
               </div>
@@ -104,7 +112,7 @@ export function NavUser({
             <DropdownMenuItem
               onClick={async () => {
                 await logout();
-                router.replace(
+                router.push(
                   "https://dev.login.mt.gov.br/auth/realms/mt-realm/protocol/openid-connect/logout?client_id=projeto-template-integracao&redirect_uri=http://172.16.146.58:3000&response_type=code",
                 );
               }}

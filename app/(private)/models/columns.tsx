@@ -40,12 +40,12 @@ export const columns: ColumnDef<Model>[] = [
     cell({ row }) {
       return (
         <div className="flex gap-1">
-          <Button variant="outline" className="h-6 w-6 p-2" asChild>
+          <Button variant="green" className="h-6 w-6 p-2" asChild>
             <Link href={"/models/" + row.original.id}>
               <ChevronRight size={16} />
             </Link>
           </Button>
-          <Button variant="outline" className="h-6 w-6 p-2" asChild>
+          <Button variant="yellow" className="h-6 w-6 p-2" asChild>
             <Link href={"/models/" + row.original.id + "/edit"}>
               <Pen size={16} />
             </Link>

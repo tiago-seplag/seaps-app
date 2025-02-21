@@ -1,6 +1,6 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
+/* eslint-disable @next/next/no-img-element */
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -58,7 +58,7 @@ export function LoginForm({
             saveToken(data.access_token);
             router.replace("/");
           }
-        });
+        })
     }
   }, [router, searchParams]);
 
