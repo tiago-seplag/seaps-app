@@ -1,5 +1,5 @@
 import { GoBack } from "@/components/go-back";
-import { CreatePersonForm } from "../_components/create-checklist-form";
+import { CreatePersonForm } from "../_components/create-responsible-form";
 
 export default function CreateCheckList() {
   return (

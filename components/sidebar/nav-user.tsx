@@ -18,7 +18,8 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import Link from "next/link";
+import { logout } from "@/app/actions/set-cookies";
+import { useRouter } from "next/navigation";
 
 export function NavUser({
   user,
@@ -30,6 +31,8 @@ export function NavUser({
   };
 }) {
   const { isMobile } = useSidebar();
+
+  const router = useRouter();
 
   const createAvatarFallback = (name: string) => {
     const split = name.split(" ");
@@ -97,11 +100,18 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem asChild className="text-destructive">
-              <Link href="/login">
-                <LogOut />
-                Sair
-              </Link>
+
+            <DropdownMenuItem
+              onClick={async () => {
+                await logout();
+                router.replace(
+                  "https://dev.login.mt.gov.br/auth/realms/mt-realm/protocol/openid-connect/logout?client_id=projeto-template-integracao&redirect_uri=http://172.16.146.58:3000&response_type=code",
+                );
+              }}
+              className="text-destructive"
+            >
+              <LogOut />
+              Sair
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

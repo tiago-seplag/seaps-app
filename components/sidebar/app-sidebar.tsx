@@ -1,58 +1,25 @@
-"use client";
-import * as React from "react";
-import {
-  Boxes,
-  ChartColumnIncreasing,
-  ClipboardList,
-  Landmark,
-} from "lucide-react";
 import { NavUser } from "@/components/sidebar/nav-user";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
-  SidebarGroup,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import Link from "next/link";
-import { cn } from "@/lib/utils";
-import { usePathname } from "next/navigation";
+
 import Logo from "../../assets/logo-gov.png";
 import Image from "next/image";
+import { NavSidebar } from "./nav-sidebar";
+import { cookies } from "next/headers";
 
-const data = {
-  user: {
-    name: "User Name",
-    email: "username@seplag.mt.gov.br",
-    avatar: "http://localhost.com",
-  },
-  navMain: [
-    {
-      title: "Checklists",
-      url: "/checklists",
-      icon: ClipboardList,
-    },
-    {
-      title: "Imóveis",
-      url: "/properties",
-      icon: Landmark,
-    },
-    {
-      title: "Modelos",
-      url: "/models",
-      icon: Boxes,
-    },
-  ],
-};
+export async function AppSidebar({
+  ...props
+}: React.ComponentProps<typeof Sidebar>) {
+  const cookieStore = await cookies();
 
-const activeLink = "text-foreground font-bold";
-
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const pathname = usePathname();
+  const user = cookieStore.get("user")?.value;
 
   return (
     <Sidebar variant="sidebar" collapsible="icon" {...props}>
@@ -74,56 +41,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>Menu</SidebarGroupLabel>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                asChild
-                size="lg"
-                tooltip={{
-                  children: "Dashboard",
-                  hidden: false,
-                }}
-                className={cn(
-                  "px-2.5 transition-colors md:px-2",
-                  pathname === "/" ? activeLink : "text-foreground/60",
-                )}
-              >
-                <Link href={"/"}>
-                  <ChartColumnIncreasing />
-                  Dashboard
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            {data.navMain.map((item) => (
-              <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton
-                  asChild
-                  size="lg"
-                  tooltip={{
-                    children: item.title,
-                    hidden: false,
-                  }}
-                  className={cn(
-                    "px-2.5 transition-colors md:px-2",
-                    pathname.startsWith(item.url)
-                      ? activeLink
-                      : "text-foreground/60",
-                  )}
-                >
-                  <Link href={item.url}>
-                    <item.icon />
-                    {item.title}
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
-        </SidebarGroup>
+        <NavSidebar />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        {user && <NavUser user={JSON.parse(user)} />}
       </SidebarFooter>
     </Sidebar>
   );

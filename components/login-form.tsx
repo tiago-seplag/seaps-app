@@ -1,16 +1,67 @@
+/* eslint-disable @next/next/no-img-element */
+"use client";
+
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import Image from "next/image";
 import Logo from "../assets/logo-gov.png";
+import { useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { saveToken } from "@/app/actions/set-cookies";
+
+const config = {
+  grant_type: "authorization_code",
+  client_id: "projeto-template-integracao",
+  redirect_uri: "http://172.16.146.58:3000/login",
+
+  url_token:
+    "https://dev.login.mt.gov.br/auth/realms/mt-realm/protocol/openid-connect/token",
+  url_userInfo:
+    "https://dev.login.mt.gov.br/auth/realms/mt-realm/protocol/openid-connect/userinfo",
+
+  url_login:
+    "https://dev.login.mt.gov.br/auth/realms/mt-realm/protocol/openid-connect/auth?client_id=projeto-template-integracao&redirect_uri=http://172.16.146.58:3000/login&response_type=code",
+  url_logout:
+    "https://dev.login.mt.gov.br/auth/realms/mt-realm/protocol/openid-connect/logout?client_id=projeto-template-integracao&redirect_uri=http://172.16.146.58:3000/login&response_type=code",
+};
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  useEffect(() => {
+    const code = searchParams.get("code");
+    //console.log('CODE',code)
+
+    if (code) {
+      //obtem o token
+      fetch(config.url_token, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+          grant_type: config.grant_type,
+          client_id: config.client_id,
+          code: code,
+          redirect_uri: config.redirect_uri,
+        }),
+      })
+        .then((data) => data.json())
+        .then((data) => {
+          if (data.access_token) {
+            saveToken(data.access_token);
+            router.replace("/");
+          }
+        });
+    }
+  }, [router, searchParams]);
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="overflow-hidden shadow-lg">
@@ -25,29 +76,20 @@ export function LoginForm({
                   Bem-vindo de volta
                 </p>
               </div>
-              <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="m@example.com"
-                  required
-                />
-              </div>
-              <div className="grid gap-2">
-                <div className="flex items-center">
-                  <Label htmlFor="password">Senha</Label>
-                  <a
-                    href="#"
-                    className="ml-auto text-sm underline-offset-2 hover:underline"
-                  >
-                    Esqueceu a senha?
-                  </a>
-                </div>
-                <Input id="password" type="password" required />
-              </div>
-              <Button type="button" className="w-full" asChild>
-                <Link href="/">Entrar</Link>
+              <Button
+                type="button"
+                className="h-12 w-full py-1"
+                asChild
+                size={"lg"}
+              >
+                <Link href={config.url_login}>
+                  <img
+                    alt="mt-login-logo"
+                    className="h-full"
+                    src="https://dev.login.mt.gov.br/auth/resources/3fl3k/login/mtlogin_v3/dist/assets/icon-DH2B8051.png"
+                  />
+                  Entrar com MT Login
+                </Link>
               </Button>
             </div>
           </form>
