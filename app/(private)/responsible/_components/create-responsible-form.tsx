@@ -22,8 +22,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-// import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
+import { createResponsible } from "@/app/actions/create-responsible";
 
 const formSchema = z.object({
   name: z
@@ -31,6 +32,7 @@ const formSchema = z.object({
       message: "Insira o nome do Responsável",
     })
     .min(1, { message: "Insira o nome do Responsável" }),
+  role: z.string(),
   email: z.string().optional(),
   phone: z.string().optional(),
   organization_id: z.string({
@@ -39,16 +41,18 @@ const formSchema = z.object({
 });
 
 export function CreatePersonForm() {
-  // const router = useRouter();
+  const router = useRouter();
+  const searhParams = useSearchParams();
 
   const [organizations, setOrganizations] = useState<Organization[]>([]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      organization_id: undefined as unknown as string,
+      organization_id: searhParams.get("organization_id") || "",
       name: "",
       phone: "",
+      role: "",
       email: "",
     },
   });
@@ -60,8 +64,7 @@ export function CreatePersonForm() {
   }, []);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    // createChecklist(values).then(() => router.replace("/checklists"));
+    createResponsible(values).then(() => router.back());
   }
 
   const formatPhone = (value: string) => {
@@ -87,7 +90,10 @@ export function CreatePersonForm() {
           render={({ field }) => (
             <FormItem className="w-full">
               <FormLabel>Orgão</FormLabel>
-              <Select onValueChange={field.onChange}>
+              <Select
+                onValueChange={field.onChange}
+                defaultValue={searhParams.get("organization_id") || undefined}
+              >
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione o Orgão" />
@@ -111,6 +117,17 @@ export function CreatePersonForm() {
           render={({ field }) => (
             <FormItem className="w-full">
               <FormLabel>Nome</FormLabel>
+              <Input {...field} />
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="role"
+          render={({ field }) => (
+            <FormItem className="w-full">
+              <FormLabel>Cargo</FormLabel>
               <Input {...field} />
               <FormMessage />
             </FormItem>

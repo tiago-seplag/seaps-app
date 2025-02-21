@@ -20,7 +20,11 @@ export default async function Page({ params }: ProjectPageProps) {
   const checklist = await prisma.checklist.findUnique({
     where: { id: id },
     include: {
-      property: true,
+      property: {
+        include: {
+          person: true,
+        },
+      },
       person: true,
       user: true,
       checklistItems: {
@@ -60,6 +64,11 @@ export default async function Page({ params }: ProjectPageProps) {
             <PropertyBadge type={checklist.property.type as ENUM_PROPERTY} />
           </h2>
           <p>{checklist.property.address}</p>
+          <p>
+            {checklist.property.person?.name} -{" "}
+            {checklist.property.person?.role || ""} -{" "}
+            {checklist.property.person?.phone}
+          </p>
         </div>
       </div>
       <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">

@@ -4,7 +4,8 @@ import { ENUM_PROPERTY, PropertyBadge } from "@/components/property-badge";
 import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Pen } from "lucide-react";
+import Link from "next/link";
 
 type Column = {
   id: string;
@@ -64,11 +65,16 @@ export const columns: ColumnDef<Column>[] = [
   {
     accessorKey: "actions",
     header: "Ações",
-    cell({}) {
+    cell({ row }) {
       return (
         <div className="flex gap-1">
           <Button variant="outline" className="h-6 w-6 p-2">
             <ChevronRight size={16} />
+          </Button>
+          <Button variant="outline" className="h-6 w-6 p-2" asChild>
+            <Link href={"/properties/" + row.original.id + "/edit"}>
+              <Pen size={16} />
+            </Link>
           </Button>
         </div>
       );

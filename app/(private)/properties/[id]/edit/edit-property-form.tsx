@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
-import { Organization } from "@prisma/client";
+import { Organization, Property } from "@prisma/client";
 import {
   Select,
   SelectContent,
@@ -23,9 +23,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { createProperty } from "@/app/actions/create-property";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
+import { editProperty } from "@/app/actions/edit-property";
 
 const formSchema = z.object({
   organization_id: z.string({
@@ -41,9 +41,8 @@ const formSchema = z.object({
   person_id: z.string(),
 });
 
-export function CreatePropertyForm() {
+export function EditPropertyForm({ property }: { property: Property }) {
   const router = useRouter();
-  const searhParams = useSearchParams();
 
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [responsible, setResponsible] = useState<Organization[]>([]);
@@ -51,9 +50,11 @@ export function CreatePropertyForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      organization_id: searhParams.get("organization_id") || undefined,
-      address: "",
-      name: "",
+      address: property.address || "",
+      name: property.name,
+      organization_id: property.organization_id,
+      person_id: property.person_id || "",
+      type: property.type,
     },
   });
 
@@ -72,8 +73,8 @@ export function CreatePropertyForm() {
   }, [organization_id]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    await createProperty(values);
-    router.back();
+    await editProperty(values, property.id);
+    router.replace("/properties");
   }
 
   return (
@@ -89,8 +90,9 @@ export function CreatePropertyForm() {
             <FormItem className="w-full">
               <FormLabel>Orgão</FormLabel>
               <Select
+                disabled
+                defaultValue={property.organization_id}
                 onValueChange={field.onChange}
-                defaultValue={searhParams.get("organization_id") || undefined}
               >
                 <FormControl>
                   <SelectTrigger>
@@ -116,7 +118,10 @@ export function CreatePropertyForm() {
             <FormItem className="w-full">
               <FormLabel>Responsavel</FormLabel>
               <div className="flex w-full items-center gap-2">
-                <Select onValueChange={field.onChange}>
+                <Select
+                  defaultValue={property.person_id || ""}
+                  onValueChange={field.onChange}
+                >
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Selecione o Orgão" />
@@ -156,7 +161,10 @@ export function CreatePropertyForm() {
           render={({ field }) => (
             <FormItem className="w-full">
               <FormLabel>Tipo de Imóvel</FormLabel>
-              <Select onValueChange={field.onChange}>
+              <Select
+                onValueChange={field.onChange}
+                defaultValue={property.type || ""}
+              >
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione o tipo imóvel" />
@@ -202,7 +210,7 @@ export function CreatePropertyForm() {
           )}
         />
         <Button type="submit" className="self-end">
-          Criar
+          Salvar
         </Button>
       </form>
     </Form>
