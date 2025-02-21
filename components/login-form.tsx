@@ -53,12 +53,11 @@ export function LoginForm({
         }),
       })
         .then((data) => data.json())
-        .then((data) => {
+        .then(async (data) => {
           if (data.access_token) {
-            saveToken(data.access_token);
-            router.replace("/");
+            saveToken(data.access_token).then(() => router.push("/"));
           }
-        })
+        });
     }
   }, [router, searchParams]);
 
