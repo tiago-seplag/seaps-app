@@ -2,6 +2,7 @@
 
 import { ENUM_PROPERTY, PropertyBadge } from "@/components/property-badge";
 import { Button } from "@/components/ui/button";
+import { getFirstAndLastName } from "@/lib/utils";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { ChevronRight, Pen } from "lucide-react";
@@ -20,6 +21,9 @@ type Column = {
     id: string;
     name: string;
   };
+  person?: {
+    name: string;
+  } | null;
 };
 
 export const columns: ColumnDef<Column>[] = [
@@ -46,6 +50,13 @@ export const columns: ColumnDef<Column>[] = [
     header: "Orgão",
     accessorFn(row) {
       return row.organization.name;
+    },
+  },
+  {
+    accessorKey: "person",
+    header: "Responsável",
+    accessorFn(row) {
+      return row.person?.name ? getFirstAndLastName(row.person.name) : "--";
     },
   },
   {

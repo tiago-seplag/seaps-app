@@ -29,7 +29,7 @@ async function verifyToken(token: string | null) {
 export async function authMiddleware(req: NextRequest) {
   const cookieStore = await cookies();
 
-  const token = cookieStore.get("session");
+  const token = cookieStore.get("SESSION");
 
   if (!token) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });

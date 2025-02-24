@@ -1,6 +1,6 @@
 "use client";
 
-import { ChecklistItems } from "@prisma/client";
+import { $Enums, ChecklistItems } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 // import Link from "next/link";
 import {
@@ -21,7 +21,9 @@ import Image from "next/image";
 
 export const ChecklistCard = ({
   checklistItem,
+  status,
 }: {
+  status: $Enums.Status;
   propertyId: string;
   checklistItem: ChecklistItems & {
     item: {
@@ -77,6 +79,7 @@ export const ChecklistCard = ({
         )}
         <RadioGroup
           className="flex w-full"
+          disabled={status === "CLOSED"}
           onValueChange={(e) => handleChangeValue(e, checklistItem.id)}
           defaultValue={String(checklistItem.score)}
         >
@@ -97,12 +100,14 @@ export const ChecklistCard = ({
       <CardFooter className="flex-col gap-2">
         <div className="w-full overflow-hidden">
           {checklistItem.observation ? (
-            <p
-              className="line-clamp-2 min-h-9 cursor-pointer text-wrap rounded-md border px-4 py-1 text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+            <Button
+              variant={"ghost"}
+              className="line-clamp-2 h-full min-h-9 w-full cursor-pointer text-wrap rounded-md border px-4 py-1 text-start text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+              disabled={status === "CLOSED"}
               onClick={observationDialog.show}
             >
               {checklistItem.observation}
-            </p>
+            </Button>
           ) : (
             <Button
               variant="ghost"

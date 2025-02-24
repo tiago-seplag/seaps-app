@@ -40,3 +40,13 @@ export function formatBytes(
       : (sizes[i] ?? "Bytes")
   }`;
 }
+
+export const getFirstAndLastName = (name: string) => {
+  const names = name.trim().split(/\s+/); // Remove espaços extras e divide por espaços
+  if (names.length === 1) return names[0];
+
+  const firstName = names[0];
+  const lastName = names[names.length - 1];
+
+  return `${firstName} ${lastName}`;
+};

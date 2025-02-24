@@ -19,6 +19,11 @@ export default async function Page() {
           },
         },
       },
+      user: {
+        select: {
+          name: true,
+        },
+      },
     },
   });
 

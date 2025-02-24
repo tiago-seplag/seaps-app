@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { authMiddleware } from "@/utils/auth";
+import { authMiddleware } from "@/utils/authentication";
 import { withMiddlewares } from "@/utils/handler";
 
 async function getHandler() {

@@ -16,7 +16,7 @@ export async function middleware(resquest: NextRequest) {
   const path = resquest.nextUrl.pathname;
   const publicRoute = publicRoutes.find((route) => route.path === path);
 
-  const authToken = resquest.cookies.get("session");
+  const authToken = resquest.cookies.get("MT_ID_SESSION");
 
   if (!authToken && publicRoute) {
     return NextResponse.next();
@@ -42,7 +42,10 @@ export async function middleware(resquest: NextRequest) {
     const decoded: any = jwt.decode(authToken.value);
 
     if (decoded.exp * 1000 < Date.now()) {
-      (await cookies()).delete("session");
+      (await cookies())
+        .delete("MT_ID_SESSION")
+        .delete("SESSION")
+        .delete("USER");
       const redirectUrl = resquest.nextUrl.clone();
 
       redirectUrl.pathname = REDIRECT_WHEN_NOT_AUTHENTICATED_ROUTE;

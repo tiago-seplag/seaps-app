@@ -19,7 +19,7 @@ export async function AppSidebar({
 }: React.ComponentProps<typeof Sidebar>) {
   const cookieStore = await cookies();
 
-  const user = cookieStore.get("user")?.value;
+  const user = cookieStore.get("USER_DATA")?.value;
 
   return (
     <Sidebar variant="sidebar" collapsible="icon" {...props}>

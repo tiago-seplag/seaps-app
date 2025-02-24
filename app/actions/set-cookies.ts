@@ -32,5 +32,7 @@ export async function saveToken(data: string) {
 
 export async function logout() {
   const cookieStore = await cookies();
-  cookieStore.delete("session");
+  cookieStore.delete("MT_ID_SESSION");
+  cookieStore.delete("SESSION");
+  cookieStore.delete("USER");
 }

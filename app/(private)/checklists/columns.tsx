@@ -2,10 +2,11 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { getFirstAndLastName } from "@/lib/utils";
 import { $Enums } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Pen } from "lucide-react";
 // import { Pen, Printer, Trash } from "lucide-react";
 import Link from "next/link";
 
@@ -21,6 +22,9 @@ const ENUM = {
 };
 
 type Column = {
+  user: {
+    name: string;
+  } | null;
   property: {
     name: string;
     address: string | null;
@@ -81,10 +85,26 @@ export const columns: ColumnDef<Column>[] = [
     },
   },
   {
+    accessorKey: "user",
+    header: "Responsável",
+    accessorFn(row) {
+      return row.user?.name ? getFirstAndLastName(row.user?.name) : "--";
+    },
+  },
+  {
     accessorKey: "created_at",
     header: "Criado em",
     accessorFn(row) {
       return format(new Date(row.created_at), "dd/MM/yyyy");
+    },
+  },
+  {
+    accessorKey: "finished_at",
+    header: "Finalziado em",
+    accessorFn(row) {
+      return row.finished_at
+        ? format(new Date(row.finished_at), "dd/MM/yyyy")
+        : "--";
     },
   },
   {
@@ -96,6 +116,11 @@ export const columns: ColumnDef<Column>[] = [
           <Button variant="green" className="h-6 w-6 p-2" asChild>
             <Link href={"/checklists/" + row.original.id + "/items"}>
               <ChevronRight size={16} />
+            </Link>
+          </Button>
+          <Button variant="yellow" className="h-6 w-6 p-2" asChild>
+            <Link href={"/checklists/" + row.original.id + "/edit"}>
+              <Pen size={16} />
             </Link>
           </Button>
         </div>

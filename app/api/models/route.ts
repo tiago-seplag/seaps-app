@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
-import { authMiddleware } from "@/utils/auth";
+import { authMiddleware } from "@/utils/authentication";
+import { authorization } from "@/utils/authorization";
 import { withMiddlewares } from "@/utils/handler";
 import { validation } from "@/utils/validate";
 import { NextRequest } from "next/server";
@@ -75,7 +76,10 @@ const postHandler = async (request: NextRequest) => {
   return Response.json(model);
 };
 
-export const GET = withMiddlewares([authMiddleware], getHandler);
+export const GET = withMiddlewares(
+  [authMiddleware, authorization("admin")],
+  getHandler,
+);
 
 export const POST = withMiddlewares(
   [authMiddleware, validation(modelSchema)],

@@ -9,9 +9,14 @@ export default async function Page() {
   const properties = await prisma.property.findMany({
     include: {
       organization: true,
+      person: {
+        select: { name: true },
+      },
     },
     orderBy: {
-      name: "asc",
+      organization: {
+        name: "asc",
+      },
     },
   });
 

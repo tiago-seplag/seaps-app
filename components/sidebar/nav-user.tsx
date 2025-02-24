@@ -1,12 +1,11 @@
 "use client";
 
-import { Bell, ChevronsUpDown, LogOut, Wrench } from "lucide-react";
+import { ChevronsUpDown, LogOut } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -18,8 +17,8 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { logout } from "@/app/actions/set-cookies";
 import { useRouter } from "next/navigation";
+import { getFirstAndLastName } from "@/lib/utils";
 
 export function NavUser({
   user,
@@ -41,18 +40,20 @@ export function NavUser({
     return `${names[0][0]}${names[names.length - 1][0]}`;
   };
 
-  const getFirstAndLastName = (name: string) => {
-    const names = name.trim().split(/\s+/); // Remove espaços extras e divide por espaços
-    if (names.length === 1) return names[0];
-
-    const firstName = names[0];
-    const lastName = names[names.length - 1];
-
-    return `${firstName} ${lastName}`;
-  };
-
   const avatarFallback = createAvatarFallback(user.name);
   const name = getFirstAndLastName(user.name);
+
+  const logout = async () => {
+    await fetch("/api/auth/logout", {
+      method: "POST",
+    })
+      .then(() =>
+        router.push(
+          "https://dev.login.mt.gov.br/auth/realms/mt-realm/protocol/openid-connect/logout?client_id=projeto-template-integracao&redirect_uri=http://172.16.146.58:3000&response_type=code",
+        ),
+      )
+      .catch((e) => console.log(e));
+  };
 
   return (
     <SidebarMenu>
@@ -97,7 +98,7 @@ export function NavUser({
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuGroup>
+            {/* <DropdownMenuGroup>
               <DropdownMenuItem>
                 <Wrench />
                 Conta
@@ -107,17 +108,9 @@ export function NavUser({
                 Notificações
               </DropdownMenuItem>
             </DropdownMenuGroup>
-            <DropdownMenuSeparator />
+            <DropdownMenuSeparator /> */}
 
-            <DropdownMenuItem
-              onClick={async () => {
-                await logout();
-                router.push(
-                  "https://dev.login.mt.gov.br/auth/realms/mt-realm/protocol/openid-connect/logout?client_id=projeto-template-integracao&redirect_uri=http://172.16.146.58:3000&response_type=code",
-                );
-              }}
-              className="text-destructive"
-            >
+            <DropdownMenuItem onClick={logout} className="text-destructive">
               <LogOut />
               Sair
             </DropdownMenuItem>

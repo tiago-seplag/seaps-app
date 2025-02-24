@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { authMiddleware } from "@/utils/auth";
+import { authMiddleware } from "@/utils/authentication";
 import { withMiddlewares } from "@/utils/handler";
 import { validation } from "@/utils/validate";
 import { NextRequest } from "next/server";

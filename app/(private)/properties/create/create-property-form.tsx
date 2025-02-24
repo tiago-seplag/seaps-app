@@ -38,7 +38,9 @@ const formSchema = z.object({
   type: z.string({
     message: "Selecione o tipo do imóvel",
   }),
-  person_id: z.string(),
+  person_id: z.string({
+    message: "Selecione o Responsável pelo imóvel",
+  }),
 });
 
 export function CreatePropertyForm() {

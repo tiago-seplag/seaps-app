@@ -9,7 +9,6 @@ import Image from "next/image";
 import Logo from "../assets/logo-gov.png";
 import { useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { saveToken } from "@/app/actions/set-cookies";
 
 const config = {
   grant_type: "authorization_code",
@@ -36,28 +35,16 @@ export function LoginForm({
 
   useEffect(() => {
     const code = searchParams.get("code");
-    //console.log('CODE',code)
+    console.log("CODE", code);
 
     if (code) {
       //obtem o token
-      fetch(config.url_token, {
+      fetch("/api/auth/login?code=" + code, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: new URLSearchParams({
-          grant_type: config.grant_type,
-          client_id: config.client_id,
-          code: code,
-          redirect_uri: config.redirect_uri,
-        }),
+        body: new URLSearchParams({ code: code }),
       })
         .then((data) => data.json())
-        .then(async (data) => {
-          if (data.access_token) {
-            saveToken(data.access_token).then(() => router.push("/"));
-          }
-        });
+        .then(() => router.push("/"));
     }
   }, [router, searchParams]);
 
