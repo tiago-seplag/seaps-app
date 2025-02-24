@@ -17,9 +17,9 @@ import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Trash } from "lucide-react";
-import { createModel } from "@/app/actions/create-model";
 import { useEffect, useState } from "react";
 import { Item } from "@prisma/client";
+import axios from "axios";
 
 const formSchema = z.object({
   name: z
@@ -58,8 +58,10 @@ export function CreateModelForm() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    createModel(values);
-    router.back();
+    return axios
+      .post("/api/models/", values)
+      .then(() => router.back())
+      .catch((e) => console.log(e));
   }
 
   const { fields, append, remove } = useFieldArray({

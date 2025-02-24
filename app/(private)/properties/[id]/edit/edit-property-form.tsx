@@ -25,7 +25,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
-import { editProperty } from "@/app/actions/edit-property";
+import axios from "axios";
 
 const formSchema = z.object({
   organization_id: z.string({
@@ -73,8 +73,10 @@ export function EditPropertyForm({ property }: { property: Property }) {
   }, [organization_id]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    await editProperty(values, property.id);
-    router.replace("/properties");
+    return axios
+      .put("/api/properties/" + property.id, values)
+      .then(() => router.replace("/properties"))
+      .catch((e) => console.log(e));
   }
 
   return (

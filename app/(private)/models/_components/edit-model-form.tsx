@@ -19,7 +19,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Trash } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Item, Model } from "@prisma/client";
-import { editModel } from "@/app/actions/edit-model";
+import axios from "axios";
 
 const formSchema = z.object({
   name: z
@@ -81,8 +81,10 @@ export function EditModelForm({
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    editModel(values, model.id);
-    router.replace("/models/" + model.id);
+    return axios
+      .put("/api/models/" + model.id, values)
+      .then(() => router.replace("/models/" + model.id))
+      .catch((e) => console.log(e));
   }
 
   const { fields, append, remove } = useFieldArray({
@@ -144,6 +146,7 @@ export function EditModelForm({
                     />
                     <Button
                       size="icon"
+                      type="button"
                       className="absolute -right-5 -top-5 h-8 w-8 rounded-full"
                       onClick={() => {
                         form.clearErrors();

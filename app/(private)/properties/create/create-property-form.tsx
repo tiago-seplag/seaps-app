@@ -23,9 +23,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { createProperty } from "@/app/actions/create-property";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Plus } from "lucide-react";
+import axios from "axios";
 
 const formSchema = z.object({
   organization_id: z.string({
@@ -72,8 +72,10 @@ export function CreatePropertyForm() {
   }, [organization_id]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    await createProperty(values);
-    router.back();
+    return axios
+      .post("/api/properties/", values)
+      .then(() => router.back())
+      .catch((e) => console.log(e));
   }
 
   return (

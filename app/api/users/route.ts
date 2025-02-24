@@ -3,16 +3,13 @@ import { authMiddleware } from "@/utils/auth";
 import { withMiddlewares } from "@/utils/handler";
 
 async function getHandler() {
-  const items = await prisma.item.findMany({
-    where: {
-      level: 0,
-    },
+  const users = await prisma.user.findMany({
     orderBy: {
       name: "asc",
     },
   });
 
-  return Response.json(items);
+  return Response.json(users);
 }
 
 export const GET = withMiddlewares([authMiddleware], getHandler);

@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
-import { Model, Organization, Property } from "@prisma/client";
+import { Model, Organization, Property, User } from "@prisma/client";
 import {
   Select,
   SelectContent,
@@ -24,9 +24,9 @@ import {
 } from "@/components/ui/select";
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { createChecklist } from "@/app/actions/create-checklist";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import axios from "axios";
 
 const formSchema = z.object({
   model_id: z.string({
@@ -37,6 +37,9 @@ const formSchema = z.object({
   }),
   property_id: z.string({
     message: "Selecione o Imóvel",
+  }),
+  user_id: z.string({
+    message: "Selecione o Responsável pelo Checklist",
   }),
 });
 
@@ -60,6 +63,7 @@ export function CreateCheckListForm() {
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [models, setModels] = useState<Model[]>([]);
   const [properties, setProperties] = useState<Property[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [model, setModel] = useState<ModelResponse>();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -80,6 +84,9 @@ export function CreateCheckListForm() {
     fetch("/api/models")
       .then((response) => response.json())
       .then((data) => setModels(data));
+    fetch("/api/users")
+      .then((response) => response.json())
+      .then((data) => setUsers(data));
   }, []);
 
   useEffect(() => {
@@ -99,7 +106,10 @@ export function CreateCheckListForm() {
   }, [model_id]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    createChecklist(values).then(() => router.replace("/checklists"));
+    return axios
+      .post("/api/checklists/", values)
+      .then(() => router.replace("/checklists"))
+      .catch((e) => console.log(e));
   }
 
   return (
@@ -196,6 +206,30 @@ export function CreateCheckListForm() {
                     <Plus />
                   </Button>
                 </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="user_id"
+            render={({ field }) => (
+              <FormItem className="w-full">
+                <FormLabel>Responsável</FormLabel>
+                <Select onValueChange={field.onChange}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione o Responsável pelo checklis" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {users.map((item) => (
+                      <SelectItem key={item.id} value={String(item.id)}>
+                        {item.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 <FormMessage />
               </FormItem>
             )}
