@@ -22,7 +22,7 @@ export const modelSchema = z.object({
   items: z
     .array(
       z.object({
-        name: z.string().min(1),
+        name: z.string().min(1).toUpperCase().trim(),
       }),
     )
     .min(1),

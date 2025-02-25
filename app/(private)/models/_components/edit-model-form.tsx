@@ -82,7 +82,12 @@ export function EditModelForm({
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     return axios
-      .put("/api/models/" + model.id, values)
+      .put("/api/models/" + model.id, {
+        ...values,
+        items: values.items.map((item) => ({
+          name: item.name.toUpperCase(),
+        })),
+      })
       .then(() => router.replace("/models/" + model.id))
       .catch((e) => console.log(e));
   }
@@ -139,7 +144,15 @@ export function EditModelForm({
                       render={({ field }) => (
                         <FormItem className="w-full">
                           <FormLabel>Nome do Item</FormLabel>
-                          <Input list={"items-list"} {...field} />
+                          <Input
+                            {...field}
+                            list={"items-list"}
+                            onChange={(e) => {
+                              const c = e;
+                              c.target.value = c.target.value.toUpperCase();
+                              field.onChange(e);
+                            }}
+                          />
                           <FormMessage />
                         </FormItem>
                       )}

@@ -116,7 +116,14 @@ export function CreateModelForm() {
                       render={({ field }) => (
                         <FormItem className="w-full">
                           <FormLabel>Nome do Item</FormLabel>
-                          <Input list={"items-list"} {...field} />
+                          <Input
+                            list={"items-list"}
+                            {...field}
+                            onChange={(e) => {
+                              e.target.value = e.target.value.toUpperCase();
+                              field.onChange(e);
+                            }}
+                          />
                           <FormMessage />
                         </FormItem>
                       )}

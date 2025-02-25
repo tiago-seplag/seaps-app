@@ -64,7 +64,10 @@ export function CreatePersonForm() {
   }, []);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    createResponsible(values).then(() => router.back());
+    createResponsible({
+      ...values,
+      phone: values.phone ? values.phone.replace(/\D/g, "") : undefined,
+    }).then(() => router.back());
   }
 
   const formatPhone = (value: string) => {
