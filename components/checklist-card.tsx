@@ -2,7 +2,6 @@
 
 import { $Enums, ChecklistItems } from "@prisma/client";
 import { Button } from "@/components/ui/button";
-// import Link from "next/link";
 import {
   Card,
   CardContent,
@@ -17,7 +16,6 @@ import { ObservationDialog } from "./observation-dialog";
 import { FileUploader } from "./file-uploader";
 import { ImageDialog } from "./image-dialog";
 import Image from "next/image";
-// import { useParams } from "next/navigation";
 
 export const ChecklistCard = ({
   checklistItem,
@@ -38,7 +36,6 @@ export const ChecklistCard = ({
     }[];
   };
 }) => {
-  // const { itemId } = useParams<{ itemId?: string[] }>();
   const observationDialog = useModal();
   const imageDialog = useModal();
 
@@ -58,6 +55,7 @@ export const ChecklistCard = ({
         {!checklistItem.image ? (
           <FileUploader
             id={checklistItem.id}
+            disabled={status === "CLOSED"}
             maxFileCount={10}
             accept={{ "image/*": [] }}
             maxSize={1024 * 1024 * 1024 * 2}
@@ -101,37 +99,29 @@ export const ChecklistCard = ({
         <div className="w-full overflow-hidden">
           {checklistItem.observation ? (
             <Button
-              variant={"ghost"}
-              className="line-clamp-2 h-full min-h-9 w-full cursor-pointer text-wrap rounded-md border px-4 py-1 text-start text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+              className="block h-full min-h-14 w-full py-2"
               disabled={status === "CLOSED"}
+              variant="outline"
               onClick={observationDialog.show}
             >
-              {checklistItem.observation}
+              <p
+                title={checklistItem.observation}
+                className="line line-clamp-2 w-full text-ellipsis text-wrap break-words text-start"
+              >
+                {checklistItem.observation}
+              </p>
             </Button>
           ) : (
             <Button
               variant="ghost"
               onClick={observationDialog.show}
-              className="w-full border border-dashed"
+              disabled={status === "CLOSED"}
+              className="min-h-14 w-full border border-dashed"
             >
               Adicionar Observação
             </Button>
           )}
         </div>
-        {/* <Button
-          asChild={checklistItem.item.level < 3}
-          disabled={checklistItem.item.level === 3}
-          className="w-full"
-          variant="secondary"
-        >
-          <Link
-            href={
-              itemId ? checklistItem.item_id : "items/" + checklistItem.item_id
-            }
-          >
-            Listar Subitens
-          </Link>
-        </Button> */}
       </CardFooter>
       <ImageDialog
         item={checklistItem}

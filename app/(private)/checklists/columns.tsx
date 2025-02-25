@@ -13,11 +13,11 @@ import Link from "next/link";
 const ENUM = {
   OPEN: {
     label: "ABERTO",
-    style: "border-green-800 bg-green-500",
+    style: "border-green-800 bg-green-500 hover:bg-green-500/80",
   },
   CLOSED: {
     label: "FECHADO",
-    style: "border-red-800 bg-red-500",
+    style: "border-red-800 bg-red-500 hover:bg-red-500/80",
   },
 };
 

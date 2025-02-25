@@ -45,6 +45,11 @@ export default async function Page({ params }: ProjectPageProps) {
             item_id: !itemId ? undefined : itemId[itemId.length - 1],
           },
         },
+        orderBy: {
+          item: {
+            name: "asc",
+          },
+        },
       },
       _count: {
         select: {
@@ -60,40 +65,51 @@ export default async function Page({ params }: ProjectPageProps) {
 
   return (
     <div className="flex h-full flex-1 flex-col gap-8">
-      <div className="flex justify-between">
-        <div className="flex items-center gap-3 truncate">
-          <GoBack />
-          <div>
+      <div className="flex flex-col justify-between gap-3 sm:flex-row">
+        <div>
+          <div className="flex items-center gap-3">
+            <GoBack />
             <h2
-              className="flex items-center gap-2 truncate text-2xl font-bold tracking-tight"
+              className="line-clamp-1 break-words text-2xl font-bold "
               title={checklist.property.name}
             >
               {checklist.property.name}
-              <PropertyBadge type={checklist.property.type as ENUM_PROPERTY} />
             </h2>
-            <p>{checklist.property.address}</p>
-            <p>
-              {checklist.property.person?.name} -{" "}
-              {checklist.property.person?.role || ""} -{" "}
-              {checklist.property.person?.phone}
+            <PropertyBadge
+              className="h-fit"
+              type={checklist.property.type as ENUM_PROPERTY}
+            />
+          </div>
+          <div>
+            <p className="line-clamp-2 text-wrap text-sm text-muted-foreground">
+              {checklist.property.address}
+            </p>
+          </div>
+          <div>
+            <p className="text-wrap">
+              {`${checklist.property.person?.name} - ${checklist.property.person?.role || ""} - ${checklist.property.person?.phone}`}
             </p>
           </div>
         </div>
-        {checklist.status === "CLOSED" && checklist.finished_at ? (
-          <div className="h-full">
-            <p>
-              Assinado por: {getFirstAndLastName(checklist.user?.name || "")}
-            </p>
-            <p>
-              Data da finalização: {format(checklist.finished_at, "dd/MM/yyyy")}
-            </p>
-          </div>
-        ) : (
-          user &&
-          JSON.parse(user).id === checklist.user_id && (
-            <FinishButton checklist={checklist} />
-          )
-        )}
+        <div className="self-start sm:self-end">
+          {checklist.status === "CLOSED" && checklist.finished_at ? (
+            <div className="w-full text-nowrap">
+              <p>
+                <strong> Assinado por: </strong>
+                {getFirstAndLastName(checklist.user?.name || "")}
+              </p>
+              <p>
+                <strong>Data da finalização: </strong>
+                {format(checklist.finished_at, "dd/MM/yyyy")}
+              </p>
+            </div>
+          ) : (
+            user &&
+            JSON.parse(user).id === checklist.user_id && (
+              <FinishButton checklist={checklist} />
+            )
+          )}
+        </div>
       </div>
       <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
         {checklist.checklistItems.map((checklistItem) => (
