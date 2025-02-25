@@ -239,7 +239,7 @@ export function CreateCheckListForm() {
           </Button>
         </form>
         <FormItem className="w-full">
-          <FormLabel>Preview</FormLabel>
+          <FormLabel>Preview do modelo</FormLabel>
           {model &&
             model.modelItems?.map((field, index) => {
               return (
