@@ -17,7 +17,9 @@ export const FinishButton = ({ checklist }: { checklist: Checklist }) => {
         router.refresh();
       })
       .catch((e) => {
-        if (e.response.data.message) {
+        if (e.response.data.messages?.length > 0) {
+          e.response.data.messages.map((msg: string) => toast.error(msg));
+        } else if (e.response.data.message) {
           toast.error(e.response.data.message);
         }
       });
