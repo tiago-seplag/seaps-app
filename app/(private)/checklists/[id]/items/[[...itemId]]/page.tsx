@@ -70,7 +70,7 @@ export default async function Page({ params }: ProjectPageProps) {
           <div className="flex items-center gap-3">
             <GoBack />
             <h2
-              className="line-clamp-1 break-words text-2xl font-bold "
+              className="line-clamp-1 break-words text-2xl font-bold"
               title={checklist.property.name}
             >
               {checklist.property.name}

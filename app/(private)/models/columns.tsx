@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Model } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
-import { ChevronRight, Pen, Trash } from "lucide-react";
+import { ChevronRight, Pen } from "lucide-react";
 import Link from "next/link";
 
 export const columns: ColumnDef<Model>[] = [
@@ -18,6 +18,10 @@ export const columns: ColumnDef<Model>[] = [
         </span>
       );
     },
+    meta: {
+      headerClassName: "hidden md:table-cell",
+      cellClassName: "truncate hidden md:table-cell",
+    },
   },
   {
     accessorKey: "name",
@@ -26,12 +30,20 @@ export const columns: ColumnDef<Model>[] = [
   {
     accessorKey: "description",
     header: "Descrição",
+    meta: {
+      headerClassName: "hidden md:table-cell",
+      cellClassName: "truncate hidden md:table-cell",
+    },
   },
   {
     accessorKey: "created_at",
     header: "Criado em",
     accessorFn(row) {
       return format(new Date(row.created_at), "dd/MM/yyyy");
+    },
+    meta: {
+      headerClassName: "hidden md:table-cell",
+      cellClassName: "truncate hidden md:table-cell",
     },
   },
   {
@@ -49,9 +61,6 @@ export const columns: ColumnDef<Model>[] = [
             <Link href={"/models/" + row.original.id + "/edit"}>
               <Pen size={16} />
             </Link>
-          </Button>
-          <Button variant="destructive" className="h-6 w-6 p-2">
-            <Trash size={16} />
           </Button>
         </div>
       );

@@ -1,9 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { DataTable } from "./data-table";
 import { columns } from "./columns";
 import Link from "next/link";
+import { DataTable } from "@/components/data-table";
 
 export default async function Page() {
   const checklists = await prisma.checklist.findMany({

@@ -5,7 +5,7 @@ import { PieComponent } from "./(dashboard)/pie-card";
 
 export default async function Page() {
   return (
-    <div className="grid grid-cols-3">
+    <div className="grid grid-cols-1 sm:grid-cols-3">
       <BarComponent />
       <PieComponent />
       <HorizontalBarComponent />

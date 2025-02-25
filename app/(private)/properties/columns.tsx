@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { getFirstAndLastName } from "@/lib/utils";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
-import { ChevronRight, Pen } from "lucide-react";
+import { Pen } from "lucide-react";
 import Link from "next/link";
 
 type Column = {
@@ -37,6 +37,10 @@ export const columns: ColumnDef<Column>[] = [
         </span>
       );
     },
+    meta: {
+      headerClassName: "hidden md:table-cell",
+      cellClassName: "truncate hidden md:table-cell",
+    },
   },
   {
     accessorKey: "property",
@@ -51,12 +55,20 @@ export const columns: ColumnDef<Column>[] = [
     accessorFn(row) {
       return row.organization.name;
     },
+    meta: {
+      headerClassName: "hidden md:table-cell",
+      cellClassName: "truncate hidden md:table-cell",
+    },
   },
   {
     accessorKey: "person",
     header: "Responsável",
     accessorFn(row) {
       return row.person?.name ? getFirstAndLastName(row.person.name) : "--";
+    },
+    meta: {
+      headerClassName: "hidden md:table-cell",
+      cellClassName: "truncate hidden md:table-cell",
     },
   },
   {
@@ -72,6 +84,10 @@ export const columns: ColumnDef<Column>[] = [
     accessorFn(row) {
       return format(new Date(row.created_at), "dd/MM/yyyy");
     },
+    meta: {
+      headerClassName: "hidden md:table-cell",
+      cellClassName: "truncate hidden md:table-cell",
+    },
   },
   {
     accessorKey: "actions",
@@ -79,9 +95,6 @@ export const columns: ColumnDef<Column>[] = [
     cell({ row }) {
       return (
         <div className="flex gap-1">
-          <Button variant="green" className="h-6 w-6 p-2">
-            <ChevronRight size={16} />
-          </Button>
           <Button variant="yellow" className="h-6 w-6 p-2" asChild>
             <Link href={"/properties/" + row.original.id + "/edit"}>
               <Pen size={16} />

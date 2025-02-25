@@ -2,8 +2,8 @@ import { prisma } from "@/lib/prisma";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import Link from "next/link";
-import { DataTable } from "./data-table";
 import { columns } from "./columns";
+import { DataTable } from "@/components/data-table";
 
 export default async function Page() {
   const properties = await prisma.property.findMany({

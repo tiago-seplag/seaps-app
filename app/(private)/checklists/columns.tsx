@@ -58,12 +58,20 @@ export const columns: ColumnDef<Column>[] = [
         </Link>
       );
     },
+    meta: {
+      headerClassName: "hidden md:table-cell",
+      cellClassName: "truncate hidden md:table-cell",
+    },
   },
   {
     accessorKey: "organization",
     header: "Orgão",
     accessorFn(row) {
       return row.property.organization.name;
+    },
+    meta: {
+      headerClassName: "hidden md:table-cell",
+      cellClassName: "truncate hidden md:table-cell",
     },
   },
   {
@@ -97,14 +105,22 @@ export const columns: ColumnDef<Column>[] = [
     accessorFn(row) {
       return format(new Date(row.created_at), "dd/MM/yyyy");
     },
+    meta: {
+      headerClassName: "hidden md:table-cell",
+      cellClassName: "truncate hidden md:table-cell",
+    },
   },
   {
     accessorKey: "finished_at",
-    header: "Finalziado em",
+    header: "Finalizado em",
     accessorFn(row) {
       return row.finished_at
         ? format(new Date(row.finished_at), "dd/MM/yyyy")
         : "--";
+    },
+    meta: {
+      headerClassName: "hidden md:table-cell",
+      cellClassName: "truncate hidden md:table-cell",
     },
   },
   {

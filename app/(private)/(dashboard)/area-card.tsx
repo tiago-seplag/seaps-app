@@ -151,7 +151,7 @@ export function AreaComponent() {
   });
 
   return (
-    <Card className="col-span-3 border-none p-0 shadow-none">
+    <Card className="col-span-1 border-none p-0 shadow-none sm:col-span-3">
       <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
         <div className="grid flex-1 gap-1 text-center sm:text-left">
           <CardTitle>Area Chart - Interactive</CardTitle>
