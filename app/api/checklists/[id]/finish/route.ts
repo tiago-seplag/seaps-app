@@ -15,6 +15,11 @@ export async function putHandler(
     include: {
       checklistItems: {
         include: {
+          item: {
+            select: {
+              name: true,
+            },
+          },
           _count: {
             select: {
               images: true,
@@ -32,6 +37,8 @@ export async function putHandler(
     );
   }
 
+  const uncheckedItems = [];
+
   for (const item of checklist?.checklistItems) {
     if (item._count.images < 1) {
       return Response.json(
@@ -42,6 +49,21 @@ export async function putHandler(
         { status: 400 },
       );
     }
+    if (typeof item.score !== "number") {
+      uncheckedItems.push(item.item);
+    }
+  }
+
+  if (uncheckedItems.length > 0) {
+    return Response.json(
+      {
+        error: "validation error",
+        messages: uncheckedItems.map(
+          (item) => `O item '${item.name}' não foi pontuado`,
+        ),
+      },
+      { status: 400 },
+    );
   }
 
   const finishedChecklist = await prisma.checklist.update({

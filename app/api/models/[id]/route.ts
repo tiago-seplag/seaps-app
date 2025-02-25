@@ -30,10 +30,10 @@ export async function getHandler(
   return Response.json(model);
 }
 
-export const putHandler = async (
+export async function putHandler(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
-) => {
+) {
   const { id } = await params;
 
   const { name, description, items }: z.infer<typeof modelSchema> =
@@ -88,7 +88,7 @@ export const putHandler = async (
   });
 
   return Response.json(model);
-};
+}
 
 export const GET = withMiddlewares([authMiddleware], getHandler);
 
