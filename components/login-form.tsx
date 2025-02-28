@@ -35,7 +35,6 @@ export function LoginForm({
 
   useEffect(() => {
     const code = searchParams.get("code");
-    console.log("CODE", code);
 
     if (code) {
       //obtem o token

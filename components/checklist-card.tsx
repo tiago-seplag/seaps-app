@@ -33,6 +33,7 @@ export const ChecklistCard = ({
       image: string | null;
       created_at: Date;
       checklist_item_id: string;
+      observation: string | null;
     }[];
   };
 }) => {

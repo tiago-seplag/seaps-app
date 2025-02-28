@@ -33,6 +33,7 @@ interface ObservationDialogProps extends DialogProps {
       image: string | null;
       created_at: Date;
       checklist_item_id: string;
+      observation: string | null;
     }[];
   };
   slides?: any;
@@ -76,12 +77,17 @@ export function ImageDialog({ ...props }: ObservationDialogProps) {
             <CarouselContent aria-describedby="content">
               {props.item.images.map((image, index) => (
                 <CarouselItem key={index}>
-                  <div className="aspect-square p-1">
+                  <div className="relative aspect-square p-1">
                     <img
                       src={"http://172.16.146.58:3333/" + image.image}
-                      className="h-full w-full rounded object-cover"
+                      className="h-full w-full rounded object-contain"
                       alt=""
                     />
+                    {image.observation && (
+                      <div className="absolute bottom-0 line-clamp-3 min-h-5 w-full overflow-hidden bg-black/50 p-2">
+                        {image.observation}
+                      </div>
+                    )}
                   </div>
                 </CarouselItem>
               ))}

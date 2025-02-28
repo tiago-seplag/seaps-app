@@ -47,7 +47,6 @@ async function postHandler(
       .then((data) => data.json())
       .catch((e) => console.log(e));
 
-
     if (data.access_token) {
       const decoded: any = jwt.decode(data.access_token);
 

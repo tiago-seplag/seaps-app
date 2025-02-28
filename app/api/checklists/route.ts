@@ -63,7 +63,39 @@ export const postHandler = async (request: NextRequest) => {
   return Response.json(checklist);
 };
 
+const getHandler = async (request: NextRequest) => {
+  const userId = request.headers.get("x-user-id")!;
+
+  const checklists = await prisma.checklist.findMany({
+    where: {
+      // user_id: userId,
+    },
+    include: {
+      property: {
+        select: {
+          name: true,
+          address: true,
+          organization: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      },
+      user: {
+        select: {
+          name: true,
+        },
+      },
+    },
+  });
+
+  return Response.json(checklists);
+};
+
 export const POST = withMiddlewares(
   [authMiddleware, validation(checklistSchema)],
   postHandler,
 );
+
+export const GET = withMiddlewares([authMiddleware], getHandler);

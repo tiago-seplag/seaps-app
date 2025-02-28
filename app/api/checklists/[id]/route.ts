@@ -9,6 +9,44 @@ const updateSchema = z.object({
   user_id: z.string(),
 });
 
+const getHandler = async (
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) => {
+  const { id } = await params;
+
+  const checklist = await prisma.checklist.findUnique({
+    where: { id: id },
+    include: {
+      property: {
+        include: {
+          person: true,
+        },
+      },
+      person: true,
+      user: true,
+      checklistItems: {
+        include: {
+          item: true,
+          images: true,
+        },
+        where: {
+          item: {
+            level: 0,
+          },
+        },
+        orderBy: {
+          item: {
+            name: "asc",
+          },
+        },
+      },
+    },
+  });
+
+  return Response.json(checklist);
+};
+
 export const putHandler = async (
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
@@ -30,3 +68,5 @@ export const PUT = withMiddlewares(
   [authMiddleware, validation(updateSchema)],
   putHandler,
 );
+
+export const GET = withMiddlewares([authMiddleware], getHandler);
