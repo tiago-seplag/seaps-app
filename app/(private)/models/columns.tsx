@@ -32,7 +32,7 @@ export const columns: ColumnDef<Model>[] = [
     header: "Descrição",
     meta: {
       headerClassName: "hidden md:table-cell",
-      cellClassName: "truncate hidden md:table-cell",
+      cellClassName: "truncate hidden md:table-cell max-w-40",
     },
   },
   {

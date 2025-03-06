@@ -80,6 +80,11 @@ const getHandler = async (request: NextRequest) => {
               name: true,
             },
           },
+          person: {
+            select: {
+              name: true,
+            },
+          },
         },
       },
       user: {
