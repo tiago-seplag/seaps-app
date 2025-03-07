@@ -31,16 +31,13 @@ export const columns: ColumnDef<Column>[] = [
     accessorKey: "id",
     header: "ID",
     cell({ row }) {
-      return (
-        <span title={row.original.id}>
-          {row.original.id.slice(0, 8) + "..."}
-        </span>
-      );
+      return <span title={row.original.id}>{row.original.id}</span>;
     },
     meta: {
       headerClassName: "hidden md:table-cell",
-      cellClassName: "truncate hidden md:table-cell",
+      cellClassName: "truncate hidden md:table-cell font-mono",
     },
+    size: 50,
   },
   {
     accessorKey: "property",
@@ -103,5 +100,6 @@ export const columns: ColumnDef<Column>[] = [
         </div>
       );
     },
+    size: 50,
   },
 ];

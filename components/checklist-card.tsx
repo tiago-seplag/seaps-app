@@ -30,7 +30,7 @@ export const ChecklistCard = ({
     };
     images: {
       id: string;
-      image: string | null;
+      image: string;
       created_at: Date;
       checklist_item_id: string;
       observation: string | null;
@@ -68,7 +68,7 @@ export const ChecklistCard = ({
             className="h-40 min-h-40 w-full overflow-hidden border bg-muted-foreground/10 object-cover p-0"
           >
             <Image
-              src={"http://172.16.146.58:3333/" + checklistItem.image}
+              src={process.env.BUCKET_URL + checklistItem.image}
               alt="checklist-image"
               width={388}
               height={160}

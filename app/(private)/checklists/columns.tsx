@@ -52,7 +52,7 @@ export const columns: ColumnDef<Column>[] = [
       return (
         <Link
           href={"/checklists/" + row.original.id + "/items"}
-          className="text-sky-400 hover:text-sky-700"
+          className="font-mono text-sky-400 hover:text-sky-700"
         >
           {row.original.sid}
         </Link>

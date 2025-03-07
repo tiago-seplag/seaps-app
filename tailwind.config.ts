@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 import type { Config } from "tailwindcss";
 
 const config: Config = {
@@ -67,8 +68,8 @@ const config: Config = {
         sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
-        font_geist_mono: ["var(--font-geist-mono)"],
-        font_geist_sans: ["var(--font-geist-sans)"],
+        mono: ["var(--font-geist-mono)"],
+        sans: ["var(--font-geist-sans)"],
       },
     },
   },
