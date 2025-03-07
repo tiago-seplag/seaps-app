@@ -17,8 +17,8 @@ export const columns: ColumnDef<Model>[] = [
     meta: {
       headerClassName: "hidden md:table-cell",
       cellClassName: "truncate hidden md:table-cell font-mono",
+      size: 100,
     },
-    size: 50,
   },
   {
     accessorKey: "name",
@@ -62,6 +62,5 @@ export const columns: ColumnDef<Model>[] = [
         </div>
       );
     },
-    size: 50,
   },
 ];

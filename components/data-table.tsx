@@ -42,9 +42,9 @@ export function DataTable<TData, TValue>({
                   key={header.id}
                   className={header.column.columnDef.meta?.headerClassName}
                   style={{
-                    minWidth: header.column.columnDef.size,
-                    maxWidth: header.column.columnDef.size,
-                    width: header.column.columnDef.size,
+                    minWidth: header.column.columnDef.meta?.size,
+                    maxWidth: header.column.columnDef.meta?.size,
+                    width: header.column.columnDef.meta?.size,
                   }}
                 >
                   {header.isPlaceholder
@@ -69,11 +69,15 @@ export function DataTable<TData, TValue>({
               {row.getVisibleCells().map((cell) => (
                 <TableCell
                   className={cell.column.columnDef.meta?.cellClassName}
-                  width={cell.column.columnDef.size}
+                  width={
+                    cell.column.columnDef.meta?.size
+                      ? cell.column.columnDef.meta.size
+                      : undefined
+                  }
                   style={{
-                    minWidth: cell.column.columnDef.size,
-                    maxWidth: cell.column.columnDef.size,
-                    width: cell.column.columnDef.size,
+                    minWidth: cell.column.columnDef.meta?.size,
+                    maxWidth: cell.column.columnDef.meta?.size,
+                    width: cell.column.columnDef.meta?.size,
                   }}
                   key={cell.id}
                 >

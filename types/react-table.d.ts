@@ -4,5 +4,6 @@ declare module "@tanstack/react-table" {
   interface ColumnMeta {
     headerClassName?: HTMLAttributes<HTMLTableHeaderCellElement>["className"];
     cellClassName?: HTMLAttributes<HTMLTableDataCellElement>["className"];
+    size?: number | undefined;
   }
 }

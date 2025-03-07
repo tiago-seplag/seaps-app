@@ -6,6 +6,7 @@ import { columns } from "./columns";
 import { DataTable } from "@/components/data-table";
 import { generateMetaPagination } from "@/utils/meta-pagination";
 import { Pagination } from "@/components/pagination";
+import { Suspense } from "react";
 import Link from "next/link";
 
 export default async function Page(props: { searchParams: any }) {
@@ -47,23 +48,25 @@ export default async function Page(props: { searchParams: any }) {
   });
 
   return (
-    <div className="flex flex-col gap-y-4">
-      <div className="flex justify-between">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">Checklists</h2>
+    <Suspense fallback={<p>Loading feed...</p>}>
+      <div className="flex flex-col gap-y-4">
+        <div className="flex justify-between">
+          <div>
+            <h2 className="text-2xl font-bold tracking-tight">Checklists</h2>
+          </div>
+          <div className="self-end">
+            <Button asChild>
+              <Link href={"checklists/create"}>
+                <Plus />
+                Criar Checklist
+              </Link>
+            </Button>
+          </div>
         </div>
-        <div className="self-end">
-          <Button asChild>
-            <Link href={"checklists/create"}>
-              <Plus />
-              Criar Checklist
-            </Link>
-          </Button>
-        </div>
-      </div>
 
-      <DataTable columns={columns} data={checklists} />
-      {meta.total > 10 && <Pagination meta={meta} />}
-    </div>
+        <DataTable columns={columns} data={checklists} />
+        {meta.total > 10 && <Pagination meta={meta} />}
+      </div>
+    </Suspense>
   );
 }

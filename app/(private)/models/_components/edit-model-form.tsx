@@ -59,8 +59,6 @@ export function EditModelForm({
 }) {
   const router = useRouter();
 
-  console.log(model);
-
   const [items, setItems] = useState<Item[]>([]);
 
   useEffect(() => {
