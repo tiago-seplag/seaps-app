@@ -5,23 +5,8 @@ import { withMiddlewares } from "@/utils/handler";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import { NextRequest } from "next/server";
+import { config } from "@/utils/mt-login";
 // import { NextRequest } from "next/server";
-
-const config = {
-  grant_type: "authorization_code",
-  client_id: "projeto-template-integracao",
-  redirect_uri: "http://172.16.146.58:3000/login",
-
-  url_token:
-    "https://dev.login.mt.gov.br/auth/realms/mt-realm/protocol/openid-connect/token",
-  url_userInfo:
-    "https://dev.login.mt.gov.br/auth/realms/mt-realm/protocol/openid-connect/userinfo",
-
-  url_login:
-    "https://dev.login.mt.gov.br/auth/realms/mt-realm/protocol/openid-connect/auth?client_id=projeto-template-integracao&redirect_uri=http://172.16.146.58:3000/login&response_type=code",
-  url_logout:
-    "https://dev.login.mt.gov.br/auth/realms/mt-realm/protocol/openid-connect/logout?client_id=projeto-template-integracao&redirect_uri=http://172.16.146.58:3000/login&response_type=code",
-};
 
 async function postHandler(
   request: NextRequest,

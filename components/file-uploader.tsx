@@ -49,7 +49,7 @@ export function FileUploader({ ...props }: FileUploaderProps) {
   const router = useRouter();
 
   const { onUpload, progresses } = useUploadFile(
-    "http://172.16.146.58:3333/upload/images",
+    process.env.BUCKET_URL + "/upload/images",
     { defaultUploadedFiles: [] },
     "images",
   );

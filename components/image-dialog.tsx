@@ -1,14 +1,9 @@
-/* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { DialogProps } from "@radix-ui/react-dialog";
-// import { Button } from "@/components/ui/button";
 import {
   Dialog,
-  //   DialogClose,
   DialogContent,
   DialogDescription,
-  //   DialogDescription,
-  //   DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -22,6 +17,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "./ui/carousel";
+import Image from "next/image";
 
 interface ObservationDialogProps extends DialogProps {
   item: ChecklistItems & {
@@ -30,7 +26,7 @@ interface ObservationDialogProps extends DialogProps {
     };
     images: {
       id: string;
-      image: string | null;
+      image: string;
       created_at: Date;
       checklist_item_id: string;
       observation: string | null;
@@ -77,11 +73,13 @@ export function ImageDialog({ ...props }: ObservationDialogProps) {
             <CarouselContent aria-describedby="content">
               {props.item.images.map((image, index) => (
                 <CarouselItem key={index}>
-                  <div className="relative aspect-square p-1">
-                    <img
-                      src={"http://172.16.146.58:3333/" + image.image}
+                  <div className="relative aspect-square w-[512px] p-1">
+                    <Image
+                      src={process.env.BUCKET_URL + image.image}
                       className="h-full w-full rounded object-contain"
-                      alt=""
+                      width={512}
+                      height={512}
+                      alt={image.observation || ""}
                     />
                     {image.observation && (
                       <div className="absolute bottom-0 line-clamp-3 min-h-5 w-full overflow-hidden bg-black/50 p-2">
@@ -107,9 +105,11 @@ export function ImageDialog({ ...props }: ObservationDialogProps) {
                       ` ${select === index ? "border border-sky-400" : ""}`
                     }
                   >
-                    <img
-                      src={"http://172.16.146.58:3333/" + image.image}
+                    <Image
+                      src={process.env.BUCKET_URL + image.image}
                       className="h-full w-full object-fill"
+                      width={96}
+                      height={96}
                       alt=""
                     />
                   </button>

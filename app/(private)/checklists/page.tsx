@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { prisma } from "@/lib/prisma";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
@@ -7,7 +8,7 @@ import { generateMetaPagination } from "@/utils/meta-pagination";
 import { Pagination } from "@/components/pagination";
 import Link from "next/link";
 
-export default async function Page(props: { searchParams: SearchParams }) {
+export default async function Page(props: { searchParams: any }) {
   const total = await prisma.checklist.count();
 
   const searchParams = await props.searchParams;

@@ -12,6 +12,10 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  env: {
+    BASE_URL: process.env.BASE_URL,
+    BUCKET_URL: process.env.BUCKET_URL,
+  },
 };
 
 export default nextConfig;
