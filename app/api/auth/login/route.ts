@@ -8,10 +8,7 @@ import { NextRequest } from "next/server";
 import { config } from "@/utils/mt-login";
 // import { NextRequest } from "next/server";
 
-async function postHandler(
-  request: NextRequest,
-  { params }: { params: Promise<{ code: string }> },
-) {
+async function postHandler(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const cookieStore = await cookies();
   const code = searchParams.get("code");
@@ -74,13 +71,6 @@ async function postHandler(
   }
 
   return Response.json({ error: `unknown error` }, { status: 500 });
-
-  //   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-
-  //   cookieStore.set("user", JSON.stringify(user));
-  //   cookieStore.set("session", data);
-
-  //   return Response.json(user);
 }
 
 export const POST = withMiddlewares([], postHandler);

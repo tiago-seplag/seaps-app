@@ -10,7 +10,7 @@ const updateSchema = z.object({
 });
 
 const getHandler = async (
-  request: NextRequest,
+  _: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) => {
   const { id } = await params;
@@ -48,7 +48,7 @@ const getHandler = async (
   return Response.json(checklist);
 };
 
-export const putHandler = async (
+const putHandler = async (
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) => {

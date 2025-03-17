@@ -16,7 +16,7 @@ async function getHandler() {
   return Response.json(models);
 }
 
-export const modelSchema = z.object({
+const modelSchema = z.object({
   name: z.string().min(1),
   description: z.string().optional(),
   items: z

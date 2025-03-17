@@ -1,9 +1,10 @@
 import { prisma } from "@/lib/prisma";
 import { authMiddleware } from "@/utils/authentication";
 import { withMiddlewares } from "@/utils/handler";
+import { NextRequest } from "next/server";
 
-export async function putHandler(
-  request: Request,
+async function putHandler(
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
   const userId = request.headers.get("x-user-id")!;

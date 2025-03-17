@@ -2,9 +2,9 @@ import { GoBack } from "@/components/go-back";
 import { CreatePropertyForm } from "./create-property-form";
 
 type CreatePropertyProps = {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 };
 
 export default async function CreateProperty({ params }: CreatePropertyProps) {

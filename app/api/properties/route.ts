@@ -36,7 +36,7 @@ async function getHandler(req: NextRequest) {
   return Response.json([properties, meta]);
 }
 
-export const propertySchema = z.object({
+const propertySchema = z.object({
   organization_id: z.string(),
   name: z.string().min(2),
   address: z.string().optional(),

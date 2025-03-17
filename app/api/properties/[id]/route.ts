@@ -4,9 +4,16 @@ import { withMiddlewares } from "@/utils/handler";
 import { validation } from "@/utils/validate";
 import { NextRequest } from "next/server";
 import { z } from "zod";
-import { propertySchema } from "../route";
 
-export async function getHandler(
+const propertySchema = z.object({
+  organization_id: z.string(),
+  name: z.string().min(2),
+  address: z.string().optional(),
+  type: z.string(),
+  person_id: z.string(),
+});
+
+async function getHandler(
   _: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -23,7 +30,7 @@ export async function getHandler(
   return Response.json(property);
 }
 
-export const putHandler = async (
+const putHandler = async (
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) => {

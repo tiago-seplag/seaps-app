@@ -6,16 +6,12 @@ import Link from "next/link";
 interface Params {
   params: Promise<{
     id: string;
-    propertyId: string;
   }>;
 }
 
-export default async function Page({ params }: Params) {
-  const { propertyId } = await params;
-
+export default async function Page({}: Params) {
   const organizations = await prisma.item.findMany({
     where: {
-      property_id: propertyId,
       level: 0,
     },
     orderBy: {

@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
-import { NextApiRequest } from "next";
+
+import { NextRequest } from "next/server";
 
 export function withMiddlewares(middlewares: Function[], handler: Function) {
-  return async (req: NextApiRequest, ctx?: any) => {
+  return async (req: NextRequest, ctx?: any) => {
     for (const middleware of middlewares) {
       const res = await middleware(req, ctx);
       if (res) return res; // Interrompe se um middleware retornar resposta

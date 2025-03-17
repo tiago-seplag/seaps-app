@@ -12,7 +12,7 @@ const checklistSchema = z.object({
   user_id: z.string(),
 });
 
-export const postHandler = async (request: NextRequest) => {
+const postHandler = async (request: NextRequest) => {
   const userId = request.headers.get("x-user-id")!;
 
   const values: z.infer<typeof checklistSchema> = await request.json();
@@ -63,9 +63,7 @@ export const postHandler = async (request: NextRequest) => {
   return Response.json(checklist);
 };
 
-const getHandler = async (request: NextRequest) => {
-  const userId = request.headers.get("x-user-id")!;
-
+const getHandler = async () => {
   const checklists = await prisma.checklist.findMany({
     where: {
       // user_id: userId,

@@ -1,25 +1,22 @@
 "use client";
-
 /* eslint-disable @next/next/no-img-element */
+
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { config } from "@/utils/mt-login";
 import Link from "next/link";
 import Image from "next/image";
 import Logo from "../assets/logo-gov.png";
-import { useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { config } from "@/utils/mt-login";
 
-export function LoginForm({
-  className,
-  ...props
-}: React.ComponentProps<"div">) {
-  const searchParams = useSearchParams();
+export function LoginForm() {
   const router = useRouter();
 
   useEffect(() => {
-    const code = searchParams.get("code");
+    const params = new URLSearchParams(document.location.search);
+    const code = params.get("code");
 
     if (code) {
       //obtem o token
@@ -30,10 +27,10 @@ export function LoginForm({
         .then((data) => data.json())
         .then(() => router.push("/"));
     }
-  }, [router, searchParams]);
+  }, [router]);
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
+    <div className={cn("flex flex-col gap-6")}>
       <Card className="overflow-hidden shadow-lg">
         <CardContent className="grid min-h-[547px] p-0 md:grid-cols-2">
           <form className="self-center p-6 md:p-8">
