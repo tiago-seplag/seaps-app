@@ -2,11 +2,12 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { reports } from "@/lib/reports";
 import { getFirstAndLastName } from "@/lib/utils";
 import { $Enums } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
-import { ChevronRight, Pen } from "lucide-react";
+import { ChevronRight, Pen, Printer } from "lucide-react";
 // import { Pen, Printer, Trash } from "lucide-react";
 import Link from "next/link";
 
@@ -138,6 +139,14 @@ export const columns: ColumnDef<Column>[] = [
             <Link href={"/checklists/" + row.original.id + "/edit"}>
               <Pen size={16} />
             </Link>
+          </Button>
+          <Button
+            variant="zinc"
+            className="h-6 w-6 p-2"
+            disabled={row.original.status !== "CLOSED"}
+            onClick={() => reports(row.original.id)}
+          >
+            <Printer size={16} />
           </Button>
         </div>
       );

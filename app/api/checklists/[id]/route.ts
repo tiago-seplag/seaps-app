@@ -21,6 +21,7 @@ const getHandler = async (
       property: {
         include: {
           person: true,
+          organization: true,
         },
       },
       person: true,

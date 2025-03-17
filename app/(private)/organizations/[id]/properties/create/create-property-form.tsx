@@ -23,8 +23,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { createProperty } from "@/app/actions/create-property";
 import { useRouter } from "next/navigation";
+import axios from "axios";
 
 const formSchema = z.object({
   organization_id: z.string({
@@ -64,8 +64,10 @@ export function CreatePropertyForm({
   }, []);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    await createProperty(values);
-    router.back();
+    return axios
+      .post("/api/properties", values)
+      .then(() => router.replace("/checklists"))
+      .catch((e) => console.log(e));
   }
 
   return (

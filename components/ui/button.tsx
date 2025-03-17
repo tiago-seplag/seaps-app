@@ -23,6 +23,7 @@ const buttonVariants = cva(
           "bg-green-600 text-destructive-foreground shadow-sm hover:bg-bg-green-600/90",
         yellow:
           "bg-yellow-600 text-destructive-foreground shadow-sm hover:bg-bg-yellow-600/90",
+        zinc: "bg-zinc-600 text-destructive-foreground shadow-sm hover:bg-bg-zinc-600/90",
       },
       size: {
         default: "h-9 px-4 py-2",
