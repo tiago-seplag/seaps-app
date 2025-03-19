@@ -8,6 +8,10 @@ const publicRoutes = [
     path: "/login",
     whenAuthenticated: "redirect",
   },
+  {
+    path: "/manifest.webmanifest",
+    whenAuthenticated: "ignore",
+  },
 ];
 
 const REDIRECT_WHEN_NOT_AUTHENTICATED_ROUTE = "/login";
@@ -32,6 +36,10 @@ export async function middleware(resquest: NextRequest) {
 
   if (authToken && publicRoute) {
     const redirectUrl = resquest.nextUrl.clone();
+
+    if (publicRoute.whenAuthenticated === "ignore") {
+      return NextResponse.next();
+    }
 
     redirectUrl.pathname = "/";
 
