@@ -13,6 +13,7 @@ model Organization {
 
   properties Property[]
   persons    Person[]
+  checklists Checklist[]
 
   @@map("organizations")
 }
@@ -102,18 +103,20 @@ model Item {
 }
 
 model Checklist {
-  id          String    @id @unique @default(uuid())
-  sid         String
-  status      Status    @default(OPEN)
-  model_id    String
-  property_id String
-  user_id     String?
-  created_by  String?
-  person_id   String?
-  finished_at DateTime?
-  created_at  DateTime  @default(now())
-  updated_at  DateTime  @default(now()) @updatedAt()
+  id              String    @id @unique @default(uuid())
+  sid             String
+  status          Status    @default(OPEN)
+  organization_id String
+  model_id        String
+  property_id     String
+  user_id         String?
+  created_by      String?
+  person_id       String?
+  finished_at     DateTime?
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @default(now()) @updatedAt()
 
+  organization   Organization     @relation(fields: [organization_id], references: [id])
   property       Property         @relation(fields: [property_id], references: [id])
   user           User?            @relation(fields: [user_id], references: [id])
   createdBy      User?            @relation("created_by", fields: [created_by], references: [id])
@@ -133,6 +136,8 @@ model ModelItems {
 
   model Model @relation(fields: [model_id], references: [id], onDelete: Cascade)
   item  Item  @relation(fields: [item_id], references: [id], onDelete: Cascade)
+
+  @@map("model_items")
 }
 
 enum Status {

@@ -15,7 +15,9 @@ import { useModal } from "@/hooks/use-modal";
 import { ObservationDialog } from "./observation-dialog";
 import { FileUploader } from "./file-uploader";
 import { ImageDialog } from "./image-dialog";
+import { Camera, MessageSquareText } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 export const ChecklistCard = ({
   checklistItem,
@@ -48,16 +50,16 @@ export const ChecklistCard = ({
   };
 
   return (
-    <Card>
-      <CardHeader className="flex-row items-center space-y-0">
+    <Card className="flex h-[400px] flex-col">
+      <CardHeader>
         <CardTitle>{checklistItem.item.name}</CardTitle>
       </CardHeader>
-      <CardContent className="grid gap-4 pb-4">
+      <CardContent className="flex h-full flex-col gap-4">
         {!checklistItem.image ? (
           <FileUploader
             id={checklistItem.id}
             disabled={status === "CLOSED"}
-            maxFileCount={10}
+            maxFileCount={5}
             accept={{ "image/*": [] }}
             maxSize={1024 * 1024 * 1024 * 2}
           />
@@ -65,7 +67,7 @@ export const ChecklistCard = ({
           <Button
             variant="ghost"
             onClick={imageDialog.show}
-            className="h-40 min-h-40 w-full overflow-hidden border bg-muted-foreground/10 object-cover p-0"
+            className="w-full flex-grow overflow-hidden border bg-muted-foreground/10 object-cover p-0"
           >
             <Image
               src={process.env.BUCKET_URL + checklistItem.image}
@@ -82,47 +84,35 @@ export const ChecklistCard = ({
           onValueChange={(e) => handleChangeValue(e, checklistItem.id)}
           defaultValue={String(checklistItem.score)}
         >
-          <div className="flex w-full flex-col items-center justify-center gap-2 rounded bg-red-300 px-1 py-3 dark:bg-red-800 md:flex-row">
-            <RadioGroupItem value="0" id={checklistItem.id + `0`} />
-            <Label htmlFor={checklistItem.id + `0`}>Ruim</Label>
+          <div className="flex w-full flex-col items-center justify-center gap-2 rounded bg-green-300 px-1 py-3 dark:bg-green-800 md:flex-row">
+            <RadioGroupItem value="2" id={checklistItem.id + `2`} />
+            <Label htmlFor={checklistItem.id + `2`}>Bom</Label>
           </div>
           <div className="flex w-full flex-col items-center justify-center gap-2 rounded bg-yellow-300 px-1 py-3 dark:bg-yellow-800 md:flex-row">
             <RadioGroupItem value="1" id={checklistItem.id + `1`} />
             <Label htmlFor={checklistItem.id + `1`}>Regular</Label>
           </div>
-          <div className="flex w-full flex-col items-center justify-center gap-2 rounded bg-green-300 px-1 py-3 dark:bg-green-800 md:flex-row">
-            <RadioGroupItem value="2" id={checklistItem.id + `2`} />
-            <Label htmlFor={checklistItem.id + `2`}>Bom</Label>
+          <div className="flex w-full flex-col items-center justify-center gap-2 rounded bg-red-300 px-1 py-3 dark:bg-red-800 md:flex-row">
+            <RadioGroupItem value="0" id={checklistItem.id + `0`} />
+            <Label htmlFor={checklistItem.id + `0`}>Ruim</Label>
           </div>
         </RadioGroup>
       </CardContent>
-      <CardFooter className="flex-col gap-2">
-        <div className="w-full overflow-hidden">
-          {checklistItem.observation ? (
-            <Button
-              className="block h-full min-h-14 w-full py-2"
-              disabled={status === "CLOSED"}
-              variant="outline"
-              onClick={observationDialog.show}
-            >
-              <p
-                title={checklistItem.observation}
-                className="line line-clamp-2 w-full text-ellipsis text-wrap break-words text-start"
-              >
-                {checklistItem.observation}
-              </p>
-            </Button>
-          ) : (
-            <Button
-              variant="ghost"
-              onClick={observationDialog.show}
-              disabled={status === "CLOSED"}
-              className="min-h-14 w-full border border-dashed"
-            >
-              Adicionar Observação
-            </Button>
-          )}
-        </div>
+      <CardFooter className="flex gap-2">
+        <Button
+          variant="outline"
+          className="w-full"
+          onClick={observationDialog.show}
+        >
+          Observação
+          <MessageSquareText />
+        </Button>
+        <Button className="w-full" variant="outline" asChild>
+          <Link href={"items/" + checklistItem.id}>
+            Imagens
+            <Camera />
+          </Link>
+        </Button>
       </CardFooter>
       <ImageDialog
         item={checklistItem}
@@ -130,6 +120,7 @@ export const ChecklistCard = ({
         open={imageDialog.visible}
       />
       <ObservationDialog
+        status={status}
         item={checklistItem}
         onOpenChange={observationDialog.toggle}
         open={observationDialog.visible}
