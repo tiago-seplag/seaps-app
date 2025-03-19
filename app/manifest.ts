@@ -4,11 +4,11 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Next.js PWA",
     short_name: "SEAPS",
-    description: "A Progressive Web App built with Next.js",
+    description: "Sistema de Manutenção Predial",
     start_url: "/login",
     display: "standalone",
-    background_color: "#ffffff",
-    theme_color: "#000000",
+    background_color: "#17181c",
+    theme_color: "#17181c",
     icons: [
       {
         src: "/icon192.png",
