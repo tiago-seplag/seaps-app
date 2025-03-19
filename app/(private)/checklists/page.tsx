@@ -3,10 +3,9 @@ import { Plus } from "lucide-react";
 import { columns } from "./columns";
 import { DataTable } from "@/components/data-table";
 import { Pagination } from "@/components/pagination";
-import { Suspense } from "react";
 import { getChecklistsPaginated } from "@/models/checklist";
-import Link from "next/link";
 import { DataFilterForm } from "./_components/filter-form";
+import Link from "next/link";
 
 export default async function Page(props: {
   searchParams: Promise<SearchParams>;
@@ -17,29 +16,27 @@ export default async function Page(props: {
     Number(page || 1),
     Number(perPage || 10),
     searchParams,
-  );
+  ).then((response) => response.json());
 
   return (
-    <Suspense fallback={<p>Loading...</p>}>
-      <div className="flex flex-col gap-y-4">
-        <div className="flex justify-between">
-          <div>
-            <h2 className="text-2xl font-bold tracking-tight">Checklists</h2>
-          </div>
-          <div className="self-end">
-            <Button asChild>
-              <Link href={"checklists/create"}>
-                <Plus />
-                Criar Checklist
-              </Link>
-            </Button>
-          </div>
+    <div className="flex flex-col gap-y-4">
+      <div className="flex justify-between">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight">Checklists</h2>
         </div>
-
-        <DataFilterForm />
-        <DataTable columns={columns} data={checklists} />
-        {meta.total > 10 && <Pagination meta={meta} />}
+        <div className="self-end">
+          <Button asChild>
+            <Link href={"checklists/create"}>
+              <Plus />
+              Criar Checklist
+            </Link>
+          </Button>
+        </div>
       </div>
-    </Suspense>
+
+      <DataFilterForm />
+      <DataTable columns={columns} data={checklists} />
+      {meta.total > 10 && <Pagination meta={meta} />}
+    </div>
   );
 }

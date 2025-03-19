@@ -1,27 +1,24 @@
 import { prisma } from "@/lib/prisma";
+import {
+  updateChecklistItem,
+  updateChecklistItemSchema,
+} from "@/models/checklist";
 import { authMiddleware } from "@/utils/authentication";
 import { withMiddlewares } from "@/utils/handler";
+import { validation } from "@/utils/validate";
+import { NextRequest } from "next/server";
 
-export async function PUT(
-  request: Request,
+const putHandler = async (
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
-) {
+) => {
+  const userId = request.headers.get("x-user-id")!;
+
   const { id } = await params;
   const data = await request.json();
 
-  await prisma.checklistItems.update({
-    data: {
-      score: Number(data.score) ?? Number(data.score),
-      is_inspected: true,
-      observation: data.observation ?? data.observation,
-    },
-    where: {
-      id,
-    },
-  });
-
-  return Response.json({ ok: "ok" });
-}
+  return updateChecklistItem(id, userId, data);
+};
 
 const getHandler = async (
   _: Request,
@@ -39,5 +36,10 @@ const getHandler = async (
 
   return Response.json(checklist);
 };
+
+export const PUT = withMiddlewares(
+  [authMiddleware, validation(updateChecklistItemSchema)],
+  putHandler,
+);
 
 export const GET = withMiddlewares([authMiddleware], getHandler);

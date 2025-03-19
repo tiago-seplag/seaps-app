@@ -9,7 +9,16 @@ export const checklistSchema = z.object({
   user_id: z.string(),
 });
 
+export const updateChecklistItemSchema = z.object({
+  score: z.number().optional(),
+  observation: z.string().optional(),
+});
+
 export type ChecklistSchema = z.infer<typeof checklistSchema>;
+
+export type UpdateChecklistItemSchema = z.infer<
+  typeof updateChecklistItemSchema
+>;
 
 export async function getChecklistsPaginated(
   page = 1,
@@ -62,7 +71,7 @@ export async function getChecklistsPaginated(
     skip: (meta.current_page - 1) * meta.per_page,
   });
 
-  return { data: checklists, meta };
+  return Response.json({ data: checklists, meta });
 }
 
 export async function createChecklist(
@@ -115,7 +124,7 @@ export async function createChecklist(
     });
   }
 
-  return checklist;
+  return Response.json(checklist);
 }
 
 export async function finishChecklist(id: string, userId: string) {
@@ -183,5 +192,43 @@ export async function finishChecklist(id: string, userId: string) {
     },
   });
 
-  return finishedChecklist;
+  return Response.json(finishedChecklist);
+}
+
+export async function updateChecklistItem(
+  id: string,
+  userId: string,
+  data: UpdateChecklistItemSchema,
+) {
+  const checklistItem = await prisma.checklistItems.findUnique({
+    where: { id },
+    include: {
+      checklist: {
+        select: {
+          user_id: true,
+        },
+      },
+    },
+  });
+
+  if (checklistItem?.checklist.user_id !== userId) {
+    return Response.json(
+      {
+        error: "forbidden",
+        message: "Apenas o responsável pode editar o item",
+      },
+      { status: 403 },
+    );
+  }
+
+  const updatedChecklistItem = await prisma.checklistItems.update({
+    data: {
+      score: data.score ? Number(data.score) : undefined,
+      is_inspected: true,
+      observation: data.observation ? data.observation : undefined,
+    },
+    where: { id },
+  });
+
+  return Response.json(updatedChecklistItem);
 }

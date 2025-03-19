@@ -14,20 +14,16 @@ const postHandler = async (request: NextRequest) => {
 
   const values: ChecklistSchema = await request.json();
 
-  const checklist = await createChecklist(values, userId);
-
-  return Response.json(checklist);
+  return createChecklist(values, userId);
 };
 
 const getHandler = async (req: NextRequest) => {
   const searchParams = req.nextUrl.searchParams;
 
-  const data = await getChecklistsPaginated(
+  return getChecklistsPaginated(
     Number(searchParams.get("page")),
     Number(searchParams.get("per_page")),
   );
-
-  return Response.json(data);
 };
 
 export const POST = withMiddlewares(

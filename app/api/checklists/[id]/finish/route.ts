@@ -11,9 +11,7 @@ async function putHandler(
 
   const { id } = await params;
 
-  const finishedChecklist = await finishChecklist(id, userId);
-
-  return Response.json(finishedChecklist);
+  return finishChecklist(id, userId);
 }
 
 export const PUT = withMiddlewares([authMiddleware], putHandler);
