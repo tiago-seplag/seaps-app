@@ -33,7 +33,7 @@ async function getHandler(req: NextRequest) {
     skip: (meta.current_page - 1) * meta.per_page,
   });
 
-  return Response.json([properties, meta]);
+  return Response.json({ data: properties, meta });
 }
 
 const propertySchema = z.object({

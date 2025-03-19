@@ -4,11 +4,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { reports } from "@/lib/reports";
 import { getFirstAndLastName } from "@/lib/utils";
-import { $Enums } from "@prisma/client";
+import { Checklist } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { ChevronRight, Pen, Printer } from "lucide-react";
-// import { Pen, Printer, Trash } from "lucide-react";
 import Link from "next/link";
 
 const ENUM = {
@@ -26,24 +25,13 @@ type Column = {
   user: {
     name: string;
   } | null;
+  organization: {
+    name: string;
+  };
   property: {
     name: string;
-    address: string | null;
-    organization: {
-      name: string;
-    };
   };
-} & {
-  id: string;
-  sid: string;
-  status: $Enums.Status;
-  property_id: string;
-  user_id: string | null;
-  person_id: string | null;
-  finished_at: Date | null;
-  created_at: Date;
-  updated_at: Date;
-};
+} & Checklist;
 
 export const columns: ColumnDef<Column>[] = [
   {
@@ -68,7 +56,7 @@ export const columns: ColumnDef<Column>[] = [
     accessorKey: "organization",
     header: "Orgão",
     accessorFn(row) {
-      return row.property.organization.name;
+      return row.organization.name;
     },
     meta: {
       headerClassName: "hidden md:table-cell",

@@ -61,19 +61,19 @@ export function ImageDialog({ ...props }: ObservationDialogProps) {
   return (
     <Dialog {...props}>
       <DialogContent
-        className="w-full max-w-xl border-none bg-transparent shadow-none"
+        className="w-full max-w-[600px] border-none px-0 shadow-none"
         aria-describedby="content"
       >
-        <DialogHeader>
+        <DialogHeader hidden>
           <DialogTitle hidden>Imagens</DialogTitle>
           <DialogDescription hidden>Imagens</DialogDescription>
         </DialogHeader>
-        <div className="mx-auto flex max-w-lg flex-col gap-4">
-          <Carousel className="max-w-lg" setApi={setApi}>
+        <div className="mx-auto flex w-full max-w-lg flex-col gap-4 px-4">
+          <Carousel setApi={setApi}>
             <CarouselContent aria-describedby="content">
               {props.item.images.map((image, index) => (
                 <CarouselItem key={index}>
-                  <div className="relative aspect-square w-[512px] p-1">
+                  <div className="relative aspect-square w-full max-w-[512px]">
                     <Image
                       src={process.env.BUCKET_URL + image.image}
                       className="h-full w-full rounded object-contain"
@@ -82,7 +82,7 @@ export function ImageDialog({ ...props }: ObservationDialogProps) {
                       alt={image.observation || ""}
                     />
                     {image.observation && (
-                      <div className="absolute bottom-0 line-clamp-3 min-h-5 w-full overflow-hidden bg-black/50 p-2">
+                      <div className="absolute bottom-0 w-full bg-black/50 p-2 text-white">
                         {image.observation}
                       </div>
                     )}

@@ -1,99 +1,33 @@
-import { prisma } from "@/lib/prisma";
+import {
+  ChecklistSchema,
+  checklistSchema,
+  createChecklist,
+  getChecklistsPaginated,
+} from "@/models/checklist";
 import { authMiddleware } from "@/utils/authentication";
 import { withMiddlewares } from "@/utils/handler";
 import { validation } from "@/utils/validate";
 import { NextRequest } from "next/server";
-import { z } from "zod";
-
-const checklistSchema = z.object({
-  model_id: z.string(),
-  organization_id: z.string(),
-  property_id: z.string(),
-  user_id: z.string(),
-});
 
 const postHandler = async (request: NextRequest) => {
   const userId = request.headers.get("x-user-id")!;
 
-  const values: z.infer<typeof checklistSchema> = await request.json();
+  const values: ChecklistSchema = await request.json();
 
-  const lastChecklist = await prisma.checklist.findFirst({
-    orderBy: {
-      created_at: "desc",
-    },
-  });
-
-  const year = new Date().getFullYear().toString().slice(2);
-
-  let sid = "0001/" + year;
-
-  if (lastChecklist && lastChecklist.sid.slice(-2) === year) {
-    const number = Number(lastChecklist.sid.slice(0, 4)) + 1;
-    sid = number.toString().padStart(4, "0") + "/" + year;
-  }
-
-  const checklist = await prisma.checklist.create({
-    data: {
-      created_by: userId,
-      user_id: values.user_id,
-      property_id: values.property_id,
-      sid: sid,
-      model_id: values.model_id,
-    },
-  });
-
-  const items = await prisma.item.findMany({
-    where: {
-      modelItems: {
-        some: {
-          model_id: values.model_id,
-        },
-      },
-    },
-  });
-
-  if (items.length > 0) {
-    await prisma.checklistItems.createMany({
-      data: items.map((item) => {
-        return { item_id: item.id, checklist_id: checklist.id };
-      }),
-    });
-  }
+  const checklist = await createChecklist(values, userId);
 
   return Response.json(checklist);
 };
 
-const getHandler = async () => {
-  const checklists = await prisma.checklist.findMany({
-    where: {
-      // user_id: userId,
-    },
-    include: {
-      property: {
-        select: {
-          name: true,
-          address: true,
-          organization: {
-            select: {
-              name: true,
-            },
-          },
-          person: {
-            select: {
-              name: true,
-            },
-          },
-        },
-      },
-      user: {
-        select: {
-          name: true,
-        },
-      },
-    },
-  });
+const getHandler = async (req: NextRequest) => {
+  const searchParams = req.nextUrl.searchParams;
 
-  return Response.json(checklists);
+  const data = await getChecklistsPaginated(
+    Number(searchParams.get("page")),
+    Number(searchParams.get("per_page")),
+  );
+
+  return Response.json(data);
 };
 
 export const POST = withMiddlewares(

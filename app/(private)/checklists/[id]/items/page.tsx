@@ -4,10 +4,10 @@ import { ChecklistCard } from "@/components/checklist-card";
 import { GoBack } from "@/components/go-back";
 import { ENUM_PROPERTY, PropertyBadge } from "@/components/property-badge";
 import { cookies } from "next/headers";
-import { FinishButton } from "../../../_components/finish-checklist-button";
 import { format } from "date-fns";
 import { getFirstAndLastName } from "@/lib/utils";
 import { Suspense } from "react";
+import { FinishButton } from "../../_components/finish-checklist-button";
 
 type ProjectPageProps = {
   params: Promise<{

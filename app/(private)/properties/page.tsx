@@ -1,28 +1,20 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { columns } from "./columns";
 import { DataTable } from "@/components/data-table";
-import { cookies } from "next/headers";
 import { Pagination } from "@/components/pagination";
+import { getPropertiesPaginated } from "@/models/property";
 import Link from "next/link";
 
-export default async function Page(props: { searchParams: any }) {
+export default async function Page(props: {
+  searchParams: Promise<SearchParams>;
+}) {
   const searchParams = await props.searchParams;
 
-  const cookie = await cookies();
-  const params = new URLSearchParams(searchParams);
-
-  const [properties, meta] = await fetch(
-    "http://127.0.0.1:3000/api/properties?" + params.toString(),
-    {
-      headers: {
-        Cookie: cookie.toString(),
-      },
-    },
-  )
-    .then((response) => response.json())
-    .then((data) => data);
+  const { meta, data: properties } = await getPropertiesPaginated(
+    Number(searchParams.page || 1),
+    Number(searchParams.perPage || 10),
+  );
 
   return (
     <div className="flex flex-col gap-y-4">
