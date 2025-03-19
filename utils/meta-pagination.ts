@@ -3,8 +3,20 @@ export function generateMetaPagination(
   perPage: number,
   total: number,
 ) {
-  const current_page = Number(page || 1);
-  const per_page = Number(perPage || 10);
+  let current_page;
+  let per_page;
+
+  if (typeof page !== "number" || page < 1) {
+    current_page = 1;
+  }
+
+  if (typeof perPage !== "number") {
+    per_page = 10;
+  }
+
+  current_page = page;
+  per_page = perPage;
+
   const last_page = Math.ceil(total / per_page);
 
   const next_page =
