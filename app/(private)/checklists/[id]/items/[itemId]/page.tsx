@@ -66,7 +66,7 @@ export default async function Page({ params }: ProjectPageProps) {
               <UploadCard
                 maxFileCount={5 - checklistItem.images.length}
                 status={checklistItem.checklist.status}
-                checklistItemId={checklistItem.checklist_id}
+                checklistItemId={checklistItem.id}
               />
             )}
         </div>

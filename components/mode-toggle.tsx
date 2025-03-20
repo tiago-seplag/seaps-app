@@ -12,8 +12,34 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+interface HTMLMetaElement extends HTMLElement {
+  content?: string;
+}
+
 export function ModeToggle() {
-  const { setTheme } = useTheme();
+  const { setTheme, theme, systemTheme } = useTheme();
+
+  const DARK_THEME = "#17181c";
+  const LIGHT_THEME = "#ffffff";
+
+  React.useEffect(() => {
+    console.log(theme);
+
+    const themeColor: HTMLMetaElement | null =
+      window.document.getElementById("theme-content");
+
+    if (themeColor) {
+      if (theme === "dark") {
+        themeColor.content = DARK_THEME;
+      }
+      if (theme === "light") {
+        themeColor.content = LIGHT_THEME;
+      }
+      if (theme === "system") {
+        themeColor.content = systemTheme === "dark" ? DARK_THEME : LIGHT_THEME;
+      }
+    }
+  }, [theme, systemTheme]);
 
   return (
     <DropdownMenu modal={false}>

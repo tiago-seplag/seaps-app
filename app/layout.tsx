@@ -42,6 +42,7 @@ export default function RootLayout({
           sizes="<generated>"
         />
       </head>
+      <meta id="theme-content" name="theme-color" content="hls(226 0% 100%)" />
       <body
         className={`${geistSans.variable} ${geistMono.variable} relative min-h-screen antialiased`}
       >

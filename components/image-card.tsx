@@ -31,21 +31,21 @@ export const ChecklistImageCard = ({
   const observationDialog = useModal();
 
   return (
-    <Card className="h-[326px]">
+    <Card className="flex min-h-[326px] flex-col">
       {image.observation && (
         <CardHeader>
-          <CardDescription>{image.observation}</CardDescription>
+          <CardDescription className="line-clamp-2 min-h-[2lh]">
+            {image.observation}
+          </CardDescription>
         </CardHeader>
       )}
-      <CardContent
-        className={cn("grid gap-4 pb-4", !image.observation && "pt-6")}
-      >
+      <CardContent className={cn(!image.observation && "pt-6", "h-full")}>
         <Image
           src={process.env.BUCKET_URL + image.image}
           alt="checklist-image"
           width={388}
           height={160}
-          className="pointer-events-none h-56 w-full object-cover"
+          className="pointer-events-none h-full min-h-56 w-full object-cover"
         />
       </CardContent>
       <CardFooter className="flex gap-2">

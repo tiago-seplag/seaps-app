@@ -7,7 +7,6 @@ export default function manifest(): MetadataRoute.Manifest {
     description: "Sistema de Manutenção Predial",
     start_url: "/login",
     display: "standalone",
-    background_color: "#17181c",
     theme_color: "#17181c",
     icons: [
       {

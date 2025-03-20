@@ -87,6 +87,10 @@ export const columns: ColumnDef<Column>[] = [
     accessorFn(row) {
       return row.user?.name ? getFirstAndLastName(row.user?.name) : "--";
     },
+    meta: {
+      headerClassName: "hidden md:table-cell",
+      cellClassName: "truncate hidden md:table-cell",
+    },
   },
   {
     accessorKey: "created_at",
