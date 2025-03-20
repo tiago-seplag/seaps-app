@@ -16,7 +16,7 @@ export default async function Page(props: {
     Number(page || 1),
     Number(perPage || 10),
     searchParams,
-  ).then((response) => response.json());
+  );
 
   return (
     <div className="flex flex-col gap-y-4">

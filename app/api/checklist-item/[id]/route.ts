@@ -1,3 +1,4 @@
+import { ValidationError } from "@/errors/validation-error";
 import { prisma } from "@/lib/prisma";
 import {
   updateChecklistItem,
@@ -17,7 +18,13 @@ const putHandler = async (
   const { id } = await params;
   const data = await request.json();
 
-  return updateChecklistItem(id, userId, data);
+  try {
+    const finishedChecklist = await updateChecklistItem(id, userId, data);
+    return Response.json(finishedChecklist);
+  } catch (error) {
+    if (error instanceof ValidationError)
+      return Response.json(error, { status: error.statusCode });
+  }
 };
 
 const getHandler = async (

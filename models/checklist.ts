@@ -1,3 +1,4 @@
+import { ValidationError } from "@/errors/validation-error";
 import { prisma } from "@/lib/prisma";
 import { generateMetaPagination } from "@/utils/meta-pagination";
 import { z } from "zod";
@@ -71,7 +72,7 @@ export async function getChecklistsPaginated(
     skip: (meta.current_page - 1) * meta.per_page,
   });
 
-  return Response.json({ data: checklists, meta });
+  return { data: checklists, meta };
 }
 
 export async function createChecklist(
@@ -124,7 +125,7 @@ export async function createChecklist(
     });
   }
 
-  return Response.json(checklist);
+  return checklist;
 }
 
 export async function finishChecklist(id: string, userId: string) {
@@ -149,39 +150,26 @@ export async function finishChecklist(id: string, userId: string) {
   });
 
   if (userId !== checklist.user_id) {
-    return Response.json(
-      { error: "forbidden", message: "Apenas o responsável pode finalizar" },
-      { status: 403 },
-    );
+    throw new ValidationError({
+      message: "Apenas o responsável pode finalizar",
+      action: "Pessa ao responsável para finalizar esse checklist",
+      statusCode: 403,
+    });
   }
-
-  const uncheckedItems = [];
 
   for (const item of checklist?.checklistItems) {
     if (item._count.images < 1) {
-      return Response.json(
-        {
-          error: "validation error",
-          message: "Todos os itens devem conter ao menos uma imagem",
-        },
-        { status: 400 },
-      );
+      throw new ValidationError({
+        message: "Todos os itens devem conter ao menos uma imagem",
+        action: "Insira ao menos uma imagem no item: " + item.item.name,
+      });
     }
     if (typeof item.score !== "number") {
-      uncheckedItems.push(item.item);
+      throw new ValidationError({
+        message: "Todos os itens devem ser pontuatos.",
+        action: `O item '${item.item.name}' não foi pontuado`,
+      });
     }
-  }
-
-  if (uncheckedItems.length > 0) {
-    return Response.json(
-      {
-        error: "validation error",
-        messages: uncheckedItems.map(
-          (item) => `O item '${item.name}' não foi pontuado`,
-        ),
-      },
-      { status: 400 },
-    );
   }
 
   const finishedChecklist = await prisma.checklist.update({
@@ -192,7 +180,7 @@ export async function finishChecklist(id: string, userId: string) {
     },
   });
 
-  return Response.json(finishedChecklist);
+  return finishedChecklist;
 }
 
 export async function updateChecklistItem(
@@ -212,13 +200,11 @@ export async function updateChecklistItem(
   });
 
   if (checklistItem?.checklist.user_id !== userId) {
-    return Response.json(
-      {
-        error: "forbidden",
-        message: "Apenas o responsável pode editar o item",
-      },
-      { status: 403 },
-    );
+    throw new ValidationError({
+      message: "Apenas o responsável pode editar o item",
+      action: "Pessa ao responsável para realizar o checklist",
+      statusCode: 403,
+    });
   }
 
   const updatedChecklistItem = await prisma.checklistItems.update({
@@ -230,5 +216,5 @@ export async function updateChecklistItem(
     where: { id },
   });
 
-  return Response.json(updatedChecklistItem);
+  return updatedChecklistItem;
 }

@@ -4,6 +4,8 @@ import type { Metadata } from "next";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
+import { PullToRefreshElement } from "@/components/pull-to-refresh";
+import "@/components/pull-to-refresh";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,6 +30,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" suppressHydrationWarning>
+      <PullToRefreshElement />
       <head>
         <link
           rel="apple-icon"

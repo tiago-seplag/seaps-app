@@ -1,0 +1,188 @@
+* {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+body {
+  font-family: "Geist", sans-serif;
+  color: #1a3280;
+  break-inside: auto;
+  page-break-inside: auto;
+  background-color: #f5f4ef;
+}
+
+h1 {
+  font-weight: bolder;
+  font-size: 2rem;
+  text-align: center;
+  width: 400px;
+  margin: 0 auto;
+  margin-bottom: 8px;
+}
+p {
+  font-size: 16px;
+  letter-spacing: -0.006em;
+  margin: 0;
+}
+.card {
+  width: 100%;
+  border: 1px solid #1a3280;
+  padding: 0.5rem 1rem;
+  border-radius: 1rem;
+  margin-bottom: 8px;
+}
+.line {
+  margin-bottom: 6px;
+  border-bottom: 1px solid #1a3280;
+  justify-content: space-between;
+  display: flex;
+}
+fieldset {
+  overflow: hidden;
+}
+fieldset p {
+  flex: 1;
+  font-weight: bold;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+fieldset p span {
+  font-weight: initial;
+}
+table {
+  border-spacing: 0;
+  break-inside: auto;
+  page-break-inside: auto;
+}
+tr {
+  break-inside: avoid !important;
+  page-break-inside: avoid !important;
+}
+th,
+td {
+  min-width: 80px;
+  padding: 4px 0;
+}
+th.item,
+td.item {
+  width: 100%;
+  text-align: start;
+}
+td {
+  text-align: center;
+  border-bottom: 1px solid #1a328050;
+}
+input[type="radio"] {
+  appearance: none;
+
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+
+  border: 1px solid #999;
+  transition: 0.2s all linear;
+  margin-right: 5px;
+
+  position: relative;
+  top: 4px;
+}
+input[type="radio"]:checked {
+  background-color: #1a3280;
+  border-color: #1a3280;
+}
+
+.footer {
+  color: #f3f3f3;
+  width: 160px;
+  position: running(footer);
+  text-align: start;
+  margin-left: auto;
+  font-family: sans-serif;
+}
+
+.footer > h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+.footer > p {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+tr:nth-child(23n) {
+  break-before: page;
+}
+
+.logo-footer {
+  position: running(logoFooter);
+}
+
+.logo-footer > img {
+  width: 200px;
+}
+
+thead > tr > th > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.images {
+  break-before: page;
+  height: 100%;
+}
+
+section > h1 {
+  break-before: page;
+}
+
+.card-images:nth-child(n + 3) {
+  break-before: page;
+}
+
+.images-grid {
+  display: grid;
+  gap: 4px;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+figure img {
+  height: 200px;
+  width: 100%;
+  object-fit: cover;
+}
+
+figure {
+  break-inside: avoid;
+}
+
+@page {
+  size: A4;
+  margin: 5mm 5mm 25mm;
+  padding: 0 0 4mm;
+  background-color: #f5f4ef;
+  @bottom-left {
+    background-color: #0a8a97;
+    content: element(logoFooter);
+  }
+  @bottom-center {
+    font-family: monospace;
+    color: #f3f3f3;
+    background-color: #0a8a97;
+    content: counter(page) "/" counter(pages);
+  }
+  @bottom-right {
+    background-color: #0a8a97;
+    content: element(footer);
+  }
+  @bottom-left-corner {
+    content: "";
+    background-color: #0a8a97;
+  }
+  @bottom-right-corner {
+    content: "";
+    background-color: #0a8a97;
+  }
+}

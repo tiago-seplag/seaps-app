@@ -24,6 +24,7 @@ const getHandler = async (
           organization: true,
         },
       },
+      organization: true,
       person: true,
       user: true,
       checklistItems: {

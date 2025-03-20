@@ -91,3 +91,8 @@ html {
 html {
   overscroll-behavior: none;
 }
+
+.ptr--icon,
+.ptr--text {
+  color: hsl(var(--foreground)) !important;
+}

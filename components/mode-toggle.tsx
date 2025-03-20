@@ -23,8 +23,6 @@ export function ModeToggle() {
   const LIGHT_THEME = "#ffffff";
 
   React.useEffect(() => {
-    console.log(theme);
-
     const themeColor: HTMLMetaElement | null =
       window.document.getElementById("theme-content");
 

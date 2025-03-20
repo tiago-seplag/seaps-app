@@ -1,3 +1,4 @@
+import { ValidationError } from "@/errors/validation-error";
 import { finishChecklist } from "@/models/checklist";
 import { authMiddleware } from "@/utils/authentication";
 import { withMiddlewares } from "@/utils/handler";
@@ -11,7 +12,13 @@ async function putHandler(
 
   const { id } = await params;
 
-  return finishChecklist(id, userId);
+  try {
+    const finishedChecklist = await finishChecklist(id, userId);
+    return Response.json(finishedChecklist);
+  } catch (error) {
+    if (error instanceof ValidationError)
+      return Response.json(error, { status: error.statusCode });
+  }
 }
 
 export const PUT = withMiddlewares([authMiddleware], putHandler);
