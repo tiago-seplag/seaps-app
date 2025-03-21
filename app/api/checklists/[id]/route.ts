@@ -1,4 +1,6 @@
+import { ValidationError } from "@/errors/validation-error";
 import { prisma } from "@/lib/prisma";
+import { getChecklistById } from "@/models/checklist";
 import { authMiddleware } from "@/utils/authentication";
 import { withMiddlewares } from "@/utils/handler";
 import { validation } from "@/utils/validate";
@@ -15,38 +17,13 @@ const getHandler = async (
 ) => {
   const { id } = await params;
 
-  const checklist = await prisma.checklist.findUnique({
-    where: { id: id },
-    include: {
-      property: {
-        include: {
-          person: true,
-          organization: true,
-        },
-      },
-      organization: true,
-      person: true,
-      user: true,
-      checklistItems: {
-        include: {
-          item: true,
-          images: true,
-        },
-        where: {
-          item: {
-            level: 0,
-          },
-        },
-        orderBy: {
-          item: {
-            name: "asc",
-          },
-        },
-      },
-    },
-  });
-
-  return Response.json(checklist);
+  try {
+    const checklist = await getChecklistById(id);
+    return Response.json(checklist);
+  } catch (error) {
+    if (error instanceof ValidationError)
+      return Response.json(error, { status: error.statusCode });
+  }
 };
 
 const putHandler = async (

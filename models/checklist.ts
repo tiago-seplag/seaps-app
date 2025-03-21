@@ -75,6 +75,49 @@ export async function getChecklistsPaginated(
   return { data: checklists, meta };
 }
 
+export async function getChecklistById(id: string) {
+  const checklist = await prisma.checklist.findUnique({
+    where: { id: id },
+    include: {
+      property: {
+        include: {
+          person: true,
+          organization: true,
+        },
+      },
+      organization: true,
+      person: true,
+      user: true,
+      checklistItems: {
+        include: {
+          item: true,
+          images: true,
+        },
+        where: {
+          item: {
+            level: 0,
+          },
+        },
+        orderBy: {
+          item: {
+            name: "asc",
+          },
+        },
+      },
+    },
+  });
+
+  if (!checklist) {
+    throw new ValidationError({
+      message: "Esse ID de checklist não existe",
+      action: "Verifique se o ID foi passado corretamente",
+      statusCode: 404,
+    });
+  }
+
+  return checklist;
+}
+
 export async function createChecklist(
   data: z.infer<typeof checklistSchema>,
   userId: string,
