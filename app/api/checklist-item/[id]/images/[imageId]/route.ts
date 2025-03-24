@@ -11,7 +11,7 @@ async function putHandler(
 
   const observation = data.observation;
 
-  await prisma.checklistItemImages.update({
+  const updatedImage = await prisma.checklistItemImages.update({
     data: {
       observation,
     },
@@ -20,7 +20,7 @@ async function putHandler(
     },
   });
 
-  return Response.json({ ok: "ok" });
+  return Response.json(updatedImage);
 }
 
 export const PUT = withMiddlewares([authMiddleware], putHandler);

@@ -18,12 +18,12 @@ export async function PUT(
     },
   });
 
-  await prisma.checklistItemImages.createMany({
+  const createdImages = await prisma.checklistItemImages.createManyAndReturn({
     data: images.map((image: string) => ({
       checklist_item_id: id,
       image: image,
     })),
   });
 
-  return Response.json({ ok: "ok" });
+  return Response.json({ images: createdImages }, { status: 201 });
 }

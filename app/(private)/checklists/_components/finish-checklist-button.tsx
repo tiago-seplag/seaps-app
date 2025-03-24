@@ -13,7 +13,7 @@ export const FinishButton = ({ checklist }: { checklist: Checklist }) => {
     axios
       .put("/api/checklists/" + checklist.id + "/finish")
       .then(() => {
-        toast.success("Chcklist finalizado e assinado.");
+        toast.success("Checklist finalizado e assinado.");
         router.refresh();
       })
       .catch((e) => {

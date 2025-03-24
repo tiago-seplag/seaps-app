@@ -11,7 +11,10 @@ export const checklistSchema = z.object({
 });
 
 export const updateChecklistItemSchema = z.object({
-  score: z.number().optional(),
+  score: z
+    .string()
+    .optional()
+    .transform((value) => typeof value === "number" && isFinite(value)),
   observation: z.string().optional(),
 });
 
@@ -200,6 +203,8 @@ export async function finishChecklist(id: string, userId: string) {
     });
   }
 
+  let score = 0;
+
   for (const item of checklist?.checklistItems) {
     if (item._count.images < 1) {
       throw new ValidationError({
@@ -213,17 +218,21 @@ export async function finishChecklist(id: string, userId: string) {
         action: `O item '${item.item.name}' não foi pontuado`,
       });
     }
+    score += item.score;
   }
 
-  const finishedChecklist = await prisma.checklist.update({
-    where: { id },
-    data: {
-      status: "CLOSED",
-      finished_at: new Date(),
-    },
-  });
+  console.log(score / checklist.checklistItems.length);
 
-  return finishedChecklist;
+  // const finishedChecklist = await prisma.checklist.update({
+  //   where: { id },
+  //   data: {
+  //     score,
+  //     status: "CLOSED",
+  //     finished_at: new Date(),
+  //   },
+  // });
+
+  return checklist;
 }
 
 export async function updateChecklistItem(

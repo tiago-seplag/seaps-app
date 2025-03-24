@@ -18,6 +18,7 @@ async function putHandler(
   } catch (error) {
     if (error instanceof ValidationError)
       return Response.json(error, { status: error.statusCode });
+    return Response.json({ error }, { status: 500 });
   }
 }
 

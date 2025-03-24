@@ -85,7 +85,7 @@ export const ChecklistCard = ({
           defaultValue={String(checklistItem.score)}
         >
           <div className="flex w-full flex-col items-center justify-center gap-2 rounded bg-green-300 px-1 py-3 dark:bg-green-800 md:flex-row">
-            <RadioGroupItem value="2" id={checklistItem.id + `2`} />
+            <RadioGroupItem value="3" id={checklistItem.id + `2`} />
             <Label htmlFor={checklistItem.id + `2`}>Bom</Label>
           </div>
           <div className="flex w-full flex-col items-center justify-center gap-2 rounded bg-yellow-300 px-1 py-3 dark:bg-yellow-800 md:flex-row">
@@ -93,7 +93,7 @@ export const ChecklistCard = ({
             <Label htmlFor={checklistItem.id + `1`}>Regular</Label>
           </div>
           <div className="flex w-full flex-col items-center justify-center gap-2 rounded bg-red-300 px-1 py-3 dark:bg-red-800 md:flex-row">
-            <RadioGroupItem value="0" id={checklistItem.id + `0`} />
+            <RadioGroupItem value="-2" id={checklistItem.id + `0`} />
             <Label htmlFor={checklistItem.id + `0`}>Ruim</Label>
           </div>
         </RadioGroup>

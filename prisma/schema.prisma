@@ -112,6 +112,7 @@ model Checklist {
   user_id         String?
   created_by      String?
   person_id       String?
+  score           Int       @default(0)
   finished_at     DateTime?
   created_at      DateTime  @default(now())
   updated_at      DateTime  @default(now()) @updatedAt()
