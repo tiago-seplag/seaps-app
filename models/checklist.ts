@@ -221,18 +221,18 @@ export async function finishChecklist(id: string, userId: string) {
     score += item.score;
   }
 
-  console.log(score / checklist.checklistItems.length);
+  const finalScore = score / checklist.checklistItems.length;
 
-  // const finishedChecklist = await prisma.checklist.update({
-  //   where: { id },
-  //   data: {
-  //     score,
-  //     status: "CLOSED",
-  //     finished_at: new Date(),
-  //   },
-  // });
+  const finishedChecklist = await prisma.checklist.update({
+    where: { id },
+    data: {
+      score: finalScore,
+      status: "CLOSED",
+      finished_at: new Date(),
+    },
+  });
 
-  return checklist;
+  return finishedChecklist;
 }
 
 export async function updateChecklistItem(

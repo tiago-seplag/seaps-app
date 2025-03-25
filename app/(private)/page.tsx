@@ -1,15 +1,15 @@
-import { AreaComponent } from "./(dashboard)/area-card";
+import { getCountByRange } from "@/models/dashboard";
 import { BarComponent } from "./(dashboard)/bar-card";
-import { HorizontalBarComponent } from "./(dashboard)/horizontal-bar-card";
-import { PieComponent } from "./(dashboard)/pie-card";
 
 export default async function Page() {
+  const ranges = await getCountByRange();
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3">
-      <BarComponent />
-      <PieComponent />
+      <BarComponent data={ranges} />
+      {/* <PieComponent />
       <HorizontalBarComponent />
-      <AreaComponent />
+      <AreaComponent /> */}
     </div>
   );
 }
