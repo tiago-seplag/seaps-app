@@ -16,7 +16,7 @@ COPY . .
 
 # Disable telemetry during the build
 ENV NEXT_TELEMETRY_DISABLED=1 
-RUN npm run build;
+RUN npm run db:generate; npm run build;
 
 
 # Production image, copy all the files and run next
@@ -27,6 +27,7 @@ ENV NODE_ENV=production
 
 # Uncomment the following line in case you want to disable telemetry during runtime.
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV NEXT_PRIVATE_STANDALONE=true
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
@@ -42,11 +43,11 @@ EXPOSE 3000
 
 ENV PORT=3000
 
-ARG DATABASE_URL= ${DATABASE_URL}
-ARG JWT_SECRET=${JWT_SECRET}
-ARG REPORT_URL=${REPORT_URL}
-ARG BUCKET_URL=${BUCKET_URL}
-ARG BASE_URL=${BASE_URL}
+# ARG DATABASE_URL= ${DATABASE_URL}
+# ARG JWT_SECRET=${JWT_SECRET}
+# ARG REPORT_URL=${REPORT_URL}
+# ARG BUCKET_URL=${BUCKET_URL}
+# ARG BASE_URL=${BASE_URL}
 
 ENV HOSTNAME="0.0.0.0"
 CMD ["node", "server.js"]

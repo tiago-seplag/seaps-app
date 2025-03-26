@@ -17,6 +17,7 @@ const nextConfig: NextConfig = {
     BUCKET_URL: process.env.BUCKET_URL,
     REPORT_URL: process.env.REPORT_URL,
   },
+  output: "standalone",
 };
 
 export default nextConfig;
