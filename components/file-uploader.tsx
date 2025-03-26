@@ -14,11 +14,8 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useControllableState } from "@/hooks/use-controllable-state";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useUploadFile } from "@/hooks/use-upload-file";
-import { useRouter } from "next/navigation";
 
 interface FileUploaderProps extends React.HTMLAttributes<HTMLDivElement> {
-  id: string;
   value?: File[];
   onValueChange?: (files: File[]) => void;
   onUpload?: (files: File[]) => Promise<void>;
@@ -32,12 +29,11 @@ interface FileUploaderProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export function FileUploader({ ...props }: FileUploaderProps) {
   const {
-    id,
+    progresses,
+    onUpload,
     value: valueProp,
     onValueChange,
-    // onUpload,
     accept,
-    // progresses,
     maxSize = 1024 * 1024 * 2,
     maxFileCount = 1,
     multiple = false,
@@ -46,34 +42,10 @@ export function FileUploader({ ...props }: FileUploaderProps) {
     ...dropzoneProps
   } = props;
 
-  const router = useRouter();
-
-  const { onUpload, progresses } = useUploadFile(
-    process.env.BUCKET_URL + "/upload/images",
-    { defaultUploadedFiles: [] },
-    "images",
-  );
-
   const [files, setFiles] = useControllableState({
     prop: valueProp,
     onChange: onValueChange,
   });
-
-  const handleUpload = React.useCallback(
-    async (files: File[]) => {
-      const uploadedFiles = await onUpload(files);
-
-      if (uploadedFiles) {
-        fetch("/api/checklist-item/" + id + "/images", {
-          method: "PUT",
-          body: JSON.stringify({
-            images: uploadedFiles.files.map((file: any) => file.url),
-          }),
-        });
-      }
-    },
-    [id, onUpload],
-  );
 
   const onDrop = React.useCallback(
     (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
@@ -104,18 +76,17 @@ export function FileUploader({ ...props }: FileUploaderProps) {
       }
 
       if (
-        handleUpload &&
+        onUpload &&
         updatedFiles.length > 0 &&
         updatedFiles.length <= maxFileCount
       ) {
         const target =
           updatedFiles.length > 0 ? `${updatedFiles.length} files` : `file`;
 
-        toast.promise(handleUpload(updatedFiles), {
+        toast.promise(onUpload(updatedFiles), {
           loading: `Uploading ${target}...`,
           success: () => {
             setFiles([]);
-            router.refresh();
             return `${target} uploaded`;
           },
           error: `Failed to upload ${target}`,
@@ -123,7 +94,7 @@ export function FileUploader({ ...props }: FileUploaderProps) {
       }
     },
 
-    [files, handleUpload, maxFileCount, multiple, router, setFiles],
+    [files, onUpload, maxFileCount, multiple, setFiles],
   );
 
   function onRemove(index: number) {
@@ -181,7 +152,7 @@ export function FileUploader({ ...props }: FileUploaderProps) {
                   />
                 </div>
                 <p className="font-medium text-muted-foreground">
-                  Drop the files here
+                  Solte as imagens aqui
                 </p>
               </div>
             ) : (
@@ -192,6 +163,9 @@ export function FileUploader({ ...props }: FileUploaderProps) {
                     aria-hidden="true"
                   />
                 </div>
+                <p className="font-medium text-muted-foreground">
+                  Click ou Arraste para enviar as imagens
+                </p>
               </div>
             )}
           </div>

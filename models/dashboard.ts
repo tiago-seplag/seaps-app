@@ -1,10 +1,10 @@
 import { prisma } from "@/lib/prisma";
 
 export async function getCountByRange() {
-  const ranges: { range: string; total: number }[] = await prisma.$queryRaw`
+  const ranges: { status: string; total: number }[] = await prisma.$queryRaw`
     SELECT
-        t.range,
-        count(*) as total
+        t.status,
+        count(*)::integer as total
     FROM 
         (
         SELECT 
@@ -13,21 +13,16 @@ export async function getCountByRange() {
                 WHEN score > 1.5 THEN 'REGULAR'
                 ELSE 'RUIM'
             END AS 
-                range
+                status
         FROM
             checklists
         WHERE
             status = 'CLOSED'
         ) t
     GROUP BY
-	    t.range
+	    t.status
     ;
     `;
 
-  const formattedRanges = ranges.map((range) => ({
-    ...range,
-    total: Number(range.total),
-  }));
-
-  return formattedRanges;
+  return ranges;
 }

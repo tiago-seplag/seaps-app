@@ -17,7 +17,7 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-type Data = { range: string; total: number };
+type Data = { status: string; total: number };
 
 export function BarComponent({ data }: { data: Data[] }) {
   return (
@@ -32,7 +32,7 @@ export function BarComponent({ data }: { data: Data[] }) {
             <CartesianGrid vertical={false} />
             <YAxis domain={[0, "dataMax"]} />
             <XAxis
-              dataKey="range"
+              dataKey="status"
               tickLine={false}
               tickMargin={10}
               axisLine={false}

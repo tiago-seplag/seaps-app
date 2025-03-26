@@ -10,6 +10,11 @@ const nextConfig: NextConfig = {
         port: "3333",
         search: "",
       },
+      {
+        protocol: "https",
+        hostname: "jrgxeplrqwsmntjfhakb.supabase.co",
+        port: "",
+      },
     ],
   },
   env: {

@@ -1,3 +1,4 @@
+import { ValidationError } from "@/errors/validation-error";
 import {
   ChecklistSchema,
   checklistSchema,
@@ -14,7 +15,14 @@ const postHandler = async (request: NextRequest) => {
 
   const values: ChecklistSchema = await request.json();
 
-  return createChecklist(values, userId);
+  try {
+    const checklist = await createChecklist(values, userId);
+    return Response.json(checklist);
+  } catch (error) {
+    if (error instanceof ValidationError)
+      return Response.json(error, { status: error.statusCode });
+    return Response.json({ error }, { status: 500 });
+  }
 };
 
 const getHandler = async (req: NextRequest) => {

@@ -13,9 +13,8 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { useModal } from "@/hooks/use-modal";
 import { ObservationDialog } from "./observation-dialog";
-import { FileUploader } from "./file-uploader";
 import { ImageDialog } from "./image-dialog";
-import { Camera, MessageSquareText } from "lucide-react";
+import { Camera, CameraIcon, MessageSquareText } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -56,13 +55,22 @@ export const ChecklistCard = ({
       </CardHeader>
       <CardContent className="flex h-full flex-col gap-4">
         {!checklistItem.image ? (
-          <FileUploader
-            id={checklistItem.id}
-            disabled={status === "CLOSED"}
-            maxFileCount={5}
-            accept={{ "image/*": [] }}
-            maxSize={1024 * 1024 * 1024 * 2}
-          />
+          <Link href={"items/" + checklistItem.id} className="h-full">
+            <div
+              className={
+                "group relative grid h-full w-full cursor-pointer place-items-center rounded-lg border-2 border-dashed bg-muted-foreground/10 px-5 py-2.5 text-center ring-offset-background transition hover:bg-muted/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              }
+            >
+              <div className="flex flex-col items-center justify-center gap-4 sm:px-5">
+                <div className="rounded-full border border-dashed p-3">
+                  <CameraIcon
+                    className="size-7 text-muted-foreground"
+                    aria-hidden="true"
+                  />
+                </div>
+              </div>
+            </div>
+          </Link>
         ) : (
           <Button
             variant="ghost"
