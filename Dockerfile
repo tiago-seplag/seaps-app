@@ -16,7 +16,7 @@ COPY . .
 
 # Disable telemetry during the build
 ENV NEXT_TELEMETRY_DISABLED=1 
-RUN npm run db:generate; npm run build;
+RUN npm run db:generate && npm run build;
 
 
 # Production image, copy all the files and run next
