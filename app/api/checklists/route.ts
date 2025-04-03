@@ -26,12 +26,18 @@ const postHandler = async (request: NextRequest) => {
 };
 
 const getHandler = async (req: NextRequest) => {
-  const searchParams = req.nextUrl.searchParams;
-
-  return getChecklistsPaginated(
-    Number(searchParams.get("page")),
-    Number(searchParams.get("per_page")),
-  );
+ const searchParams = req.nextUrl.searchParams;
+  try {
+    const checklists = await getChecklistsPaginated(
+      Number(searchParams.get("page")),
+      Number(searchParams.get("per_page")),
+    );
+    return Response.json(checklists);
+  } catch (error) {
+    if (error instanceof ValidationError)
+      return Response.json(error, { status: error.statusCode });
+    return Response.json({ error }, { status: 500 });
+  }
 };
 
 export const POST = withMiddlewares(
