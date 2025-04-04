@@ -1,13 +1,18 @@
 export const config = {
   grant_type: "authorization_code",
-  client_id: "projeto-template-integracao",
+  client_id: process.env.MT_LOGIN_CLIENT_ID,
   redirect_uri: `${process.env.BASE_URL}/login`,
 
   url_token:
-    "https://dev.login.mt.gov.br/auth/realms/mt-realm/protocol/openid-connect/token",
+    process.env.MT_LOGIN_URL + "/realms/mt-realm/protocol/openid-connect/token",
   url_userInfo:
-    "https://dev.login.mt.gov.br/auth/realms/mt-realm/protocol/openid-connect/userinfo",
+    process.env.MT_LOGIN_URL +
+    "/realms/mt-realm/protocol/openid-connect/userinfo",
 
-  url_login: `https://dev.login.mt.gov.br/auth/realms/mt-realm/protocol/openid-connect/auth?client_id=projeto-template-integracao&redirect_uri=${process.env.BASE_URL}/login&response_type=code`,
-  url_logout: `https://dev.login.mt.gov.br/auth/realms/mt-realm/protocol/openid-connect/logout?client_id=projeto-template-integracao&redirect_uri=${process.env.BASE_URL}/login&response_type=code`,
+  url_login:
+    process.env.MT_LOGIN_URL +
+    `/realms/mt-realm/protocol/openid-connect/auth?client_id=${process.env.MT_LOGIN_CLIENT_ID}&redirect_uri=${process.env.BASE_URL}/login&response_type=code`,
+  url_logout:
+    process.env.MT_LOGIN_URL +
+    `/realms/mt-realm/protocol/openid-connect/logout?client_id=${process.env.MT_LOGIN_CLIENT_ID}&redirect_uri=${process.env.BASE_URL}/login&response_type=code`,
 };

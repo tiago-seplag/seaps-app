@@ -20,6 +20,8 @@ const nextConfig: NextConfig = {
   env: {
     BASE_URL: process.env.BASE_URL,
     BUCKET_URL: process.env.BUCKET_URL,
+    MT_LOGIN_CLIENT_ID: process.env.MT_LOGIN_CLIENT_ID,
+    MT_LOGIN_URL: process.env.MT_LOGIN_URL,
     REPORT_URL: process.env.REPORT_URL,
   },
   output: "standalone",
