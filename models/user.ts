@@ -9,7 +9,7 @@ export async function generateTempPassword(userId: string) {
   const salt = await bcrypt.genSalt();
   const hashPassword = await bcrypt.hash(password, salt);
 
-  const user = await prisma.user.update({
+  await prisma.user.update({
     data: {
       password: hashPassword,
     },
@@ -18,5 +18,5 @@ export async function generateTempPassword(userId: string) {
     },
   });
 
-  return user;
+  return password;
 }
