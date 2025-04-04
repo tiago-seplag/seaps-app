@@ -4,29 +4,36 @@ import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { randomUUID } from "node:crypto";
 import { withMiddlewares } from "@/utils/handler";
 import { authMiddleware } from "@/utils/authentication";
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 const s3Client = new S3Client({
   forcePathStyle: true,
-  endpoint: process.env.AWS_S3_BUCKET_URL!,
+  region: process.env.S3_REGION!,
+  endpoint: process.env.S3_BUCKET_URL!,
   credentials: {
-    accessKeyId: process.env.AWS_S3_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.AWS_S3_SECRET_ACCESS_KEY!,
+    accessKeyId: process.env.S3_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.S3_SECRET_ACCESS_KEY!,
   },
 });
 
 async function uploadFileToS3(file: Buffer, fileName: string) {
-  const fileBuffer = file;
+  try {
+    const fileBuffer = file;
 
-  const params = {
-    Bucket: process.env.AWS_S3_BUCKET_NAME,
-    Key: `${fileName}`,
-    Body: fileBuffer,
-    ContentType: "image/jpg",
-  };
+    const params = {
+      Bucket: process.env.S3_BUCKET_NAME!,
+      Key: `${fileName}`,
+      Body: fileBuffer,
+      ContentType: "image/jpg",
+    };
 
-  const command = new PutObjectCommand(params);
-  await s3Client.send(command);
-  return fileName;
+    const command = new PutObjectCommand(params);
+    await s3Client.send(command);
+    return fileName;
+  } catch (error) {
+    console.log(error);
+    throw new Error("erro ao fazer upload");
+  }
 }
 
 function generateFileName(type: string) {
