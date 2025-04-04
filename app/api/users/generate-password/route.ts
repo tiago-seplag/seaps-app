@@ -7,11 +7,9 @@ import { NextRequest } from "next/server";
 const putHandler = async (request: NextRequest) => {
   const userId = request.headers.get("x-user-id")!;
 
-  const data = await request.json();
-
   try {
-    const finishedChecklist = await generateTempPassword(data.password, userId);
-    return Response.json(finishedChecklist);
+    const password = await generateTempPassword(userId);
+    return Response.json({ password });
   } catch (error) {
     if (error instanceof ValidationError)
       return Response.json(error, { status: error.statusCode });

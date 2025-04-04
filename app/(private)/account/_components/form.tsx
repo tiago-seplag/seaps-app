@@ -19,7 +19,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { User } from "@prisma/client";
 import axios from "axios";
-import { randomBytes } from "node:crypto";
 import { useState } from "react";
 
 const profileFormSchema = z.object({
@@ -62,15 +61,11 @@ export function ProfileForm({ user }: { user: User }) {
   });
 
   async function onSubmit() {
-    const password = randomBytes(4).toString("hex");
-
     return axios
-      .put("/api/users/generate-password", {
-        password,
-      })
-      .then(() => {
+      .put("/api/users/generate-password")
+      .then(({ data }) => {
         toast.success("Senha gerada com sucesso!");
-        setTempPassword(password);
+        setTempPassword(data.password);
       })
       .catch((e) => console.log(e));
   }
@@ -113,7 +108,7 @@ export function ProfileForm({ user }: { user: User }) {
           <div className="flex gap-2">
             <div
               className="flex h-9 w-full items-center rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors md:text-sm"
-            // className="disabled:opacity-100"
+              // className="disabled:opacity-100"
             >
               {tempPassword}
             </div>
