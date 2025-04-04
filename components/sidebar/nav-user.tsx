@@ -1,11 +1,12 @@
 "use client";
 
-import { ChevronsUpDown, LogOut } from "lucide-react";
+import { ChevronsUpDown, LogOut, Wrench } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -20,6 +21,7 @@ import {
 import { useRouter } from "next/navigation";
 import { getFirstAndLastName } from "@/lib/utils";
 import { config } from "@/utils/mt-login";
+import Link from "next/link";
 
 export function NavUser({
   user,
@@ -95,17 +97,15 @@ export function NavUser({
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            {/* <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <Wrench />
-                Conta
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Bell />
-                Notificações
+            <DropdownMenuGroup>
+              <DropdownMenuItem asChild>
+                <Link href={"/account"}>
+                  <Wrench />
+                  Conta
+                </Link>
               </DropdownMenuItem>
             </DropdownMenuGroup>
-            <DropdownMenuSeparator /> */}
+            <DropdownMenuSeparator />
 
             <DropdownMenuItem onClick={logout} className="text-destructive">
               <LogOut />

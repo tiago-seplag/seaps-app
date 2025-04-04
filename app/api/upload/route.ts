@@ -7,7 +7,6 @@ import { authMiddleware } from "@/utils/authentication";
 
 const s3Client = new S3Client({
   forcePathStyle: true,
-  region: process.env.AWS_S3_REGION!,
   endpoint: process.env.AWS_S3_BUCKET_URL!,
   credentials: {
     accessKeyId: process.env.AWS_S3_ACCESS_KEY_ID!,
