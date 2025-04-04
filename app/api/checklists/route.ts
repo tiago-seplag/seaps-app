@@ -25,12 +25,17 @@ const postHandler = async (request: NextRequest) => {
   }
 };
 
-const getHandler = async (req: NextRequest) => {
- const searchParams = req.nextUrl.searchParams;
+const getHandler = async (request: NextRequest) => {
+  const searchParams = request.nextUrl.searchParams;
+  const userId = request.headers.get("x-user-id")!;
+
   try {
     const checklists = await getChecklistsPaginated(
       Number(searchParams.get("page")),
       Number(searchParams.get("per_page")),
+      {
+        user: userId,
+      },
     );
     return Response.json(checklists);
   } catch (error) {

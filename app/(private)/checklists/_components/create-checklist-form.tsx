@@ -198,7 +198,7 @@ export function CreateCheckListForm() {
                     onClick={() => {
                       router.push(
                         "/properties/create?organization_id=" +
-                          form.getValues("organization_id"),
+                        form.getValues("organization_id"),
                       );
                     }}
                     size="icon"
@@ -215,7 +215,7 @@ export function CreateCheckListForm() {
             name="user_id"
             render={({ field }) => (
               <FormItem className="w-full">
-                <FormLabel>Responsável</FormLabel>
+                <FormLabel>Responsável pelo Checklist</FormLabel>
                 <Select onValueChange={field.onChange}>
                   <FormControl>
                     <SelectTrigger>

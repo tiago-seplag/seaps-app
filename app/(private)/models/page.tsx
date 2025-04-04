@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Button } from "@/components/ui/button";
 import { prisma } from "@/lib/prisma";
 import { Plus } from "lucide-react";
@@ -5,7 +6,11 @@ import { columns } from "./columns";
 import Link from "next/link";
 import { DataTable } from "@/components/data-table";
 
-export default async function Page() {
+export default async function Page(props: {
+  searchParams: Promise<SearchParams>;
+}) {
+  const searchParams = await props.searchParams;
+
   const models = await prisma.model.findMany({
     orderBy: {
       name: "asc",
