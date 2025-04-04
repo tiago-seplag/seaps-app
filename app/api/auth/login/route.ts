@@ -6,7 +6,6 @@ import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import { NextRequest } from "next/server";
 import { config } from "@/utils/mt-login";
-// import { NextRequest } from "next/server";
 
 async function postHandler(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -20,8 +19,8 @@ async function postHandler(request: NextRequest) {
         "Content-Type": "application/x-www-form-urlencoded",
       },
       body: new URLSearchParams({
-        grant_type: config.grant_type,
-        client_id: config.client_id,
+        grant_type: config.grant_type!,
+        client_id: config.client_id!,
         code: code,
         redirect_uri: config.redirect_uri,
       }),
