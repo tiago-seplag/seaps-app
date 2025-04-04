@@ -2,17 +2,12 @@ import axios from "axios";
 
 const reports = async (id: string) => {
   await axios
-    .get(process.env.REPORT_URL + "/reports/checklist?id=" + id, {
+    .get("/api/reports/" + id, {
       responseType: "blob",
-      headers: {
-        Authorization: document.cookie,
-      },
-      paramsSerializer: {
-        indexes: true,
-      },
     })
     .then((value) => {
-      const _url = window.URL.createObjectURL(value.data);
+      const blob = new Blob([value.data], { type: "text/html" });
+      const _url = window.URL.createObjectURL(blob);
       if (_url) {
         window
           .open(
