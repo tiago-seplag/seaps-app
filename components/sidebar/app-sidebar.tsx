@@ -14,6 +14,8 @@ import Image from "next/image";
 import { NavSidebar } from "./nav-sidebar";
 import { cookies } from "next/headers";
 
+import { version } from "@/package.json";
+
 export async function AppSidebar({
   ...props
 }: React.ComponentProps<typeof Sidebar>) {
@@ -44,6 +46,7 @@ export async function AppSidebar({
         <NavSidebar />
       </SidebarContent>
       <SidebarFooter>
+        <p className="px-2 text-xs">Versão: {version}</p>
         {user && <NavUser user={JSON.parse(user)} />}
       </SidebarFooter>
     </Sidebar>
