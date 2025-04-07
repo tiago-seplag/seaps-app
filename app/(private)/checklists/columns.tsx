@@ -1,13 +1,12 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { reports } from "@/lib/reports";
 import { getFirstAndLastName } from "@/lib/utils";
 import { Checklist } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
-import { ChevronRight, Pen, Printer } from "lucide-react";
+import { Actions } from "./actions";
+
 import Link from "next/link";
 
 const ENUM = {
@@ -21,7 +20,7 @@ const ENUM = {
   },
 };
 
-type Column = {
+export type Column = {
   user: {
     name: string;
   } | null;
@@ -119,29 +118,6 @@ export const columns: ColumnDef<Column>[] = [
   {
     accessorKey: "actions",
     header: "Ações",
-    cell({ row }) {
-      return (
-        <div className="flex gap-1">
-          <Button variant="green" className="h-6 w-6 p-2" asChild>
-            <Link href={"/checklists/" + row.original.id + "/items"}>
-              <ChevronRight size={16} />
-            </Link>
-          </Button>
-          <Button variant="yellow" className="h-6 w-6 p-2" asChild>
-            <Link href={"/checklists/" + row.original.id + "/edit"}>
-              <Pen size={16} />
-            </Link>
-          </Button>
-          <Button
-            variant="zinc"
-            className="h-6 w-6 p-2"
-            disabled={row.original.status !== "CLOSED"}
-            onClick={() => reports(row.original.id)}
-          >
-            <Printer size={16} />
-          </Button>
-        </div>
-      );
-    },
+    cell: ({ row }) => <Actions row={row} />,
   },
 ];
