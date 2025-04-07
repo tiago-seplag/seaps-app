@@ -195,6 +195,14 @@ export async function finishChecklist(id: string, userId: string) {
     },
   });
 
+  if (checklist.status === "CLOSED") {
+    throw new ValidationError({
+      message: "O checklist já foi finalizado",
+      action: "",
+      statusCode: 400,
+    });
+  }
+
   if (userId !== checklist.user_id) {
     throw new ValidationError({
       message: "Apenas o responsável pode finalizar",
