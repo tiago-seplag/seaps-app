@@ -20,6 +20,7 @@ import { Trash } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Item } from "@prisma/client";
 import axios from "axios";
+import { toUpperCase } from "@/lib/utils";
 
 const formSchema = z.object({
   name: z
@@ -81,7 +82,10 @@ export function CreateModelForm() {
           render={({ field }) => (
             <FormItem className="w-full">
               <FormLabel>Modelo</FormLabel>
-              <Input {...field} />
+              <Input
+                {...field}
+                onBlur={(e) => field.onChange(toUpperCase(e))}
+              />
               <FormMessage />
             </FormItem>
           )}
@@ -119,10 +123,7 @@ export function CreateModelForm() {
                           <Input
                             list={"items-list"}
                             {...field}
-                            onChange={(e) => {
-                              e.target.value = e.target.value.toUpperCase();
-                              field.onChange(e);
-                            }}
+                            onBlur={(e) => field.onChange(toUpperCase(e))}
                           />
                           <FormMessage />
                         </FormItem>
@@ -133,7 +134,7 @@ export function CreateModelForm() {
                       className="absolute -right-5 -top-5 h-8 w-8 rounded-full"
                       onClick={() => {
                         form.clearErrors();
-                        if (remove) remove(index);
+                        remove(index);
                       }}
                       variant="destructive"
                     >

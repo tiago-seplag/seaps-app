@@ -25,6 +25,7 @@ import {
 import { useRouter, useSearchParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { createResponsible } from "@/app/actions/create-responsible";
+import { toUpperCase } from "@/lib/utils";
 
 const formSchema = z.object({
   name: z
@@ -120,7 +121,10 @@ export function CreatePersonForm() {
           render={({ field }) => (
             <FormItem className="w-full">
               <FormLabel>Nome</FormLabel>
-              <Input {...field} />
+              <Input
+                {...field}
+                onBlur={(e) => field.onChange(toUpperCase(e))}
+              />
               <FormMessage />
             </FormItem>
           )}
@@ -131,7 +135,10 @@ export function CreatePersonForm() {
           render={({ field }) => (
             <FormItem className="w-full">
               <FormLabel>Cargo</FormLabel>
-              <Input {...field} />
+              <Input
+                {...field}
+                onBlur={(e) => field.onChange(toUpperCase(e))}
+              />
               <FormMessage />
             </FormItem>
           )}

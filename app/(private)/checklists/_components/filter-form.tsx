@@ -161,14 +161,12 @@ export function DataFilterForm() {
           )}
         />
         <div className="col-span-1 space-x-2 self-end justify-self-end sm:col-span-3">
-          <Button type="submit" className="h-8">
-            Filtrar
-          </Button>
+          <Button type="submit">Filtrar</Button>
           <Button
             variant="ghost"
             type="button"
             onClick={handleClearSearch}
-            className="h-8 px-2 lg:px-3"
+            className="px-2 lg:px-3"
           >
             Limpar
           </Button>

@@ -25,6 +25,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Plus } from "lucide-react";
+import { toUpperCase } from "@/lib/utils";
 import axios from "axios";
 
 const formSchema = z.object({
@@ -68,15 +69,17 @@ export function CreatePropertyForm() {
   }, []);
 
   useEffect(() => {
-    fetch("/api/organizations/" + organization_id + "/responsible")
-      .then((response) => response.json())
-      .then((data) => setResponsible(data));
+    if (organization_id) {
+      fetch("/api/organizations/" + organization_id + "/responsible")
+        .then((response) => response.json())
+        .then((data) => setResponsible(data));
+    }
   }, [organization_id]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     return axios
       .post("/api/properties/", values)
-      .then(() => router.back())
+      .then(() => router.replace("/properties"))
       .catch((e) => console.log(e));
   }
 
@@ -183,7 +186,11 @@ export function CreatePropertyForm() {
             <FormItem className="w-full">
               <FormLabel>Nome</FormLabel>
               <FormControl>
-                <Input placeholder="Nome do imóvel ou local" {...field} />
+                <Input
+                  placeholder="Nome do imóvel ou local"
+                  {...field}
+                  onBlur={(e) => field.onChange(toUpperCase(e))}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -199,6 +206,7 @@ export function CreatePropertyForm() {
                 <Input
                   placeholder="ex.: R. C, S/N - Centro Político Administrativo..."
                   {...field}
+                  onBlur={(e) => field.onChange(toUpperCase(e))}
                 />
               </FormControl>
               <FormMessage />
