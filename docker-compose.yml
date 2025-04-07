@@ -1,0 +1,54 @@
+version: "3.8"
+
+networks:
+  app_network:
+
+services:
+  postgres:
+    image: postgres:15
+    restart: always
+    environment:
+      - POSTGRES_HOST=localhost
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=local_db
+      - POSTGRES_USER=local_user
+      - POSTGRES_PASSWORD=root
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - app_network
+
+  app:
+    build:
+      context: ./seaps-app/
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgres://local_user:root@postgres:5432/local_db
+      - DIRECT_URL=postgres://local_user:root@postgres:5432/local_db
+    env_file:
+      - ./seaps-app/.env
+    depends_on:
+      - postgres
+    networks:
+      - app_network
+
+  reports:
+    build:
+      context: ./reports
+      dockerfile: Dockerfile
+    environment:
+      - PORT=3001
+    ports:
+      - "3001:3001"
+    depends_on:
+      - app
+      - postgres
+    networks:
+      - app_network
+
+volumes:
+  pgdata:
