@@ -25,14 +25,16 @@ import Link from "next/link";
 
 export function NavUser({
   user,
+  version,
 }: {
   user: {
     name: string;
     email: string;
     avatar: string;
   };
+  version?: string;
 }) {
-  const { isMobile } = useSidebar();
+  const { isMobile, open } = useSidebar();
 
   const router = useRouter();
 
@@ -56,6 +58,9 @@ export function NavUser({
 
   return (
     <SidebarMenu>
+      <p className={open ? "text-xs" : "text-center text-xs"}>
+        {open ? `Versão: ${version}` : version}
+      </p>
       <SidebarMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
