@@ -45,7 +45,7 @@ export const ChecklistImageCard = ({
           alt="checklist-image"
           width={388}
           height={160}
-          className="pointer-events-none h-full min-h-56 w-full object-cover"
+          className="pointer-events-none h-full max-h-56 min-h-56 w-full object-cover"
         />
       </CardContent>
       <CardFooter className="flex gap-2">
