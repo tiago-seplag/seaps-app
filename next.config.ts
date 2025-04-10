@@ -15,6 +15,10 @@ const nextConfig: NextConfig = {
         hostname: "192.168.171.252",
         port: "9000",
       },
+      {
+        protocol: "https",
+        hostname: "jrgxeplrqwsmntjfhakb.supabase.co",
+      },
     ],
   },
   env: {
