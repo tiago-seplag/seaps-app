@@ -15,6 +15,7 @@ export async function saveToken(data: string) {
       name: decoded.name,
       cpf: decoded.cpf,
       email: decoded.email,
+      is_active: true,
     },
     update: {
       name: decoded.name,

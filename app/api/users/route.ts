@@ -7,6 +7,9 @@ async function getHandler() {
     orderBy: {
       name: "asc",
     },
+    where: {
+      is_active: true,
+    },
   });
 
   return Response.json(users);
