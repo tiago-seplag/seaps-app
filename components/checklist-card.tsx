@@ -87,22 +87,26 @@ export const ChecklistCard = ({
           </Button>
         )}
         <RadioGroup
-          className="flex w-full"
+          className="grid w-full grid-cols-3"
           disabled={status === "CLOSED"}
           onValueChange={(e) => handleChangeValue(e, checklistItem.id)}
           defaultValue={String(checklistItem.score)}
         >
           <div className="flex w-full flex-col items-center justify-center gap-2 rounded bg-green-300 px-1 py-3 dark:bg-green-800 md:flex-row">
-            <RadioGroupItem value="3" id={checklistItem.id + `2`} />
-            <Label htmlFor={checklistItem.id + `2`}>Bom</Label>
+            <RadioGroupItem value="3" id={checklistItem.id + `3`} />
+            <Label htmlFor={checklistItem.id + `3`}>Bom</Label>
           </div>
           <div className="flex w-full flex-col items-center justify-center gap-2 rounded bg-yellow-300 px-1 py-3 dark:bg-yellow-800 md:flex-row">
-            <RadioGroupItem value="1" id={checklistItem.id + `1`} />
-            <Label htmlFor={checklistItem.id + `1`}>Regular</Label>
+            <RadioGroupItem value="1" id={checklistItem.id + `2`} />
+            <Label htmlFor={checklistItem.id + `2`}>Regular</Label>
           </div>
           <div className="flex w-full flex-col items-center justify-center gap-2 rounded bg-red-300 px-1 py-3 dark:bg-red-800 md:flex-row">
-            <RadioGroupItem value="-2" id={checklistItem.id + `0`} />
-            <Label htmlFor={checklistItem.id + `0`}>Ruim</Label>
+            <RadioGroupItem value="-2" id={checklistItem.id + `1`} />
+            <Label htmlFor={checklistItem.id + `1`}>Ruim</Label>
+          </div>
+          <div className="col-span-3 flex w-full items-center justify-center gap-2 rounded bg-zinc-300 px-1 py-3 dark:bg-zinc-800 md:flex-row">
+            <RadioGroupItem value="0" id={checklistItem.id + `0`} />
+            <Label htmlFor={checklistItem.id + `0`}>Não se Aplica</Label>
           </div>
         </RadioGroup>
       </CardContent>

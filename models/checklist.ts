@@ -211,25 +211,36 @@ export async function finishChecklist(id: string, userId: string) {
     });
   }
 
-  let score = 0;
+  let SUM_SCORE = 0;
+  let COUNT_ITEMS = 0;
 
   for (const item of checklist?.checklistItems) {
-    if (item._count.images < 1) {
-      throw new ValidationError({
-        message: "Todos os itens devem conter ao menos uma imagem",
-        action: "Insira ao menos uma imagem no item: " + item.item.name,
-      });
-    }
     if (typeof item.score !== "number") {
       throw new ValidationError({
         message: "Todos os itens devem ser pontuatos.",
         action: `O item '${item.item.name}' não foi pontuado`,
       });
     }
-    score += item.score;
+
+    const score = Math.abs(item.score);
+
+    if (score > 0 && item._count.images < 1) {
+      throw new ValidationError({
+        message: "Todos os itens devem conter ao menos uma imagem",
+        action: "Insira ao menos uma imagem no item: " + item.item.name,
+      });
+    }
+
+    if (score > 0) {
+      COUNT_ITEMS += 1;
+      SUM_SCORE += item.score;
+    }
   }
 
-  const finalScore = score / checklist.checklistItems.length;
+  const finalScore = SUM_SCORE / COUNT_ITEMS;
+  console.log({ finalScore, score: SUM_SCORE, count: COUNT_ITEMS });
+
+  return checklist;
 
   const finishedChecklist = await prisma.checklist.update({
     where: { id },
