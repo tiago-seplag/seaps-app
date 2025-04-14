@@ -5,6 +5,8 @@ import { randomUUID } from "node:crypto";
 import { withMiddlewares } from "@/utils/handler";
 import { authMiddleware } from "@/utils/authentication";
 
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+
 const s3Client = new S3Client({
   forcePathStyle: true,
   region: process.env.S3_REGION!,
@@ -30,7 +32,7 @@ async function uploadFileToS3(file: Buffer, fileName: string) {
     await s3Client.send(command);
     return fileName;
   } catch (error) {
-    console.log(error);
+    console.log("err->", error);
     throw new Error("erro ao fazer upload");
   }
 }

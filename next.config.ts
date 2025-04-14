@@ -6,8 +6,8 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "http",
-        hostname: "172.16.146.58",
-        port: "3333",
+        hostname: "172.16.44.56",
+        port: "3000",
         search: "",
       },
       {
@@ -18,6 +18,10 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "jrgxeplrqwsmntjfhakb.supabase.co",
+      },
+      {
+        protocol: "https",
+        hostname: "smp.seplag.mt.gov.br",
       },
     ],
   },

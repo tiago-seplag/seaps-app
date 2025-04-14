@@ -44,7 +44,7 @@ export async function GET(
       },
     });
   } catch (err) {
-    console.error(err);
+    console.error(`err->>>`, err);
     return new NextResponse("Erro ao buscar imagem", { status: 500 });
   }
 }
