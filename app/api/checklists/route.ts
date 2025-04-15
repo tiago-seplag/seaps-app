@@ -6,6 +6,7 @@ import {
   getChecklistsPaginated,
 } from "@/models/checklist";
 import { authMiddleware } from "@/utils/authentication";
+import { authorization } from "@/utils/authorization";
 import { withMiddlewares } from "@/utils/handler";
 import { validation } from "@/utils/validate";
 import { NextRequest } from "next/server";
@@ -46,7 +47,11 @@ const getHandler = async (request: NextRequest) => {
 };
 
 export const POST = withMiddlewares(
-  [authMiddleware, validation(checklistSchema)],
+  [
+    authMiddleware,
+    authorization("ADMIN", "SUPERVISOR"),
+    validation(checklistSchema),
+  ],
   postHandler,
 );
 

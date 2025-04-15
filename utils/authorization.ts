@@ -2,7 +2,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 
-export function authorization(role: string) {
+type ROLES = "ADMIN" | "SUPERVISOR" | "EVALUATOR";
+
+export function authorization(...params: ROLES[]) {
   return async (request: NextRequest) => {
     try {
       const verifiedToken: any = jwt.verify(
@@ -10,9 +12,14 @@ export function authorization(role: string) {
         process.env.JWT_SECRET || "",
       );
 
-      if (verifiedToken && role) return null;
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (_: unknown) {
+      const confirm = params.includes(verifiedToken.role);
+
+      if (confirm) {
+        return null;
+      }
+
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    } catch {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
   };

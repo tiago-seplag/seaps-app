@@ -25,6 +25,7 @@ import {
 
 import { Organization, User } from "@prisma/client";
 import { getFirstAndLastName } from "@/lib/utils";
+import axios from "axios";
 
 const filterSchema = z.object({
   organization: z.string().optional(),
@@ -54,12 +55,14 @@ export function DataFilterForm() {
   };
 
   useEffect(() => {
-    fetch("/api/organizations")
-      .then((response) => response.json())
-      .then((data) => setOrganizations(data));
-    fetch("/api/users")
-      .then((response) => response.json())
-      .then((data) => setUsers(data));
+    axios
+      .get("/api/organizations")
+      .then(({ data }) => setOrganizations(data))
+      .catch((e) => console.log(e));
+    axios
+      .get("/api/users")
+      .then(({ data }) => setUsers(data))
+      .catch((e) => console.log(e));
   }, []);
 
   async function onSubmit(values: z.infer<typeof filterSchema>) {

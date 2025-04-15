@@ -26,6 +26,7 @@ model User {
   cpf              String      @unique()
   password         String?
   avatar           String?
+  role             ROLES       @default(EVALUATOR)
   is_active        Boolean     @default(false)
   is_deleted       Boolean     @default(false)
   created_at       DateTime    @default(now())
@@ -34,6 +35,12 @@ model User {
   checklistCreated Checklist[] @relation("created_by")
 
   @@map("users")
+}
+
+enum ROLES {
+  ADMIN
+  SUPERVISOR
+  EVALUATOR
 }
 
 model Person {

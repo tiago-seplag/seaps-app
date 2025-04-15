@@ -77,11 +77,11 @@ const postHandler = async (request: NextRequest) => {
 };
 
 export const GET = withMiddlewares(
-  [authMiddleware, authorization("admin")],
+  [authMiddleware, authorization("ADMIN", "SUPERVISOR")],
   getHandler,
 );
 
 export const POST = withMiddlewares(
-  [authMiddleware, validation(modelSchema)],
+  [authMiddleware, authorization("ADMIN"), validation(modelSchema)],
   postHandler,
 );

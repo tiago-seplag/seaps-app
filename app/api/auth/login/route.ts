@@ -50,11 +50,9 @@ async function postHandler(request: NextRequest) {
       const signedToken = jwt.sign(
         {
           ...user,
+          exp: decoded.exp,
         },
         process.env.JWT_SECRET || "",
-        {
-          expiresIn: decoded.exp,
-        },
       );
 
       cookieStore.set("MT_ID_SESSION", data.access_token);

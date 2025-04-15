@@ -23,7 +23,7 @@ export default function Page() {
         São adotadas as definições previstas na Política de Privacidade da
         plataforma MT Login, como:
       </TypographyP>
-      <ul>
+      <ul className="my-6 ml-6 list-disc [&>li]:mt-2">
         <li>
           <strong>Dado pessoal:</strong> informação relacionada à pessoa natural
           identificada ou identificável;
@@ -48,7 +48,7 @@ export default function Page() {
       <TypographyH3>3. Coleta e Tratamento de Imagens</TypographyH3>
       <div>
         O aplicativo acessa a câmera e a galeria do dispositivo para:
-        <ul>
+        <ul className="my-6 ml-6 list-disc [&>li]:mt-2">
           <li>Capturar fotos de itens avaliados;</li>
           <li>Permitir seleção de imagens da galeria;</li>
           <li>Registrar visualmente as condições dos bens públicos.</li>
@@ -59,11 +59,53 @@ export default function Page() {
 
       <TypographyH3>4. Base Legal e Consentimento</TypographyH3>
       <div>
-        O tratamento de dados se baseia em:
-        <ul>
-          <li>Execução de políticas públicas (art. 7º, III da LGPD);</li>
-          <li>Consentimento do titular;</li>
-          <li>Cumprimento de obrigações legais.</li>
+        <TypographyP>
+          O tratamento dos dados pessoais e imagens no aplicativo se baseia nas
+          seguintes normas:
+        </TypographyP>
+        <ul className="my-6 ml-6 list-disc [&>li]:mt-2">
+          <li>
+            <strong>Lei nº 13.709/2018</strong> - Lei Geral de Proteção de Dados
+            Pessoais (LGPD);
+          </li>
+          <li>
+            <strong>Lei nº 12.965/2014</strong> - Marco Civil da Internet, que
+            estabelece princípios e garantias para o uso da internet no Brasil;
+          </li>
+          <li>
+            <strong>Lei nº 12.527/2011</strong> - Lei de Acesso à Informação
+            (LAI);
+          </li>
+          <li>
+            <strong>Lei nº 13.460/2017</strong> - Dispõe sobre a participação,
+            proteção e defesa dos direitos do usuário dos serviços públicos;
+          </li>
+          <li>
+            <strong>Decreto Estadual nº 951/2021</strong> - Institui o Sistema
+            de Governança Digital no âmbito do Programa Mais MT;
+          </li>
+          <li>
+            <strong>Decreto Estadual nº 546/2023</strong> - Dispõe sobre
+            identificação digital, assinatura eletrônica e procuração digital no
+            Executivo Estadual;
+          </li>
+          <li>
+            <strong>Decreto Estadual nº 806/2021</strong> - Regula a proteção de
+            dados pessoais e salvaguardas à identidade dos denunciantes;
+          </li>
+          <li>
+            <strong>Decreto Estadual nº 338/2023</strong> - Estabelece
+            diretrizes da Estratégia Digital do Estado de MT;
+          </li>
+          <li>
+            <strong>Resolução nº 002/2021/NGD</strong> - Define canais e
+            tecnologias da Plataforma de Governo Digital;
+          </li>
+          <li>
+            <strong>Regulamento (UE) nº 2016/679</strong> - Regulamento Geral de
+            Proteção de Dados (GDPR) da União Europeia, aplicado como
+            referência.
+          </li>
         </ul>
         O uso do app implica aceite desta política.
       </div>
@@ -71,7 +113,7 @@ export default function Page() {
       <TypographyH3>5. Compartilhamento e Segurança</TypographyH3>
       <div>
         Os dados:
-        <ul>
+        <ul className="my-6 ml-6 list-disc [&>li]:mt-2">
           <li>
             Não serão compartilhados com terceiros, salvo por obrigação legal;
           </li>
@@ -93,7 +135,7 @@ export default function Page() {
       <TypographyH3>7. Direitos do Usuário</TypographyH3>
       <div>
         O usuário pode:
-        <ul>
+        <ul className="my-6 ml-6 list-disc [&>li]:mt-2">
           <li>
             Revogar permissões a qualquer momento (nas configurações do
             dispositivo);

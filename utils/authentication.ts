@@ -13,6 +13,8 @@ async function verifyToken(token: string | null) {
   const user = await prisma.user.findFirst({
     select: {
       id: true,
+      role: true,
+      is_active: true,
     },
     where: {
       cpf: decoded.cpf,

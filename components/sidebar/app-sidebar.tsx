@@ -43,7 +43,7 @@ export async function AppSidebar({
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavSidebar />
+        {user && <NavSidebar user={JSON.parse(user)} />}
       </SidebarContent>
       <SidebarFooter>
         {user && <NavUser user={JSON.parse(user)} version={version} />}

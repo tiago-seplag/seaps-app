@@ -25,6 +25,7 @@ export async function middleware(resquest: NextRequest) {
   const publicRoute = publicRoutes.find((route) => route.path === path);
 
   const authToken = resquest.cookies.get("MT_ID_SESSION");
+  const sessionToken = resquest.cookies.get("SESSION");
 
   if (!authToken && publicRoute) {
     return NextResponse.next();
@@ -50,8 +51,30 @@ export async function middleware(resquest: NextRequest) {
     return NextResponse.redirect(redirectUrl);
   }
 
-  if (authToken && !publicRoute) {
-    const decoded: any = jwt.decode(authToken.value);
+  if (path === "/not-activated" && !authToken) {
+    const redirectUrl = resquest.nextUrl.clone();
+
+    redirectUrl.pathname = REDIRECT_WHEN_NOT_AUTHENTICATED_ROUTE;
+
+    return NextResponse.redirect(redirectUrl);
+  }
+
+  if (path === "/not-activated" && sessionToken) {
+    const decoded: any = jwt.decode(sessionToken.value);
+
+    if (decoded.is_active) {
+      const redirectUrl = resquest.nextUrl.clone();
+
+      redirectUrl.pathname = "/";
+
+      return NextResponse.redirect(redirectUrl);
+    }
+
+    return NextResponse.next();
+  }
+
+  if (sessionToken && !publicRoute) {
+    const decoded: any = jwt.decode(sessionToken.value);
 
     if (decoded.exp * 1000 < Date.now()) {
       (await cookies())
@@ -65,7 +88,15 @@ export async function middleware(resquest: NextRequest) {
       return NextResponse.redirect(redirectUrl);
     }
 
-    NextResponse.next();
+    if (!decoded.is_active) {
+      const redirectUrl = resquest.nextUrl.clone();
+
+      redirectUrl.pathname = "/not-activated";
+
+      return NextResponse.redirect(redirectUrl);
+    }
+
+    return NextResponse.next();
   }
 
   return NextResponse.next();
