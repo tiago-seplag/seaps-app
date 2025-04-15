@@ -9,6 +9,10 @@ const publicRoutes = [
     whenAuthenticated: "redirect",
   },
   {
+    path: "/privacy-policy",
+    whenAuthenticated: "ignore",
+  },
+  {
     path: "/manifest.webmanifest",
     whenAuthenticated: "ignore",
   },
