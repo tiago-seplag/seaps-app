@@ -20,19 +20,19 @@ const publicRoutes = [
 
 const REDIRECT_WHEN_NOT_AUTHENTICATED_ROUTE = "/login";
 
-export async function middleware(resquest: NextRequest) {
-  const path = resquest.nextUrl.pathname;
+export async function middleware(request: NextRequest) {
+  const path = request.nextUrl.pathname;
   const publicRoute = publicRoutes.find((route) => route.path === path);
 
-  const authToken = resquest.cookies.get("MT_ID_SESSION");
-  const sessionToken = resquest.cookies.get("SESSION");
+  const authToken = request.cookies.get("MT_ID_SESSION");
+  const sessionToken = request.cookies.get("SESSION");
 
   if (!authToken && publicRoute) {
     return NextResponse.next();
   }
 
   if (!authToken && !publicRoute) {
-    const redirectUrl = resquest.nextUrl.clone();
+    const redirectUrl = request.nextUrl.clone();
 
     redirectUrl.pathname = REDIRECT_WHEN_NOT_AUTHENTICATED_ROUTE;
 
@@ -40,7 +40,7 @@ export async function middleware(resquest: NextRequest) {
   }
 
   if (authToken && publicRoute) {
-    const redirectUrl = resquest.nextUrl.clone();
+    const redirectUrl = request.nextUrl.clone();
 
     if (publicRoute.whenAuthenticated === "ignore") {
       return NextResponse.next();
@@ -52,7 +52,7 @@ export async function middleware(resquest: NextRequest) {
   }
 
   if (path === "/not-activated" && !authToken) {
-    const redirectUrl = resquest.nextUrl.clone();
+    const redirectUrl = request.nextUrl.clone();
 
     redirectUrl.pathname = REDIRECT_WHEN_NOT_AUTHENTICATED_ROUTE;
 
@@ -63,7 +63,7 @@ export async function middleware(resquest: NextRequest) {
     const decoded: any = jwt.decode(sessionToken.value);
 
     if (decoded.is_active) {
-      const redirectUrl = resquest.nextUrl.clone();
+      const redirectUrl = request.nextUrl.clone();
 
       redirectUrl.pathname = "/";
 
@@ -81,7 +81,7 @@ export async function middleware(resquest: NextRequest) {
         .delete("MT_ID_SESSION")
         .delete("SESSION")
         .delete("USER");
-      const redirectUrl = resquest.nextUrl.clone();
+      const redirectUrl = request.nextUrl.clone();
 
       redirectUrl.pathname = REDIRECT_WHEN_NOT_AUTHENTICATED_ROUTE;
 
@@ -89,7 +89,7 @@ export async function middleware(resquest: NextRequest) {
     }
 
     if (!decoded.is_active) {
-      const redirectUrl = resquest.nextUrl.clone();
+      const redirectUrl = request.nextUrl.clone();
 
       redirectUrl.pathname = "/not-activated";
 

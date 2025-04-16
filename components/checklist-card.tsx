@@ -17,6 +17,8 @@ import { ImageDialog } from "./image-dialog";
 import { Camera, CameraIcon, MessageSquareText } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import axios from "axios";
+import { toast } from "sonner";
 
 export const ChecklistCard = ({
   checklistItem,
@@ -42,9 +44,12 @@ export const ChecklistCard = ({
   const imageDialog = useModal();
 
   const handleChangeValue = (value: string, id: string) => {
-    fetch("/api/checklist-item/" + id, {
-      method: "PUT",
-      body: JSON.stringify({ score: value }),
+    axios.put("/api/checklist-item/" + id, { score: value }).catch((e) => {
+      if (e.response.data.messages?.length > 0) {
+        e.response.data.messages.map((msg: string) => toast.error(msg));
+      } else if (e.response.data.message) {
+        toast.error(e.response.data.message);
+      }
     });
   };
 
