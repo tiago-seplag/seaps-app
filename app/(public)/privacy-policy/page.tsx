@@ -7,164 +7,238 @@ export default function Page() {
       <h2 className="rounded bg-primary py-4 text-center text-3xl font-bold text-white">
         Política de Privacidade - Aplicativo de Checklist de Manutenção Predial
       </h2>
-
       <TypographyH3>1. Informações Gerais</TypographyH3>
       <TypographyP>
-        Esta Política de Privacidade contém informações sobre a coleta, uso,
-        armazenamento, tratamento e proteção de dados pessoais dos usuários do
-        aplicativo <strong>Sistema de Manutenção Predial</strong>, desenvolvido
-        pelo Governo do Estado de Mato Grosso. O objetivo é garantir
-        transparência e segurança no uso da câmera, galeria e imagens capturadas
-        ou selecionadas pelo aplicativo.
+        Esta Política de Privacidade apresenta as diretrizes de{" "}
+        <strong>
+          coleta, uso, armazenamento, tratamento e proteção de dados pessoais
+        </strong>{" "}
+        dos usuários do aplicativo{" "}
+        <strong>Sistema de Manutenção Predial</strong>, uma solução do Governo
+        do Estado de Mato Grosso voltada à gestão, fiscalização e acompanhamento
+        das condições dos patrimônios públicos estaduais. <br />O aplicativo
+        está em conformidade com a{" "}
+        <strong>Lei Geral de Proteção de Dados Pessoais (LGPD)</strong> e demais
+        legislações correlatas (ver item 5) e faz uso da autenticação unificada
+        MT Login, respeitando os princípios da{" "}
+        <strong>
+          transparência, segurança e uso responsável dos dados públicos.
+        </strong>
       </TypographyP>
-
-      <TypographyH3>2. Definições</TypographyH3>
+      <TypographyH3>2. Descrição do Produto</TypographyH3>
       <TypographyP>
-        São adotadas as definições previstas na Política de Privacidade da
-        plataforma MT Login, como:
+        O <strong>Sistema de Manutenção Predial</strong> é uma ferramenta
+        digital destinada a agentes públicos responsáveis por realizar{" "}
+        <strong>vistorias e checklists técnicos</strong> em estruturas prediais
+        do Estado. O aplicativo permite:
       </TypographyP>
       <ul className="my-6 ml-6 list-disc [&>li]:mt-2">
         <li>
-          <strong>Dado pessoal:</strong> informação relacionada à pessoa natural
-          identificada ou identificável;
+          Avaliar itens e estruturas com base em critérios técnicos (Bom,
+          Regular, Ruim);
         </li>
         <li>
-          <strong>Titular:</strong> pessoa natural a quem se referem os dados;
+          Anexar imagens como evidência fotográfica das condições encontradas;
+        </li>
+        <li>Gerar relatórios automáticos e padronizados de vistoria;</li>
+        <li>Manter um histórico contínuo de avaliações prediais.</li>
+      </ul>
+      <TypographyP>
+        A solução está disponível para dispositivos móveis e web, é integrada às
+        plataformas do Governo do Estado por meio do sistema de login unificado
+        MT Login.
+      </TypographyP>
+      <TypographyH3>3. Dados Pessoais Coletados</TypographyH3>
+      <div>
+        Por meio do MT Login, os seguintes dados pessoais poderão ser coletados
+        e utilizados:
+        <ul className="my-6 ml-6 list-disc [&>li]:mt-2">
+          <li>Nome completo;</li>
+          <li>CPF;</li>
+          <li>Data de nascimento;</li>
+          <li>Nome da mãe;</li>
+          <li>E-mail;</li>
+          <li>Número de telefone (opcional);</li>
+          <li>Endereço (opcional);</li>
+          <li>Dados de autenticação (login e senha);</li>
+          <li>
+            Informações de acesso como IP, horário, dispositivo utilizado e
+            geolocalização.
+          </li>
+        </ul>
+        <p>Além disso, durante o uso do aplicativo, podem ser coletados:</p>
+        <ul className="my-6 ml-6 list-disc [&>li]:mt-2">
+          <li>
+            <strong>
+              Imagens capturadas com a câmera ou selecionadas da galeria
+            </strong>
+            ;
+          </li>
+          <li>
+            Dados de geolocalização associados à imagem (caso autorizado);
+          </li>
+          <li>
+            Informações funcionais do servidor público que realiza o checklist;
+          </li>
+          <li>Resultados das vistorias e avaliações realizadas.</li>
+        </ul>
+      </div>
+      <TypographyH3>4. Finalidade da Coleta</TypographyH3>A coleta e o
+      tratamento dos dados têm as seguintes finalidades:
+      <ul className="my-6 ml-6 list-disc [&>li]:mt-2">
+        <li>
+          <strong>Identificar o usuário de forma segura e unificada</strong>{" "}
+          (via MT Login);
         </li>
         <li>
-          <strong>Tratamento:</strong> operações como coleta, uso, arquivamento
-          e eliminação de dados;
+          <strong>Garantir rastreabilidade das vistorias</strong> realizadas por
+          agentes públicos;
         </li>
         <li>
-          <strong>Controlador:</strong> órgão público responsável pelas decisões
-          sobre os dados;
+          <strong>Documentar com evidência fotográfica</strong> as condições dos
+          patrimônios;
         </li>
         <li>
-          <strong>Operador:</strong> entidade que realiza o tratamento em nome
-          do controlador.
+          <strong>Gerar relatórios técnicos</strong> de manutenção e
+          conservação;
+        </li>
+        <li>
+          <strong>Aprimorar a gestão predial pública</strong>, com base em dados
+          objetivos e atualizados.
         </li>
       </ul>
-
-      <TypographyH3>3. Coleta e Tratamento de Imagens</TypographyH3>
+      <TypographyH3>5. Base Legal e Legislação Aplicável</TypographyH3>
       <div>
-        O aplicativo acessa a câmera e a galeria do dispositivo para:
-        <ul className="my-6 ml-6 list-disc [&>li]:mt-2">
-          <li>Capturar fotos de itens avaliados;</li>
-          <li>Permitir seleção de imagens da galeria;</li>
-          <li>Registrar visualmente as condições dos bens públicos.</li>
-        </ul>
-        As imagens são armazenadas em servidores públicos e associadas ao
-        patrimônio avaliado.
-      </div>
-
-      <TypographyH3>4. Base Legal e Consentimento</TypographyH3>
-      <div>
-        <TypographyP>
-          O tratamento dos dados pessoais e imagens no aplicativo se baseia nas
-          seguintes normas:
-        </TypographyP>
+        A presente política está fundamentada nas seguintes normas:
         <ul className="my-6 ml-6 list-disc [&>li]:mt-2">
           <li>
-            <strong>Lei nº 13.709/2018</strong> - Lei Geral de Proteção de Dados
-            Pessoais (LGPD);
+            <strong>Lei nº 13.709/2018</strong> -{" "}
+            <em>Lei Geral de Proteção de Dados Pessoais (LGPD)</em>;
           </li>
           <li>
-            <strong>Lei nº 12.965/2014</strong> - Marco Civil da Internet, que
-            estabelece princípios e garantias para o uso da internet no Brasil;
+            <strong>Lei nº 12.965/2014</strong> -{" "}
+            <em>Marco Civil da Internet</em>, que define os princípios e
+            garantias para uso da internet;
           </li>
           <li>
-            <strong>Lei nº 12.527/2011</strong> - Lei de Acesso à Informação
-            (LAI);
+            <strong>Lei nº 12.527/2011</strong> -{" "}
+            <em>Lei de Acesso à Informação (LAI)</em>;
           </li>
           <li>
-            <strong>Lei nº 13.460/2017</strong> - Dispõe sobre a participação,
-            proteção e defesa dos direitos do usuário dos serviços públicos;
+            <strong>Lei nº 13.460/2017</strong> -{" "}
+            <em>Direitos do Usuário dos Serviços Públicos</em>;
           </li>
           <li>
-            <strong>Decreto Estadual nº 951/2021</strong> - Institui o Sistema
-            de Governança Digital no âmbito do Programa Mais MT;
+            <strong>Decreto Estadual nº 951/2021</strong> -{" "}
+            <em>Sistema de Governança Digital do Programa Mais MT</em>;
           </li>
           <li>
-            <strong>Decreto Estadual nº 546/2023</strong> - Dispõe sobre
-            identificação digital, assinatura eletrônica e procuração digital no
-            Executivo Estadual;
+            <strong>Decreto Estadual nº 546/2023</strong> -{" "}
+            <em>Identificação digital e assinatura eletrônica</em>;
           </li>
           <li>
-            <strong>Decreto Estadual nº 806/2021</strong> - Regula a proteção de
-            dados pessoais e salvaguardas à identidade dos denunciantes;
+            <strong>Decreto Estadual nº 806/2021</strong> -{" "}
+            <em>Proteção de dados pessoais e identidade dos denunciantes</em>;
           </li>
           <li>
-            <strong>Decreto Estadual nº 338/2023</strong> - Estabelece
-            diretrizes da Estratégia Digital do Estado de MT;
+            <strong>Decreto Estadual nº 338/2023</strong> -{" "}
+            <em>Estratégia Digital do Estado</em>;
           </li>
           <li>
-            <strong>Resolução nº 002/2021/NGD</strong> - Define canais e
-            tecnologias da Plataforma de Governo Digital;
+            <strong>Resolução nº 002/2021/NGD</strong> -{" "}
+            <em>Canais e tecnologias da Plataforma de Governo Digital</em>;
           </li>
           <li>
-            <strong>Regulamento (UE) nº 2016/679</strong> - Regulamento Geral de
-            Proteção de Dados (GDPR) da União Europeia, aplicado como
-            referência.
+            <strong>Regulamento (UE) nº 2016/679</strong> -{" "}
+            <em>
+              Regulamento Geral sobre a Proteção de Dados da União Europeia
+              (GDPR)
+            </em>
+            , em caráter complementar à LGPD.
           </li>
         </ul>
         O uso do app implica aceite desta política.
       </div>
-
-      <TypographyH3>5. Compartilhamento e Segurança</TypographyH3>
+      <TypographyH3>6. Compartilhamento e Armazenamento</TypographyH3>
+      <ul className="my-6 ml-6 list-disc [&>li]:mt-2">
+        <li>
+          Os dados coletados serão{" "}
+          <strong>
+            armazenados em infraestrutura tecnológica gerenciada pela MTI
+          </strong>
+          , garantindo integridade e segurança.
+        </li>
+        <li>
+          O <strong>uso compartilhado de dados</strong> poderá ocorrer{" "}
+          <strong>entre órgãos públicos</strong>, exclusivamente para o
+          cumprimento de suas finalidades institucionais e legais.
+        </li>
+        <li>
+          Não será feito{" "}
+          <strong>compartilhamento com terceiros privados</strong>, salvo por
+          determinação judicial ou autorização expressa do titular.
+        </li>
+      </ul>
+      <TypographyH3>7. Segurança e Boas Práticas</TypographyH3>
       <div>
-        Os dados:
+        A Administração Pública Estadual adota medidas para:
         <ul className="my-6 ml-6 list-disc [&>li]:mt-2">
+          <li>Proteger os dados contra acesso não autorizado;</li>
+          <li>Evitar vazamentos, perdas ou alterações indevidas;</li>
           <li>
-            Não serão compartilhados com terceiros, salvo por obrigação legal;
-          </li>
-          <li>
-            Serão protegidos pela SEPLAG e MTI com medidas técnicas adequadas.
+            Garantir que as permissões de acesso à câmera e à galeria sejam
+            solicitadas de forma transparente e utilizadas apenas com a
+            finalidade prevista.
           </li>
         </ul>
       </div>
-
-      <TypographyH3>6. Responsabilidades</TypographyH3>
-      <TypographyP>
-        <strong>Usuário:</strong> responsável pela veracidade dos dados e pelo
-        uso correto do app.
-        <br />
-        <strong>Administração Pública:</strong> garante proteção e uso legal dos
-        dados.
-      </TypographyP>
-
-      <TypographyH3>7. Direitos do Usuário</TypographyH3>
+      <TypographyH3>8. Direitos do Usuário</TypographyH3>
       <div>
-        O usuário pode:
+        O titular dos dados poderá:
         <ul className="my-6 ml-6 list-disc [&>li]:mt-2">
+          <li>Consultar os dados armazenados sobre si;</li>
+          <li>Corrigir informações incorretas;</li>
           <li>
-            Revogar permissões a qualquer momento (nas configurações do
-            dispositivo);
+            Solicitar a exclusão de registros fotográficos ou pessoais, quando
+            aplicável;
           </li>
           <li>
-            Entrar em contato com os canais oficiais para mais informações.
+            Revogar permissões de câmera, galeria ou localização via
+            configurações do dispositivo.
           </li>
         </ul>
       </div>
-
-      <TypographyH3>8. Comunicação</TypographyH3>
+      <TypographyH3>9. Comunicação e Suporte</TypographyH3>
       <div>
-        <strong>MTI:</strong> centraldeatendimento@mti.mt.gov.br | (65)
-        3613-3003
-        <br />
-        <strong>Ouvidoria:</strong>{" "}
-        <a href="https://www.cge.mt.gov.br/ouvidoria" target="_blank">
-          www.cge.mt.gov.br/ouvidoria
-        </a>{" "}
-        | ouvidoria@cge.mt.gov.br | 162 ou 0800 647 1520
+        <ul className="my-6 ml-6 list-disc [&>li]:mt-2">
+          <li>
+            <strong>MTI</strong>:{" "}
+            <code>centraldeatendimento@mti.mt.gov.br</code> | Tel.: (65)
+            3613-3003{" "}
+          </li>
+          <li>
+            <strong>Ouvidoria Geral do Estado</strong>:{" "}
+            <ul className="my-2 ml-6 list-decimal [&>li]:mt-2">
+              <li>
+                Site:{" "}
+                <a href="https://www.cge.mt.gov.br/ouvidoria">
+                  www.cge.mt.gov.br/ouvidoria
+                </a>{" "}
+              </li>
+              <li>
+                E-mail: <code>ouvidoria@cge.mt.gov.br</code>{" "}
+              </li>
+              <li>Telefones: 162 ou 0800 647 1520</li>
+            </ul>
+          </li>
+        </ul>
       </div>
-
-      <TypographyH3>9. Foro</TypographyH3>
+      <TypographyH3>10. Consentimento</TypographyH3>
       <TypographyP>
-        Disputas judiciais serão tratadas na Comarca de Cuiabá/MT.
-      </TypographyP>
-      <TypographyP>
-        Ao utilizar este aplicativo, você declara ter lido e aceitado
-        integralmente esta Política de Privacidade.
+        O uso do aplicativo implica na{" "}
+        <strong>leitura, compreensão e aceitação integral</strong> desta
+        Política de Privacidade, incluindo o consentimento para coleta,
+        tratamento e armazenamento de dados conforme aqui descrito.
       </TypographyP>
       <div className="fixed bottom-4 right-4">
         <ModeToggle />
