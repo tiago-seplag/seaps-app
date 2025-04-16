@@ -240,6 +240,70 @@ export default function Page() {
         Política de Privacidade, incluindo o consentimento para coleta,
         tratamento e armazenamento de dados conforme aqui descrito.
       </TypographyP>
+      <TypographyH3>11. Exclusão de Dados</TypographyH3>
+      <div>
+        <TypographyP>
+          O titular dos dados pessoais poderá, a qualquer momento,{" "}
+          <strong>
+            solicitar a exclusão parcial ou total de seus dados pessoais
+          </strong>{" "}
+          armazenados, incluindo imagens, informações de login, registros de
+          vistoria e quaisquer outros dados coletados no âmbito da utilização do
+          aplicativo <strong>Sistema de Manutenção Predial</strong>. <br />A
+          solicitação de exclusão deverá ser realizada por meio dos canais
+          oficiais de atendimento, sendo eles:
+        </TypographyP>
+        <ul className="my-6 ml-6 list-disc [&>li]:mt-2">
+          <li>
+            <p>
+              <strong>Central de Atendimento da MTI</strong>
+              <br />
+              E-mail: <code>centraldeatendimento@mti.mt.gov.br</code>
+              <br />
+              Telefone: (65) 3613-3003
+            </p>
+          </li>
+          <li>
+            <p>
+              <strong>Ouvidoria Geral do Estado de Mato Grosso</strong>
+              <br />
+              Site:{" "}
+              <a href="https://www.cge.mt.gov.br/ouvidoria">
+                www.cge.mt.gov.br/ouvidoria
+              </a>
+              <br />
+              E-mail: <code>ouvidoria@cge.mt.gov.br</code>
+              <br />
+              Telefones: 162 (ligação local) ou 0800 647 1520 (gratuito)
+            </p>
+          </li>
+        </ul>
+        <TypographyP>
+          A exclusão será realizada no prazo razoável, respeitando as{" "}
+          <strong>obrigações legais e administrativas aplicáveis</strong>,
+          especialmente nos casos em que os dados estejam vinculados a processos
+          administrativos, obrigações legais, auditorias ou controle interno da
+          Administração Pública.
+        </TypographyP>
+        <TypographyP>
+          A exclusão poderá não ser possível nos seguintes casos:
+        </TypographyP>
+        <ul className="my-6 ml-6 list-disc [&>li]:mt-2">
+          <li>
+            Quando os dados estiverem{" "}
+            <strong>
+              necessariamente vinculados ao exercício de função pública ou
+              cumprimento de obrigação legal ou regulatória
+            </strong>{" "}
+            por parte da Administração Pública;
+          </li>
+          <li>
+            Quando os dados forem necessários para fins de{" "}
+            <strong>resguardo do interesse público</strong>, segurança,
+            integridade de sistemas ou prevenção de fraudes.
+          </li>
+        </ul>
+      </div>
       <div className="fixed bottom-4 right-4">
         <ModeToggle />
       </div>
