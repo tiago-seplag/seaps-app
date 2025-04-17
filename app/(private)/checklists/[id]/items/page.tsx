@@ -3,11 +3,11 @@ import { notFound } from "next/navigation";
 import { ChecklistCard } from "@/components/checklist-card";
 import { GoBack } from "@/components/go-back";
 import { ENUM_PROPERTY, PropertyBadge } from "@/components/property-badge";
-import { cookies } from "next/headers";
 import { format } from "date-fns";
 import { getFirstAndLastName } from "@/lib/utils";
 import { Suspense } from "react";
 import { FinishButton } from "../../_components/finish-checklist-button";
+import { getUser } from "@/lib/dal";
 
 type ProjectPageProps = {
   params: Promise<{
@@ -21,9 +21,8 @@ type ProjectPageProps = {
 
 export default async function Page({ params }: ProjectPageProps) {
   const { id, itemId } = await params;
-  const cookieStore = await cookies();
 
-  const user = cookieStore.get("USER_DATA")?.value;
+  const user = await getUser();
 
   const checklist = await prisma.checklist.findUnique({
     where: { id: id },
@@ -107,7 +106,7 @@ export default async function Page({ params }: ProjectPageProps) {
               </div>
             ) : (
               user &&
-              JSON.parse(user).id === checklist.user_id && (
+              user.id === checklist.user_id && (
                 <FinishButton checklist={checklist} />
               )
             )}

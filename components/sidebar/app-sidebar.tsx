@@ -12,16 +12,14 @@ import {
 import Logo from "../../assets/logo-gov.png";
 import Image from "next/image";
 import { NavSidebar } from "./nav-sidebar";
-import { cookies } from "next/headers";
 
 import { version } from "@/package.json";
+import { getUser } from "@/lib/dal";
 
 export async function AppSidebar({
   ...props
 }: React.ComponentProps<typeof Sidebar>) {
-  const cookieStore = await cookies();
-
-  const user = cookieStore.get("USER_DATA")?.value;
+  const user = await getUser();
 
   return (
     <Sidebar variant="sidebar" collapsible="icon" {...props}>
@@ -42,11 +40,18 @@ export async function AppSidebar({
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent>
-        {user && <NavSidebar user={JSON.parse(user)} />}
-      </SidebarContent>
+      <SidebarContent>{user && <NavSidebar user={user} />}</SidebarContent>
       <SidebarFooter>
-        {user && <NavUser user={JSON.parse(user)} version={version} />}
+        {user && (
+          <NavUser
+            user={{
+              avatar: user.avatar || undefined,
+              email: user.email,
+              name: user.name,
+            }}
+            version={version}
+          />
+        )}
       </SidebarFooter>
     </Sidebar>
   );

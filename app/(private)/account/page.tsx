@@ -1,17 +1,12 @@
-import { prisma } from "@/lib/prisma";
 import { ProfileForm } from "./_components/form";
-import { cookies } from "next/headers";
+import { getUser } from "@/lib/dal";
 
 export default async function Page() {
-  const cookieStore = await cookies();
+  const user = await getUser();
 
-  const userJSON = JSON.parse(cookieStore.get("USER_DATA")?.value || "");
-
-  const user = await prisma.user.findUniqueOrThrow({
-    where: {
-      id: userJSON.id,
-    },
-  });
+  if (!user) {
+    return null;
+  }
 
   return (
     <div className="flex flex-col gap-y-4">
@@ -21,7 +16,12 @@ export default async function Page() {
         </div>
       </div>
 
-      <ProfileForm user={user} />
+      <ProfileForm
+        user={{
+          email: user?.email,
+          name: user?.name,
+        }}
+      />
     </div>
   );
 }

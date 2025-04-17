@@ -1,11 +1,10 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { prisma } from "@/lib/prisma";
 import { withMiddlewares } from "@/utils/handler";
 import { cookies } from "next/headers";
-import jwt from "jsonwebtoken";
 import { NextRequest } from "next/server";
 import { config } from "@/utils/mt-login";
+import jwt from "jsonwebtoken";
 
 async function postHandler(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -31,7 +30,19 @@ async function postHandler(request: NextRequest) {
     if (data.access_token) {
       const decoded: any = jwt.decode(data.access_token);
 
-      const { password, ...user } = await prisma.user.upsert({
+      const user = await prisma.user.upsert({
+        select: {
+          name: true,
+          id: true,
+          email: true,
+          cpf: true,
+          avatar: true,
+          role: true,
+          is_active: true,
+          is_deleted: true,
+          created_at: true,
+          updated_at: true,
+        },
         create: {
           name: decoded.name,
           cpf: decoded.cpf,
@@ -50,14 +61,25 @@ async function postHandler(request: NextRequest) {
       const signedToken = jwt.sign(
         {
           ...user,
-          exp: decoded.exp,
+          exp: new Date(decoded.exp * 1000).getTime() / 1000,
         },
         process.env.JWT_SECRET || "",
       );
 
-      cookieStore.set("MT_ID_SESSION", data.access_token);
-      cookieStore.set("SESSION", signedToken);
-      cookieStore.set("USER_DATA", JSON.stringify(user));
+      cookieStore.set("MT_ID_SESSION", data.access_token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        expires: new Date(decoded.exp * 1000),
+        sameSite: "strict",
+        path: "/",
+      });
+      cookieStore.set("SESSION", signedToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        expires: new Date(decoded.exp * 1000),
+        sameSite: "strict",
+        path: "/",
+      });
 
       return Response.json({
         MT_ID_SESSION: data.access_token,

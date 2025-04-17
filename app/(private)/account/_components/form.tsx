@@ -29,7 +29,7 @@ const profileFormSchema = z.object({
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
 
 // This can come from your database or API.
-export function ProfileForm({ user }: { user: User }) {
+export function ProfileForm({ user }: { user: Pick<User, "name" | "email"> }) {
   const [tempPassword, setTempPassword] = useState("");
 
   const form = useForm<ProfileFormValues>({
