@@ -1,6 +1,6 @@
-/* eslint-disable @next/next/no-img-element */
 import { cn } from "@/lib/utils";
 import { ChecklistItemImages } from "@prisma/client";
+import Image from "next/image";
 import React from "react";
 
 type PropType = {
@@ -23,7 +23,7 @@ export const CarouselButton: React.FC<PropType> = (props) => {
           selected && "border-2 border-sky-400",
         )}
       >
-        <img
+        <Image
           src={process.env.BUCKET_URL + props.image.image}
           alt="image"
           className="aspect-square h-full w-full object-cover"
