@@ -33,6 +33,11 @@ const nextConfig: NextConfig = {
     REPORT_URL: process.env.REPORT_URL,
   },
   output: "standalone",
+  logging: {
+    fetches: {
+      fullUrl: true,
+    },
+  },
 };
 
 export default nextConfig;
