@@ -44,6 +44,7 @@ export async function authMiddleware(req: NextRequest) {
   }
 
   req.headers.set("x-user-id", String(user.id));
+  req.headers.set("x-user-role", String(user.role));
 
   return null;
 }

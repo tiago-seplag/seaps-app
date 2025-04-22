@@ -1,18 +1,13 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from "next/server";
-import jwt from "jsonwebtoken";
 
 type ROLES = "ADMIN" | "SUPERVISOR" | "EVALUATOR";
 
 export function authorization(...params: ROLES[]) {
   return async (request: NextRequest) => {
     try {
-      const verifiedToken: any = jwt.verify(
-        request.cookies.get("SESSION")!.value,
-        process.env.JWT_SECRET || "",
-      );
+      const role = request.headers.get("x-user-role") as ROLES;
 
-      const confirm = params.includes(verifiedToken.role);
+      const confirm = params.includes(role);
 
       if (confirm) {
         return null;
