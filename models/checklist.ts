@@ -238,9 +238,6 @@ export async function finishChecklist(id: string, userId: string) {
   }
 
   const finalScore = SUM_SCORE / COUNT_ITEMS;
-  console.log({ finalScore, score: SUM_SCORE, count: COUNT_ITEMS });
-
-  return checklist;
 
   const finishedChecklist = await prisma.checklist.update({
     where: { id },
