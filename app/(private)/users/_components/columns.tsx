@@ -28,6 +28,17 @@ export const columns: ColumnDef<Column>[] = [
   {
     accessorKey: "role",
     header: "Perfil",
+    cell({ row }) {
+      return (
+        <Badge>
+          {row.original.role === "EVALUATOR"
+            ? "AVALIADOR"
+            : row.original.role === "SUPERVISOR"
+              ? "SUPERVISOR"
+              : "ADMINISTRADOR"}
+        </Badge>
+      );
+    },
   },
   {
     accessorKey: "email",
