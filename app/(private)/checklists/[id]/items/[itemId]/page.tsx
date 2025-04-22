@@ -58,6 +58,7 @@ export default async function Page({ params }: ProjectPageProps) {
             <ChecklistImageCard
               status={checklistItem.checklist.status}
               key={image.id}
+              checklistImage={checklistItem.image || undefined}
               image={image}
             />
           ))}

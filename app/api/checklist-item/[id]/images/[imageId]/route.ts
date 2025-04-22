@@ -50,10 +50,10 @@ async function deleteFile(image: string) {
 }
 
 async function deleteHandler(
-  request: Request,
+  _: Request,
   { params }: { params: Promise<{ id: string; imageId: string }> },
 ) {
-  const { imageId } = await params;
+  const { imageId, id } = await params;
 
   const image = await prisma.checklistItemImages.findUnique({
     where: {
@@ -61,12 +61,29 @@ async function deleteHandler(
     },
   });
 
-  if (!image) {
+  const checklistItem = await prisma.checklistItems.findUnique({
+    where: {
+      id: id,
+    },
+  });
+
+  if (!image || !checklistItem) {
     return new NextResponse("Image not found", { status: 404 });
   }
 
   try {
     await deleteFile(image.image);
+
+    if (image.image === checklistItem.image) {
+      await prisma.checklistItems.update({
+        data: {
+          image: "",
+        },
+        where: {
+          id: checklistItem.id,
+        },
+      });
+    }
 
     await prisma.checklistItemImages.delete({
       where: {

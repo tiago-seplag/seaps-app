@@ -63,7 +63,7 @@ export function DeleteDialog({ image, ...props }: DeleteDialogProps) {
             imagem.
           </DialogDescription>
         </DialogHeader>
-        <DialogFooter>
+        <DialogFooter className="flex-row items-center justify-center gap-2">
           <DialogClose asChild>
             <Button disabled={loading} type="button" variant="destructive">
               Cancelar

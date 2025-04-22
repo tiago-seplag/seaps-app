@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ValidationError } from "@/errors/validation-error";
 import { prisma } from "@/lib/prisma";
 import { generateMetaPagination } from "@/utils/meta-pagination";
@@ -16,6 +17,7 @@ export const updateChecklistItemSchema = z.object({
     .optional()
     .transform((value) => typeof value === "number" && isFinite(value)),
   observation: z.string().optional(),
+  image: z.string().optional(),
 });
 
 export type ChecklistSchema = z.infer<typeof checklistSchema>;
@@ -275,12 +277,22 @@ export async function updateChecklistItem(
     });
   }
 
+  const updateData: any = {};
+
+  if (data.observation) {
+    updateData.observation = data.observation;
+  }
+
+  if (data.score) {
+    updateData.score = Number(data.score);
+  }
+
+  if (data.image) {
+    updateData.image = data.image;
+  }
+
   const updatedChecklistItem = await prisma.checklistItems.update({
-    data: {
-      score: data.score ? Number(data.score) : undefined,
-      is_inspected: true,
-      observation: data.observation ? data.observation : undefined,
-    },
+    data: updateData,
     where: { id },
   });
 
