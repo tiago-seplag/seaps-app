@@ -1,21 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from "next/server";
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { randomUUID } from "node:crypto";
 import { withMiddlewares } from "@/utils/handler";
 import { authMiddleware } from "@/utils/authentication";
-
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-
-const s3Client = new S3Client({
-  forcePathStyle: true,
-  region: process.env.S3_REGION!,
-  endpoint: process.env.S3_BUCKET_URL!,
-  credentials: {
-    accessKeyId: process.env.S3_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.S3_SECRET_ACCESS_KEY!,
-  },
-});
+import { s3Client } from "@/lib/s3-client";
 
 async function uploadFileToS3(file: Buffer, fileName: string) {
   try {

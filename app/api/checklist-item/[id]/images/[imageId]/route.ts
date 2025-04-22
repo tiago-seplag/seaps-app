@@ -1,20 +1,9 @@
 import { prisma } from "@/lib/prisma";
-import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
+import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { authMiddleware } from "@/utils/authentication";
 import { withMiddlewares } from "@/utils/handler";
 import { NextResponse } from "next/server";
-
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-
-const s3Client = new S3Client({
-  forcePathStyle: true,
-  region: process.env.S3_REGION!,
-  endpoint: process.env.S3_BUCKET_URL!,
-  credentials: {
-    accessKeyId: process.env.S3_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.S3_SECRET_ACCESS_KEY!,
-  },
-});
+import { s3Client } from "@/lib/s3-client";
 
 async function putHandler(
   request: Request,
@@ -35,18 +24,6 @@ async function putHandler(
   });
 
   return Response.json(updatedImage);
-}
-
-async function deleteFile(image: string) {
-  try {
-    const commnad = new DeleteObjectCommand({
-      Bucket: process.env.S3_BUCKET_NAME!,
-      Key: image.slice(1),
-    });
-    await s3Client.send(commnad);
-  } catch {
-    throw new Error("erro ao deletar imagem");
-  }
 }
 
 async function deleteHandler(
@@ -72,7 +49,12 @@ async function deleteHandler(
   }
 
   try {
-    await deleteFile(image.image);
+    const commnad = new DeleteObjectCommand({
+      Bucket: process.env.S3_BUCKET_NAME!,
+      Key: image.image.slice(1),
+    });
+
+    await s3Client.send(commnad);
 
     if (image.image === checklistItem.image) {
       await prisma.checklistItems.update({
