@@ -29,7 +29,6 @@ export const ChecklistCard = ({
   checklistItem: ChecklistItems & {
     item: {
       name: string;
-      level: number;
     };
     images: {
       id: string;

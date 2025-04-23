@@ -3,7 +3,23 @@ import { getChecklistById } from "@/models/checklist";
 import { authMiddleware } from "@/utils/authentication";
 import { withMiddlewares } from "@/utils/handler";
 import { NextRequest } from "next/server";
+import pdf from "html-pdf";
 import axios from "axios";
+
+function createPdfAsync(html: string): Promise<Buffer> {
+  return new Promise((resolve, reject) => {
+    pdf
+      .create(html, {
+        type: "pdf",
+        format: "A4",
+        orientation: "portrait",
+      })
+      .toBuffer((err, buffer) => {
+        if (err) return reject(err);
+        resolve(buffer);
+      });
+  });
+}
 
 async function getHandler(
   _: NextRequest,
@@ -21,8 +37,10 @@ async function getHandler(
       },
     );
 
+    const buffer = await createPdfAsync(response.data);
+
     if (response.status !== 200) {
-      return new Response(response.data);
+      return new Response(buffer);
     }
 
     return Response.json({ error: `unknown error` }, { status: 500 });

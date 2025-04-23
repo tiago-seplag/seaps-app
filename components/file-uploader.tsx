@@ -46,51 +46,55 @@ export function FileUploader({ ...props }: FileUploaderProps) {
     onChange: onValueChange,
   });
 
-  const onDrop = (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
-    if (!multiple && maxFileCount === 1 && acceptedFiles.length > 1) {
-      toast.error("Cannot upload more than 1 file at a time");
-      return;
-    }
+  const onDrop = React.useCallback(
+    (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
+      if (!multiple && maxFileCount === 1 && acceptedFiles.length > 1) {
+        toast.error("Cannot upload more than 1 file at a time");
+        return;
+      }
 
-    if ((files?.length ?? 0) + acceptedFiles.length > maxFileCount) {
-      toast.error(`Cannot upload more than ${maxFileCount} files`);
-      return;
-    }
+      if ((files?.length ?? 0) + acceptedFiles.length > maxFileCount) {
+        toast.error(`Cannot upload more than ${maxFileCount} files`);
+        return;
+      }
 
-    const newFiles = acceptedFiles.map((file) =>
-      Object.assign(file, {
-        preview: URL.createObjectURL(file),
-      }),
-    );
+      const newFiles = acceptedFiles.map((file) =>
+        Object.assign(file, {
+          preview: URL.createObjectURL(file),
+        }),
+      );
 
-    const updatedFiles = files ? [...files, ...newFiles] : newFiles;
+      const updatedFiles = files ? [...files, ...newFiles] : newFiles;
 
-    setFiles(updatedFiles);
+      setFiles(updatedFiles);
 
-    if (rejectedFiles.length > 0) {
-      rejectedFiles.forEach(({ file }) => {
-        toast.error(`File ${file.name} was rejected`);
-      });
-    }
+      if (rejectedFiles.length > 0) {
+        rejectedFiles.forEach(({ file }) => {
+          toast.error(`File ${file.name} was rejected`);
+        });
+      }
 
-    if (
-      onUpload &&
-      updatedFiles.length > 0 &&
-      updatedFiles.length <= maxFileCount
-    ) {
-      const target =
-        updatedFiles.length > 0 ? `${updatedFiles.length} files` : `file`;
+      if (
+        onUpload &&
+        updatedFiles.length > 0 &&
+        updatedFiles.length <= maxFileCount
+      ) {
+        const target =
+          updatedFiles.length > 0 ? `${updatedFiles.length} files` : `file`;
 
-      toast.promise(onUpload(updatedFiles), {
-        loading: `Uploading ${target}...`,
-        success: () => {
-          setFiles([]);
-          return `${target} uploaded`;
-        },
-        error: `Failed to upload ${target}`,
-      });
-    }
-  };
+        toast.promise(onUpload(updatedFiles), {
+          loading: `Uploading ${target}...`,
+          success: () => {
+            setFiles([]);
+            return `${target} uploaded`;
+          },
+          error: `Failed to upload ${target}`,
+        });
+      }
+    },
+
+    [files, onUpload, maxFileCount, multiple, setFiles],
+  );
 
   function onRemove(index: number) {
     if (!files) return;

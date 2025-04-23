@@ -12,7 +12,6 @@ import { getUser } from "@/lib/dal";
 type ProjectPageProps = {
   params: Promise<{
     id: string;
-    itemId?: string[];
   }>;
   searchParams: Promise<{
     item_id: string;
@@ -20,18 +19,14 @@ type ProjectPageProps = {
 };
 
 export default async function Page({ params }: ProjectPageProps) {
-  const { id, itemId } = await params;
+  const { id } = await params;
 
   const user = await getUser();
 
   const checklist = await prisma.checklist.findUnique({
     where: { id: id },
     include: {
-      property: {
-        include: {
-          person: true,
-        },
-      },
+      property: true,
       person: true,
       user: true,
       checklistItems: {
@@ -39,21 +34,10 @@ export default async function Page({ params }: ProjectPageProps) {
           item: true,
           images: true,
         },
-        where: {
-          item: {
-            level: itemId ? undefined : 0,
-            item_id: !itemId ? undefined : itemId[itemId.length - 1],
-          },
-        },
         orderBy: {
           item: {
             name: "asc",
           },
-        },
-      },
-      _count: {
-        select: {
-          checklistItems: true,
         },
       },
     },
@@ -88,7 +72,7 @@ export default async function Page({ params }: ProjectPageProps) {
             </div>
             <div>
               <p className="text-wrap">
-                {`${checklist.property.person?.name} - ${checklist.property.person?.role || ""} - ${checklist.property.person?.phone}`}
+                {`${checklist.person?.name} - ${checklist.person?.role || ""} - ${checklist.person?.phone}`}
               </p>
             </div>
           </div>
