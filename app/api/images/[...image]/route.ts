@@ -1,11 +1,16 @@
 import { s3Client } from "@/lib/s3-client";
 import { GetObjectCommand } from "@aws-sdk/client-s3";
 import { NextRequest, NextResponse } from "next/server";
+import sharp from "sharp";
 
 export async function GET(
-  _: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ image: string }> },
 ) {
+  const searchParams = request.nextUrl.searchParams;
+
+  const compress = searchParams.get("compress");
+
   const { image } = await params;
 
   if (!image) {
@@ -23,7 +28,23 @@ export async function GET(
     const stream = s3Response.Body as ReadableStream;
 
     const body = await new Response(stream).arrayBuffer();
+
     const contentType = s3Response.ContentType || "application/octet-stream";
+
+    if (compress) {
+      const compressedImageBuffer = await sharp(body)
+        .resize({ width: 240, height: 200 }) // Example: Resize the image
+        .jpeg({ quality: 70 })
+        .toBuffer();
+
+      return new NextResponse(compressedImageBuffer, {
+        headers: {
+          "Content-Type": contentType,
+          "Content-Length": String(compressedImageBuffer.byteLength),
+          "Cache-Control": "public, max-age=300",
+        },
+      });
+    }
 
     return new NextResponse(body, {
       headers: {

@@ -26,6 +26,8 @@ export const CarouselButton: React.FC<PropType> = (props) => {
         <Image
           src={process.env.BUCKET_URL + props.image.image}
           alt="image"
+          width={100}
+          height={100}
           className="aspect-square h-full w-full object-cover"
         />
       </button>
