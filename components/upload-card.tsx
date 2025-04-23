@@ -37,8 +37,8 @@ export const UploadCard = ({
         .catch(async () => toast.error("Opa! Algo deu errado!"));
     };
 
-    if (uploadedFiles[0] && uploadedFiles[0].files) {
-      onFinishUpload(uploadedFiles[0].files);
+    if (uploadedFiles.length > 0) {
+      onFinishUpload(uploadedFiles[uploadedFiles.length - 1].files);
     }
   }, [checklistItemId, router, uploadedFiles]);
 

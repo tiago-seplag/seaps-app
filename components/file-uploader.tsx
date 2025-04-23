@@ -1,7 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @next/next/no-img-element */
 "use client";
 import * as React from "react";
-import Image from "next/image";
 import { FileText, CameraIcon, X } from "lucide-react";
 import Dropzone, {
   type DropzoneProps,
@@ -47,55 +46,51 @@ export function FileUploader({ ...props }: FileUploaderProps) {
     onChange: onValueChange,
   });
 
-  const onDrop = React.useCallback(
-    (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
-      if (!multiple && maxFileCount === 1 && acceptedFiles.length > 1) {
-        toast.error("Cannot upload more than 1 file at a time");
-        return;
-      }
+  const onDrop = (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
+    if (!multiple && maxFileCount === 1 && acceptedFiles.length > 1) {
+      toast.error("Cannot upload more than 1 file at a time");
+      return;
+    }
 
-      if ((files?.length ?? 0) + acceptedFiles.length > maxFileCount) {
-        toast.error(`Cannot upload more than ${maxFileCount} files`);
-        return;
-      }
+    if ((files?.length ?? 0) + acceptedFiles.length > maxFileCount) {
+      toast.error(`Cannot upload more than ${maxFileCount} files`);
+      return;
+    }
 
-      const newFiles = acceptedFiles.map((file) =>
-        Object.assign(file, {
-          preview: URL.createObjectURL(file),
-        }),
-      );
+    const newFiles = acceptedFiles.map((file) =>
+      Object.assign(file, {
+        preview: URL.createObjectURL(file),
+      }),
+    );
 
-      const updatedFiles = files ? [...files, ...newFiles] : newFiles;
+    const updatedFiles = files ? [...files, ...newFiles] : newFiles;
 
-      setFiles(updatedFiles);
+    setFiles(updatedFiles);
 
-      if (rejectedFiles.length > 0) {
-        rejectedFiles.forEach(({ file }) => {
-          toast.error(`File ${file.name} was rejected`);
-        });
-      }
+    if (rejectedFiles.length > 0) {
+      rejectedFiles.forEach(({ file }) => {
+        toast.error(`File ${file.name} was rejected`);
+      });
+    }
 
-      if (
-        onUpload &&
-        updatedFiles.length > 0 &&
-        updatedFiles.length <= maxFileCount
-      ) {
-        const target =
-          updatedFiles.length > 0 ? `${updatedFiles.length} files` : `file`;
+    if (
+      onUpload &&
+      updatedFiles.length > 0 &&
+      updatedFiles.length <= maxFileCount
+    ) {
+      const target =
+        updatedFiles.length > 0 ? `${updatedFiles.length} files` : `file`;
 
-        toast.promise(onUpload(updatedFiles), {
-          loading: `Uploading ${target}...`,
-          success: () => {
-            setFiles([]);
-            return `${target} uploaded`;
-          },
-          error: `Failed to upload ${target}`,
-        });
-      }
-    },
-
-    [files, onUpload, maxFileCount, multiple, setFiles],
-  );
+      toast.promise(onUpload(updatedFiles), {
+        loading: `Uploading ${target}...`,
+        success: () => {
+          setFiles([]);
+          return `${target} uploaded`;
+        },
+        error: `Failed to upload ${target}`,
+      });
+    }
+  };
 
   function onRemove(index: number) {
     if (!files) return;
@@ -237,32 +232,15 @@ interface FilePreviewProps {
 }
 
 function FilePreview({ file }: FilePreviewProps) {
-  const previewURL = React.useMemo(() => {
-    return URL.createObjectURL(file);
-  }, [file]);
-
   if (file.type.startsWith("image/")) {
     return (
-      <Image
+      <img
         src={file.preview}
         alt={file.name}
         width={48}
         height={48}
         loading="lazy"
         className="aspect-square shrink-0 rounded-md object-cover"
-      />
-    );
-  }
-
-  if (file.type.startsWith("video/")) {
-    return (
-      <video
-        src={previewURL}
-        playsInline
-        preload="metadata"
-        controls={false}
-        className="inset-0 w-32 rounded-md"
-        onLoadedData={(e: any) => (e.target.currentTime = 20)}
       />
     );
   }
