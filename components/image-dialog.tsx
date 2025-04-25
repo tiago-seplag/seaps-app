@@ -1,3 +1,5 @@
+"use client";
+
 import { DialogProps } from "@radix-ui/react-dialog";
 import {
   Dialog,

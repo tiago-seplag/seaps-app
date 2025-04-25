@@ -29,6 +29,7 @@ export const ChecklistImageCard = ({
   image,
   checklistImage,
   status,
+  onClick,
 }: {
   checklistImage?: string;
   status: $Enums.Status;
@@ -39,6 +40,7 @@ export const ChecklistImageCard = ({
     checklist_item_id: string;
     observation: string | null;
   };
+  onClick?: () => void;
 }) => {
   const observationDialog = useModal();
   const deleteDialog = useModal();
@@ -92,13 +94,18 @@ export const ChecklistImageCard = ({
         </DropdownMenu>
       </CardHeader>
       <CardContent className={"h-full"}>
-        <Image
-          src={process.env.BUCKET_URL + image.image}
-          alt="checklist-image"
-          width={388}
-          height={160}
-          className="pointer-events-none h-full max-h-56 min-h-56 w-full object-cover"
-        />
+        <Button
+          className="h-fit w-full bg-transparent p-0"
+          onClick={() => onClick && onClick()}
+        >
+          <Image
+            src={process.env.BUCKET_URL + image.image}
+            alt="checklist-image"
+            width={388}
+            height={160}
+            className="pointer-events-none h-full max-h-56 min-h-56 w-full object-cover"
+          />
+        </Button>
         {image.observation && (
           <CardDescription className="line-clamp-2 min-h-[2lh] pt-3">
             {image.observation}

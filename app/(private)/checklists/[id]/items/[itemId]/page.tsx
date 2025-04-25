@@ -1,9 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { GoBack } from "@/components/go-back";
-import { Suspense } from "react";
-import { ChecklistImageCard } from "@/components/image-card";
-import { UploadCard } from "@/components/upload-card";
+import { Images } from "./Images";
 
 type ProjectPageProps = {
   params: Promise<{
@@ -35,43 +33,24 @@ export default async function Page({ params }: ProjectPageProps) {
   }
 
   return (
-    <Suspense fallback={<p>Loading feed...</p>}>
-      <div className="flex h-full flex-1 flex-col gap-8">
-        <div className="flex flex-col justify-between gap-3 sm:flex-row">
+    <div className="flex h-full flex-1 flex-col gap-8">
+      <div className="flex flex-col justify-between gap-3 sm:flex-row">
+        <div>
+          <div className="flex items-center gap-3">
+            <GoBack />
+            <h2
+              className="line-clamp-1 break-words text-2xl font-bold"
+              title={checklistItem.item.name}
+            >
+              {checklistItem.item.name}
+            </h2>
+          </div>
           <div>
-            <div className="flex items-center gap-3">
-              <GoBack />
-              <h2
-                className="line-clamp-1 break-words text-2xl font-bold"
-                title={checklistItem.item.name}
-              >
-                {checklistItem.item.name}
-              </h2>
-            </div>
-            <div>
-              <p className="text-wrap">{checklistItem.observation}</p>
-            </div>
+            <p className="text-wrap">{checklistItem.observation}</p>
           </div>
         </div>
-        <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
-          {checklistItem.images.map((image) => (
-            <ChecklistImageCard
-              status={checklistItem.checklist.status}
-              key={image.id}
-              checklistImage={checklistItem.image || undefined}
-              image={image}
-            />
-          ))}
-          {checklistItem.images.length < 5 &&
-            checklistItem.checklist.status === "OPEN" && (
-              <UploadCard
-                maxFileCount={5 - checklistItem.images.length}
-                status={checklistItem.checklist.status}
-                checklistItemId={checklistItem.id}
-              />
-            )}
-        </div>
       </div>
-    </Suspense>
+      <Images checklistItem={checklistItem} />
+    </div>
   );
 }
