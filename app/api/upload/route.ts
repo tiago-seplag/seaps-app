@@ -81,7 +81,7 @@ async function postHandler(req: NextRequest) {
       },
     );
 
-    const folder = "uploads";
+    const folder = "photos";
     const responseFiles = [];
 
     const images = Array.isArray(files.file) ? files.file : [files.file];
