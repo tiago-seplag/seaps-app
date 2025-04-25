@@ -241,9 +241,12 @@ export async function finishChecklist(id: string, userId: string) {
 
   const finalScore = SUM_SCORE / COUNT_ITEMS;
 
+  const classification = finalScore > 2.5 ? 2 : finalScore < 1.5 ? 0 : 1;
+
   const finishedChecklist = await prisma.checklist.update({
     where: { id },
     data: {
+      classification,
       score: finalScore,
       status: "CLOSED",
       finished_at: new Date(),

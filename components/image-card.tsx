@@ -32,7 +32,7 @@ export const ChecklistImageCard = ({
   onClick,
 }: {
   checklistImage?: string;
-  status: $Enums.Status;
+  status: $Enums.STATUS;
   image: {
     id: string;
     image: string;
@@ -95,7 +95,7 @@ export const ChecklistImageCard = ({
       </CardHeader>
       <CardContent className={"h-full"}>
         <Button
-          className="h-fit w-full bg-transparent p-0"
+          className="h-fit w-full overflow-hidden rounded-md bg-transparent p-0"
           onClick={() => onClick && onClick()}
         >
           <Image

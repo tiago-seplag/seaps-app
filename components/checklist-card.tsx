@@ -24,7 +24,7 @@ export const ChecklistCard = ({
   checklistItem,
   status,
 }: {
-  status: $Enums.Status;
+  status: $Enums.STATUS;
   propertyId: string;
   checklistItem: ChecklistItems & {
     item: {

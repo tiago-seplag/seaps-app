@@ -28,7 +28,7 @@ import { toast } from "sonner";
 
 interface ObservationDialogProps extends DialogProps {
   image: ChecklistItemImages;
-  status: $Enums.Status;
+  status: $Enums.STATUS;
 }
 
 const formSchema = z.object({

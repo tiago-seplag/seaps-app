@@ -14,7 +14,7 @@ export const UploadCard = ({
   checklistItemId,
   maxFileCount,
 }: {
-  status: $Enums.Status;
+  status: $Enums.STATUS;
   checklistItemId: string;
   maxFileCount: number;
 }) => {

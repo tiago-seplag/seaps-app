@@ -17,7 +17,7 @@ import { toast } from "sonner";
 
 interface DeleteDialogProps extends DialogProps {
   image: ChecklistItemImages;
-  status: $Enums.Status;
+  status: $Enums.STATUS;
 }
 
 export function DeleteDialog({ image, ...props }: DeleteDialogProps) {

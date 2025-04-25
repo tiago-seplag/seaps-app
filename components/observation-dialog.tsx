@@ -28,7 +28,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 interface ObservationDialogProps extends DialogProps {
-  status: $Enums.Status;
+  status: $Enums.STATUS;
   item: ChecklistItems & {
     item: {
       name: string;
