@@ -96,6 +96,7 @@ export function ObservationDialog({ item, ...props }: ObservationDialogProps) {
                     <Textarea
                       maxLength={255}
                       className="min-h-32"
+                      autoCapitalize="characters"
                       placeholder="insira a observação do item"
                       disabled={loading || CHECKLIST_IS_CLOSED}
                       {...field}

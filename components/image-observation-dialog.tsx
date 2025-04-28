@@ -98,6 +98,7 @@ export function ImageObservationDialog({
                       maxLength={255}
                       disabled={loading || CHECKLIST_IS_CLOSED}
                       className="min-h-32"
+                      autoCapitalize="characters"
                       placeholder="insira a observação do item"
                       {...field}
                     />
