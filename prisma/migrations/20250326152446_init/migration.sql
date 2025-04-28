@@ -1,11 +1,10 @@
 -- CreateEnum
-CREATE TYPE "Status" AS ENUM ('OPEN', 'CLOSED');
+CREATE TYPE "STATUS" AS ENUM ('OPEN', 'CLOSED');
 
 -- CreateTable
 CREATE TABLE "organizations" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
-
     CONSTRAINT "organizations_pkey" PRIMARY KEY ("id")
 );
 
@@ -21,7 +20,6 @@ CREATE TABLE "users" (
     "is_deleted" BOOLEAN NOT NULL DEFAULT false,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
 
@@ -35,7 +33,6 @@ CREATE TABLE "persons" (
     "role" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
     CONSTRAINT "persons_pkey" PRIMARY KEY ("id")
 );
 
@@ -50,7 +47,6 @@ CREATE TABLE "properties" (
     "location" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
     CONSTRAINT "properties_pkey" PRIMARY KEY ("id")
 );
 
@@ -62,7 +58,6 @@ CREATE TABLE "models" (
     "is_deleted" BOOLEAN NOT NULL DEFAULT false,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
     CONSTRAINT "models_pkey" PRIMARY KEY ("id")
 );
 
@@ -75,7 +70,6 @@ CREATE TABLE "items" (
     "is_deleted" BOOLEAN NOT NULL DEFAULT false,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
     CONSTRAINT "items_pkey" PRIMARY KEY ("id")
 );
 
@@ -83,7 +77,7 @@ CREATE TABLE "items" (
 CREATE TABLE "checklists" (
     "id" TEXT NOT NULL,
     "sid" TEXT NOT NULL,
-    "status" "Status" NOT NULL DEFAULT 'OPEN',
+    "status" "STATUS" NOT NULL DEFAULT 'OPEN',
     "organization_id" TEXT NOT NULL,
     "model_id" TEXT NOT NULL,
     "property_id" TEXT NOT NULL,
@@ -91,10 +85,9 @@ CREATE TABLE "checklists" (
     "created_by" TEXT,
     "person_id" TEXT,
     "score" DOUBLE PRECISION NOT NULL DEFAULT 0,
-    "finished_at" TIMESTAMP(3),
+    "classification" INTEGER "finished_at" TIMESTAMP(3),
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
     CONSTRAINT "checklists_pkey" PRIMARY KEY ("id")
 );
 
@@ -105,7 +98,6 @@ CREATE TABLE "model_items" (
     "item_id" TEXT NOT NULL,
     "order" DOUBLE PRECISION NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
     CONSTRAINT "model_items_pkey" PRIMARY KEY ("id")
 );
 
@@ -120,7 +112,6 @@ CREATE TABLE "checklist_items" (
     "is_inspected" BOOLEAN NOT NULL DEFAULT false,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
     CONSTRAINT "checklist_items_pkey" PRIMARY KEY ("id")
 );
 
@@ -131,7 +122,6 @@ CREATE TABLE "checklist_item_images" (
     "image" TEXT NOT NULL,
     "observation" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
     CONSTRAINT "checklist_item_images_pkey" PRIMARY KEY ("id")
 );
 
@@ -157,46 +147,101 @@ CREATE UNIQUE INDEX "items_id_key" ON "items"("id");
 CREATE UNIQUE INDEX "checklists_id_key" ON "checklists"("id");
 
 -- AddForeignKey
-ALTER TABLE "persons" ADD CONSTRAINT "persons_organization_id_fkey" FOREIGN KEY ("organization_id") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE
+    "persons"
+ADD
+    CONSTRAINT "persons_organization_id_fkey" FOREIGN KEY ("organization_id") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "properties" ADD CONSTRAINT "properties_organization_id_fkey" FOREIGN KEY ("organization_id") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE
+    "properties"
+ADD
+    CONSTRAINT "properties_organization_id_fkey" FOREIGN KEY ("organization_id") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "properties" ADD CONSTRAINT "properties_person_id_fkey" FOREIGN KEY ("person_id") REFERENCES "persons"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE
+    "properties"
+ADD
+    CONSTRAINT "properties_person_id_fkey" FOREIGN KEY ("person_id") REFERENCES "persons"("id") ON DELETE
+SET
+    NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "items" ADD CONSTRAINT "items_item_id_fkey" FOREIGN KEY ("item_id") REFERENCES "items"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE
+    "items"
+ADD
+    CONSTRAINT "items_item_id_fkey" FOREIGN KEY ("item_id") REFERENCES "items"("id") ON DELETE
+SET
+    NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "checklists" ADD CONSTRAINT "checklists_organization_id_fkey" FOREIGN KEY ("organization_id") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE
+    "checklists"
+ADD
+    CONSTRAINT "checklists_organization_id_fkey" FOREIGN KEY ("organization_id") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "checklists" ADD CONSTRAINT "checklists_property_id_fkey" FOREIGN KEY ("property_id") REFERENCES "properties"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE
+    "checklists"
+ADD
+    CONSTRAINT "checklists_property_id_fkey" FOREIGN KEY ("property_id") REFERENCES "properties"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "checklists" ADD CONSTRAINT "checklists_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE
+    "checklists"
+ADD
+    CONSTRAINT "checklists_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE
+SET
+    NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "checklists" ADD CONSTRAINT "checklists_created_by_fkey" FOREIGN KEY ("created_by") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE
+    "checklists"
+ADD
+    CONSTRAINT "checklists_created_by_fkey" FOREIGN KEY ("created_by") REFERENCES "users"("id") ON DELETE
+SET
+    NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "checklists" ADD CONSTRAINT "checklists_person_id_fkey" FOREIGN KEY ("person_id") REFERENCES "persons"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE
+    "checklists"
+ADD
+    CONSTRAINT "checklists_person_id_fkey" FOREIGN KEY ("person_id") REFERENCES "persons"("id") ON DELETE
+SET
+    NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "checklists" ADD CONSTRAINT "checklists_model_id_fkey" FOREIGN KEY ("model_id") REFERENCES "models"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE
+    "checklists"
+ADD
+    CONSTRAINT "checklists_model_id_fkey" FOREIGN KEY ("model_id") REFERENCES "models"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "model_items" ADD CONSTRAINT "model_items_model_id_fkey" FOREIGN KEY ("model_id") REFERENCES "models"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE
+    "model_items"
+ADD
+    CONSTRAINT "model_items_model_id_fkey" FOREIGN KEY ("model_id") REFERENCES "models"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "model_items" ADD CONSTRAINT "model_items_item_id_fkey" FOREIGN KEY ("item_id") REFERENCES "items"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE
+    "model_items"
+ADD
+    CONSTRAINT "model_items_item_id_fkey" FOREIGN KEY ("item_id") REFERENCES "items"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "checklist_items" ADD CONSTRAINT "checklist_items_checklist_id_fkey" FOREIGN KEY ("checklist_id") REFERENCES "checklists"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE
+    "checklist_items"
+ADD
+    CONSTRAINT "checklist_items_checklist_id_fkey" FOREIGN KEY ("checklist_id") REFERENCES "checklists"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "checklist_items" ADD CONSTRAINT "checklist_items_item_id_fkey" FOREIGN KEY ("item_id") REFERENCES "items"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE
+    "checklist_items"
+ADD
+    CONSTRAINT "checklist_items_item_id_fkey" FOREIGN KEY ("item_id") REFERENCES "items"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "checklist_item_images" ADD CONSTRAINT "checklist_item_images_checklist_item_id_fkey" FOREIGN KEY ("checklist_item_id") REFERENCES "checklist_items"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE
+    "checklist_item_images"
+ADD
+    CONSTRAINT "checklist_item_images_checklist_item_id_fkey" FOREIGN KEY ("checklist_item_id") REFERENCES "checklist_items"("id") ON DELETE CASCADE ON UPDATE CASCADE;
