@@ -6,6 +6,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { ModeToggle } from "@/components/mode-toggle";
+import { UserProvider } from "@/contexts/user-context";
 
 export default function Layout({
   children,
@@ -26,7 +27,7 @@ export default function Layout({
           <ModeToggle />
         </header>
         <div className="mx-2 h-full rounded border bg-card p-4 shadow">
-          {children}
+          <UserProvider>{children}</UserProvider>
         </div>
       </SidebarInset>
     </SidebarProvider>

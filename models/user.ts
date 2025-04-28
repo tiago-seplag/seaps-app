@@ -101,3 +101,26 @@ export async function updateUserConfigs(
     email: updateUser.email,
   };
 }
+
+export async function getUserById(userId: string) {
+  const user = prisma.user.findUnique({
+    select: {
+      id: true,
+      role: true,
+      name: true,
+      is_active: true,
+      is_deleted: true,
+      email: true,
+    },
+    where: { id: userId },
+  });
+
+  if (!user) {
+    throw new ValidationError({
+      message: "Usuário não encontrado.",
+      action: `Entre em contato com o suporte.`,
+    });
+  }
+
+  return user;
+}
