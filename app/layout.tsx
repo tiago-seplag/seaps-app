@@ -31,20 +31,6 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" suppressHydrationWarning>
       <PullToRefreshElement />
-      <head>
-        <link
-          rel="apple-icon"
-          href="/apple-icon?<generated>"
-          type="image/<generated>"
-          sizes="<generated>"
-        />
-        <link
-          rel="icon"
-          href="/icon?<generated>"
-          type="image/<generated>"
-          sizes="<generated>"
-        />
-      </head>
       <meta id="theme-content" name="theme-color" content="hls(226 0% 100%)" />
       <body
         className={`${geistSans.variable} ${geistMono.variable} relative min-h-screen antialiased`}
