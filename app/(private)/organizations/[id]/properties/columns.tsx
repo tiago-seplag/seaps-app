@@ -1,11 +1,8 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
-import { ChevronRight } from "lucide-react";
-import Link from "next/link";
 
 const ENUM = {
   OWN: {
@@ -24,18 +21,27 @@ const ENUM = {
 
 type ENUM_OPT = "GRANT" | "RENTED" | "OWN";
 
-type Column = {
+export const columns: ColumnDef<{
   id: string;
-  created_at: Date;
-  updated_at: Date;
-  type: string;
-  address: string | null;
   name: string;
   organization_id: string;
+  person_id: string | null;
+  address: string | null;
+  type: string;
   location: string | null;
-};
-
-export const columns: ColumnDef<Column>[] = [
+  created_at: Date;
+  updated_at: Date;
+  person?: {
+    id: string;
+    name: string;
+    organization_id: string;
+    created_at: Date;
+    updated_at: Date;
+    role: string | null;
+    email: string | null;
+    phone: string | null;
+  } | null;
+}>[] = [
   {
     accessorKey: "id",
     header: "ID",
@@ -45,6 +51,13 @@ export const columns: ColumnDef<Column>[] = [
     header: "Imóvel",
     accessorFn(row) {
       return row.name;
+    },
+  },
+  {
+    accessorKey: "person",
+    header: "Responsável",
+    accessorFn(row) {
+      return row.person?.name;
     },
   },
   {
@@ -63,21 +76,6 @@ export const columns: ColumnDef<Column>[] = [
     header: "Criado em",
     accessorFn(row) {
       return format(new Date(row.created_at), "dd/MM/yyyy");
-    },
-  },
-  {
-    accessorKey: "actions",
-    header: "Ações",
-    cell({ row }) {
-      return (
-        <div className="flex gap-1">
-          <Button variant="outline" className="h-6 w-6 p-2" asChild>
-            <Link href={"/checklists/" + row.original.id + "/items"}>
-              <ChevronRight size={16} />
-            </Link>
-          </Button>
-        </div>
-      );
     },
   },
 ];

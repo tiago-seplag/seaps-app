@@ -36,7 +36,7 @@ const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    fetch("api/auth/me")
+    fetch("/api/auth/me")
       .then((response) => response.json())
       .then((data) => setUser(data));
   }, []);

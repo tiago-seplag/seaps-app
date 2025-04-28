@@ -21,7 +21,11 @@ export default async function Page({ params }: Params) {
       id,
     },
     include: {
-      properties: true,
+      properties: {
+        include: {
+          person: true,
+        },
+      },
     },
     orderBy: {
       name: "asc",

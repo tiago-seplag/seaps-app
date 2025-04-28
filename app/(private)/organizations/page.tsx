@@ -1,12 +1,17 @@
-import { prisma } from "@/lib/prisma";
-import Link from "next/link";
+import { DataTable } from "@/components/data-table";
+import { getOrganizationsPaginated } from "@/models/organization";
+import { columns } from "./columns";
+import { Pagination } from "@/components/pagination";
 
-export default async function Page() {
-  const organizations = await prisma.organization.findMany({
-    orderBy: {
-      name: "asc",
-    },
-  });
+export default async function Page(props: {
+  searchParams: Promise<SearchParams>;
+}) {
+  const searchParams = await props.searchParams;
+
+  const { meta, data: organizations } = await getOrganizationsPaginated(
+    Number(searchParams.page || 1),
+    Number(searchParams.perPage || 10),
+  );
 
   return (
     <div className="flex flex-col gap-y-4">
@@ -16,16 +21,8 @@ export default async function Page() {
         </div>
       </div>
 
-      <ul className="flex flex-col gap-y-2">
-        {organizations.map((checklist) => (
-          <li key={checklist.id}>
-            <Link href={"/organizations/" + checklist.id + "/properties"}>
-              {checklist.id}
-            </Link>{" "}
-            - {checklist.name}
-          </li>
-        ))}
-      </ul>
+      <DataTable columns={columns} data={organizations} />
+      {meta.total > 10 && <Pagination meta={meta} />}
     </div>
   );
 }

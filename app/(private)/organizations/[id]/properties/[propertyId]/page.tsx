@@ -3,13 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 
-interface Params {
-  params: Promise<{
-    id: string;
-  }>;
-}
-
-export default async function Page({}: Params) {
+export default async function Page() {
   const organizations = await prisma.item.findMany({
     where: {
       level: 0,

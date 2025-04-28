@@ -14,6 +14,7 @@ import {
   ChartColumnIncreasing,
   ClipboardList,
   Landmark,
+  Building2,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -31,6 +32,12 @@ const navMain = [
     title: "Imóveis",
     url: "/properties",
     icon: Landmark,
+    role: ["SUPERVISOR", "ADMIN"],
+  },
+  {
+    title: "Orgãos",
+    url: "/organizations",
+    icon: Building2,
     role: ["SUPERVISOR", "ADMIN"],
   },
   {
