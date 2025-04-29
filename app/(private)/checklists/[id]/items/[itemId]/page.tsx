@@ -1,7 +1,7 @@
-import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { GoBack } from "@/components/go-back";
 import { Images } from "./Images";
+import { getChecklistItemById } from "@/models/checklist-item";
 
 type ProjectPageProps = {
   params: Promise<{
@@ -15,18 +15,13 @@ type ProjectPageProps = {
 export default async function Page({ params }: ProjectPageProps) {
   const { itemId } = await params;
 
-  const checklistItem = await prisma.checklistItems.findUnique({
-    where: { id: itemId },
-    include: {
-      item: true,
-      images: true,
-      checklist: {
-        select: {
-          status: true,
-        },
-      },
-    },
-  });
+  let checklistItem;
+
+  try {
+    checklistItem = await getChecklistItemById(itemId);
+  } catch {
+    checklistItem = null;
+  }
 
   if (!checklistItem) {
     return notFound();

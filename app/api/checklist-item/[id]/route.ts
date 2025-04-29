@@ -1,9 +1,10 @@
 import { ValidationError } from "@/errors/validation-error";
-import { prisma } from "@/lib/prisma";
+
 import {
+  getChecklistItemById,
   updateChecklistItem,
   updateChecklistItemSchema,
-} from "@/models/checklist";
+} from "@/models/checklist-item";
 import { authMiddleware } from "@/utils/authentication";
 import { withMiddlewares } from "@/utils/handler";
 import { validation } from "@/utils/validate";
@@ -35,19 +36,16 @@ const getHandler = async (
 ) => {
   const { id } = await params;
 
-  const checklist = await prisma.checklistItems.findUnique({
-    where: { id: id },
-    include: {
-      item: true,
-      images: {
-        orderBy: {
-          created_at: "desc",
-        },
-      },
-    },
-  });
+  try {
+    const checklistItem = await getChecklistItemById(id);
 
-  return Response.json(checklist);
+    return Response.json(checklistItem);
+  } catch (error) {
+    if (error instanceof ValidationError)
+      return Response.json(error, { status: error.statusCode });
+
+    return Response.json({ error }, { status: 500 });
+  }
 };
 
 export const PUT = withMiddlewares(

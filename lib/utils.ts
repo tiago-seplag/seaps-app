@@ -58,7 +58,11 @@ export const toUpperCase = (e: ChangeEvent<HTMLInputElement>) => {
   return e;
 };
 
-export const formatPhone = (value: string) => {
+export const formatPhone = (value?: string | null) => {
+  if (!value) {
+    return "--";
+  }
+
   const str = value.replace(/\D/g, ""); // remove caracteres não numéricos
 
   return str.length <= 10

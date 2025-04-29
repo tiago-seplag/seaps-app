@@ -1,63 +1,32 @@
-import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { ChecklistCard } from "@/components/checklist-card";
 import { GoBack } from "@/components/go-back";
 import { ENUM_PROPERTY, PropertyBadge } from "@/components/property-badge";
 import { format } from "date-fns";
-import { getFirstAndLastName } from "@/lib/utils";
+import { formatPhone, getFirstAndLastName } from "@/lib/utils";
 import { Suspense } from "react";
 import { FinishButton } from "../../_components/finish-checklist-button";
 import { getUser } from "@/lib/dal";
+import { getChecklistById } from "@/models/checklist";
 
 type ProjectPageProps = {
   params: Promise<{
     id: string;
-    itemId?: string[];
-  }>;
-  searchParams: Promise<{
-    item_id: string;
   }>;
 };
 
 export default async function Page({ params }: ProjectPageProps) {
-  const { id, itemId } = await params;
+  const { id } = await params;
 
   const user = await getUser();
 
-  const checklist = await prisma.checklist.findUnique({
-    where: { id: id },
-    include: {
-      property: {
-        include: {
-          person: true,
-        },
-      },
-      person: true,
-      user: true,
-      checklistItems: {
-        include: {
-          item: true,
-          images: true,
-        },
-        where: {
-          item: {
-            level: itemId ? undefined : 0,
-            item_id: !itemId ? undefined : itemId[itemId.length - 1],
-          },
-        },
-        orderBy: {
-          item: {
-            name: "asc",
-          },
-        },
-      },
-      _count: {
-        select: {
-          checklistItems: true,
-        },
-      },
-    },
-  });
+  let checklist;
+
+  try {
+    checklist = await getChecklistById(id);
+  } catch {
+    checklist = null;
+  }
 
   if (!checklist) {
     return notFound();
@@ -88,7 +57,7 @@ export default async function Page({ params }: ProjectPageProps) {
             </div>
             <div>
               <p className="text-wrap">
-                {`${checklist.property.person?.name} - ${checklist.property.person?.role || ""} - ${checklist.property.person?.phone}`}
+                {`${checklist.property.person?.name} - ${checklist.property.person?.role || ""} - ${formatPhone(checklist.property.person?.phone)}`}
               </p>
             </div>
           </div>

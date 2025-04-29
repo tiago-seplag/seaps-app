@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ValidationError } from "@/errors/validation-error";
 import { prisma } from "@/lib/prisma";
 import { generateMetaPagination } from "@/utils/meta-pagination";
@@ -11,20 +10,7 @@ export const checklistSchema = z.object({
   user_id: z.string(),
 });
 
-export const updateChecklistItemSchema = z.object({
-  score: z
-    .string()
-    .optional()
-    .transform((value) => typeof value === "number" && isFinite(value)),
-  observation: z.string().optional(),
-  image: z.string().optional(),
-});
-
 export type ChecklistSchema = z.infer<typeof checklistSchema>;
-
-export type UpdateChecklistItemSchema = z.infer<
-  typeof updateChecklistItemSchema
->;
 
 export async function getChecklistsPaginated(
   page = 1,
@@ -97,11 +83,6 @@ export async function getChecklistById(id: string) {
         include: {
           item: true,
           images: true,
-        },
-        where: {
-          item: {
-            level: 0,
-          },
         },
         orderBy: {
           item: {
@@ -254,50 +235,4 @@ export async function finishChecklist(id: string, userId: string) {
   });
 
   return finishedChecklist;
-}
-
-export async function updateChecklistItem(
-  id: string,
-  userId: string,
-  data: UpdateChecklistItemSchema,
-) {
-  const checklistItem = await prisma.checklistItems.findUnique({
-    where: { id },
-    include: {
-      checklist: {
-        select: {
-          user_id: true,
-        },
-      },
-    },
-  });
-
-  if (checklistItem?.checklist.user_id !== userId) {
-    throw new ValidationError({
-      message: "Apenas o responsável pode editar o item",
-      action: "Pessa ao responsável para realizar o checklist",
-      statusCode: 403,
-    });
-  }
-
-  const updateData: any = {};
-
-  if (data.observation) {
-    updateData.observation = data.observation;
-  }
-
-  if (data.score) {
-    updateData.score = Number(data.score);
-  }
-
-  if (data.image) {
-    updateData.image = data.image;
-  }
-
-  const updatedChecklistItem = await prisma.checklistItems.update({
-    data: updateData,
-    where: { id },
-  });
-
-  return updatedChecklistItem;
 }
