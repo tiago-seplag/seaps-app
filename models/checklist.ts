@@ -71,7 +71,7 @@ export async function getChecklistsPaginated(
     },
     where: filter,
     orderBy: {
-      created_at: "asc",
+      created_at: "desc",
     },
     take: meta.per_page,
     skip: (meta.current_page - 1) * meta.per_page,

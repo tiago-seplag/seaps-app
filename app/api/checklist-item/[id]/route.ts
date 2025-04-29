@@ -39,7 +39,11 @@ const getHandler = async (
     where: { id: id },
     include: {
       item: true,
-      images: true,
+      images: {
+        orderBy: {
+          created_at: "desc",
+        },
+      },
     },
   });
 
