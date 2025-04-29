@@ -1,7 +1,4 @@
 import { prisma } from "@/lib/prisma";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { columns } from "./columns";
 import { DataTable } from "@/components/data-table";
@@ -21,11 +18,7 @@ export default async function Page({ params }: Params) {
       id,
     },
     include: {
-      properties: {
-        include: {
-          person: true,
-        },
-      },
+      persons: true,
     },
     orderBy: {
       name: "asc",
@@ -41,20 +34,12 @@ export default async function Page({ params }: Params) {
       <div className="flex justify-between">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">
-            {organization.name}
+            Responsáveis - {organization.name}
           </h2>
-        </div>
-        <div className="self-end">
-          <Button asChild>
-            <Link href={"organizations/create"}>
-              <Plus />
-              Criar Imóvel
-            </Link>
-          </Button>
         </div>
       </div>
 
-      <DataTable columns={columns} data={organization.properties} />
+      <DataTable columns={columns} data={organization.persons} />
     </div>
   );
 }

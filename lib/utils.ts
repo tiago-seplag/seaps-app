@@ -57,3 +57,14 @@ export const toUpperCase = (e: ChangeEvent<HTMLInputElement>) => {
 
   return e;
 };
+
+export const formatPhone = (value: string) => {
+  const str = value.replace(/\D/g, ""); // remove caracteres não numéricos
+
+  return str.length <= 10
+    ? str.replace(/(\d{2})(\d)/, "\($1\) $2").replace(/(\d{4})(\d)/, "$1-$2")
+    : str
+        .replace(/(\d{2})(\d)/, "\($1\) $2")
+        .replace(/(\d{1})(\d{4})(\d)/, "$1 $2-$3")
+        .slice(0, 16);
+};
