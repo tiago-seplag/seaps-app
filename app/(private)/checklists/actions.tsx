@@ -4,47 +4,61 @@ import axios from "axios";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import { Row } from "@tanstack/react-table";
-import { ChevronRight, Pen, Printer, Undo } from "lucide-react";
+import { ChevronRight, Ellipsis, Pen, Printer, Undo } from "lucide-react";
 import { useState } from "react";
 import { Column } from "./columns";
 
 import { toast } from "sonner";
 import { useUser } from "@/contexts/user-context";
 import { useRouter } from "next/navigation";
+import { ReOpenDialog } from "@/components/reopen-dialog";
+import { useModal } from "@/hooks/use-modal";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const MOBILE_BREAKPOINT = 768;
 
 export const Actions = ({ row }: { row: Row<Column> }) => {
   const { user } = useUser();
   const router = useRouter();
+  const reopenDialog = useModal();
 
   const [loading, setLoading] = useState(false);
 
   const handleGetReport = () => {
-    setLoading(true);
-    axios
-      .get("/api/reports/" + row.original.id, {
+    toast.promise(
+      axios.get("/api/reports/" + row.original.id, {
         responseType: "blob",
-      })
-      .then((value) => {
-        const blob = new Blob([value.data], { type: "text/html" });
-        const _url = window.URL.createObjectURL(blob);
-        if (_url) {
-          window
-            .open(
-              _url,
-              "Axios data",
-              window.innerWidth > MOBILE_BREAKPOINT
-                ? "width=820,height=800"
-                : "",
-            )
-            ?.focus();
-        }
-      })
-      .catch(() => toast.error("Erro ao gerar relatório"))
-      .finally(() => setLoading(false));
+      }),
+      {
+        loading: "Caregando Relatório...",
+        success: (data) => {
+          const blob = new Blob([data.data], { type: "text/html" });
+          const _url = window.URL.createObjectURL(blob);
+          if (_url) {
+            window
+              .open(
+                _url,
+                "Axios data",
+                window.innerWidth > MOBILE_BREAKPOINT
+                  ? "width=820,height=800"
+                  : "",
+              )
+              ?.focus();
+          }
+          return `Relatório gerado com sucesso`;
+        },
+        error: "Erro ao gerar relatório",
+      },
+    );
   };
 
   const handleReopenChecklist = () => {
@@ -52,59 +66,68 @@ export const Actions = ({ row }: { row: Row<Column> }) => {
     axios
       .post("/api/checklists/" + row.original.id + "/re-open")
       .then(() => {
-        toast.success("Checklist reaberto!");
+        toast.success(`Checklist ${row.original.id} reaberto!`);
         router.refresh();
+        reopenDialog.hide();
       })
       .catch(() => toast.error("Erro ao reabrir o checjlist"))
       .finally(() => setLoading(false));
   };
 
   return (
-    <div className={cn("flex gap-1", loading && "animate-pulse")}>
-      <Button
-        disabled={loading}
-        title="Visualizar"
-        variant="green"
-        className="h-6 w-6 p-2"
-        asChild
-      >
-        <Link href={"/checklists/" + row.original.id + "/items"}>
-          <ChevronRight size={16} />
-        </Link>
-      </Button>
-      {user?.role !== "EVALUATOR" && (
-        <>
-          <Button
-            disabled={loading}
-            variant="yellow"
-            title="Editar"
-            className="h-6 w-6 p-2"
-            asChild
-          >
-            <Link href={"/checklists/" + row.original.id + "/edit"}>
-              <Pen size={16} />
-            </Link>
+    <>
+      <ReOpenDialog
+        onSubmit={handleReopenChecklist}
+        onOpenChange={reopenDialog.toggle}
+        open={reopenDialog.visible}
+        loading={loading}
+      />
+      <DropdownMenu modal={false}>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size={"icon"} className="h-7 flex-1">
+            <Ellipsis />
           </Button>
-          <Button
-            disabled={loading || row.original.status === "OPEN"}
-            onClick={handleReopenChecklist}
-            variant="default"
-            className="h-6 w-6 p-2"
-            title="Reabrir"
-          >
-            <Undo size={16} />
-          </Button>
-        </>
-      )}
-      <Button
-        variant="zinc"
-        title="Imprimir"
-        className="h-6 w-6 p-2"
-        disabled={row.original.status === "OPEN" || loading}
-        onClick={handleGetReport}
-      >
-        <Printer size={16} />
-      </Button>
-    </div>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-56">
+          <DropdownMenuLabel>ID: {row.original.sid}</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuGroup>
+            <DropdownMenuItem asChild>
+              <Link href={"/checklists/" + row.original.id + "/items"}>
+                <ChevronRight size={16} />
+                Visualizar
+              </Link>
+            </DropdownMenuItem>
+            {user?.role !== "EVALUATOR" && (
+              <>
+                <DropdownMenuItem
+                  disabled={row.original.status === "CLOSED"}
+                  asChild
+                >
+                  <Link href={"/checklists/" + row.original.id + "/edit"}>
+                    <Pen size={16} />
+                    Editar
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  disabled={loading || row.original.status === "OPEN"}
+                  onClick={() => reopenDialog.show()}
+                >
+                  <Undo size={16} />
+                  Reabrir
+                </DropdownMenuItem>
+              </>
+            )}
+            <DropdownMenuItem
+              disabled={row.original.status === "OPEN" || loading}
+              onClick={handleGetReport}
+            >
+              <Printer size={16} />
+              Relatório
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </>
   );
 };
