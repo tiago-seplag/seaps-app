@@ -6,17 +6,19 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Row } from "@tanstack/react-table";
-import { ChevronRight, Pen, Printer /*, Redo*/ } from "lucide-react";
+import { ChevronRight, Pen, Printer, Undo } from "lucide-react";
 import { useState } from "react";
 import { Column } from "./columns";
 
 import { toast } from "sonner";
 import { useUser } from "@/contexts/user-context";
+import { useRouter } from "next/navigation";
 
 const MOBILE_BREAKPOINT = 768;
 
 export const Actions = ({ row }: { row: Row<Column> }) => {
   const { user } = useUser();
+  const router = useRouter();
 
   const [loading, setLoading] = useState(false);
 
@@ -42,6 +44,18 @@ export const Actions = ({ row }: { row: Row<Column> }) => {
         }
       })
       .catch(() => toast.error("Erro ao gerar relatório"))
+      .finally(() => setLoading(false));
+  };
+
+  const handleReopenChecklist = () => {
+    setLoading(true);
+    axios
+      .post("/api/checklists/" + row.original.id + "/re-open")
+      .then(() => {
+        toast.success("Checklist reaberto!");
+        router.refresh();
+      })
+      .catch(() => toast.error("Erro ao reabrir o checjlist"))
       .finally(() => setLoading(false));
   };
 
@@ -71,17 +85,15 @@ export const Actions = ({ row }: { row: Row<Column> }) => {
               <Pen size={16} />
             </Link>
           </Button>
-          {/* <Button
-            disabled={loading}
+          <Button
+            disabled={loading || row.original.status === "OPEN"}
+            onClick={handleReopenChecklist}
             variant="default"
             className="h-6 w-6 p-2"
             title="Reabrir"
-            asChild
           >
-            <Link href={"/checklists/" + row.original.id + "/edit"}>
-              <Redo size={16} />
-            </Link>
-          </Button> */}
+            <Undo size={16} />
+          </Button>
         </>
       )}
       <Button

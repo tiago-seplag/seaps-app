@@ -158,21 +158,18 @@ export async function createChecklist(
 }
 
 export async function finishChecklist(id: string, userId: string) {
-  const checklist = await prisma.checklist.findFirstOrThrow({
-    where: { id },
+  const checklist = await findChecklistById(id);
+  const checklistItems = await prisma.checklistItems.findMany({
+    where: { checklist_id: id },
     include: {
-      checklistItems: {
-        include: {
-          item: {
-            select: {
-              name: true,
-            },
-          },
-          _count: {
-            select: {
-              images: true,
-            },
-          },
+      item: {
+        select: {
+          name: true,
+        },
+      },
+      _count: {
+        select: {
+          images: true,
         },
       },
     },
@@ -197,7 +194,7 @@ export async function finishChecklist(id: string, userId: string) {
   let SUM_SCORE = 0;
   let COUNT_ITEMS = 0;
 
-  for (const item of checklist?.checklistItems) {
+  for (const item of checklistItems) {
     if (typeof item.score !== "number") {
       throw new ValidationError({
         message: "Todos os itens devem ser pontuatos.",
@@ -235,4 +232,44 @@ export async function finishChecklist(id: string, userId: string) {
   });
 
   return finishedChecklist;
+}
+
+export async function reOpenChecklist(id: string) {
+  const checklist = await findChecklistById(id);
+
+  if (checklist.status !== "CLOSED") {
+    throw new ValidationError({
+      message: "Esse checklist não pode ser reaberto",
+      statusCode: 400,
+      action: "Verifique se o checklist já foi finalizado",
+    });
+  }
+
+  const updatedChecklist = await prisma.checklist.update({
+    where: { id },
+    data: {
+      status: "OPEN",
+      finished_at: null,
+      score: 0,
+      classification: null,
+    },
+  });
+
+  return updatedChecklist;
+}
+
+export async function findChecklistById(id: string) {
+  const checklist = await prisma.checklist.findUnique({
+    where: { id },
+  });
+
+  if (!checklist) {
+    throw new ValidationError({
+      message: "Esse checklist não existe",
+      statusCode: 404,
+      action: "Verifique se o checklist informado está correto",
+    });
+  }
+
+  return checklist;
 }
