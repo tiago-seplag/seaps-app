@@ -24,8 +24,9 @@ import {
 } from "@/components/ui/select";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
-import { createResponsible } from "@/app/actions/create-responsible";
 import { toUpperCase } from "@/lib/utils";
+import { toast } from "sonner";
+import axios from "axios";
 
 const formSchema = z.object({
   name: z
@@ -65,10 +66,16 @@ export function CreatePersonForm() {
   }, []);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    createResponsible({
-      ...values,
-      phone: values.phone ? values.phone.replace(/\D/g, "") : undefined,
-    }).then(() => router.back());
+    return axios
+      .post("/api/responsible/", values)
+      .then(() => router.replace("/responsible"))
+      .catch((e) => {
+        if (e.response.data.messages?.length > 0) {
+          e.response.data.messages.map((msg: string) => toast.error(msg));
+        } else if (e.response.data.message) {
+          toast.error(e.response.data.message);
+        }
+      });
   }
 
   const formatPhone = (value: string) => {
