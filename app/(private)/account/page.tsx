@@ -1,13 +1,6 @@
 import { ProfileForm } from "./_components/form";
-import { getUser } from "@/lib/dal";
 
 export default async function Page() {
-  const user = await getUser();
-
-  if (!user) {
-    return null;
-  }
-
   return (
     <div className="flex flex-col gap-y-4">
       <div className="flex justify-between">
@@ -16,12 +9,7 @@ export default async function Page() {
         </div>
       </div>
 
-      <ProfileForm
-        user={{
-          email: user?.email,
-          name: user?.name,
-        }}
-      />
+      <ProfileForm />
     </div>
   );
 }

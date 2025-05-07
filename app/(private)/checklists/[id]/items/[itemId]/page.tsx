@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-import { GoBack } from "@/components/go-back";
 import { Images } from "./Images";
 import { getChecklistItemById } from "@/models/checklist-item";
 
@@ -28,17 +27,16 @@ export default async function Page({ params }: ProjectPageProps) {
   }
 
   return (
-    <div className="flex h-full flex-1 flex-col gap-8">
+    <div className="flex h-full flex-1 flex-col gap-4">
       <div className="flex flex-col justify-between gap-3 sm:flex-row">
         <div>
           <div className="flex items-center gap-3">
-            <GoBack />
-            <h2
-              className="line-clamp-1 break-words text-2xl font-bold"
+            <h3
+              className="line-clamp-1 break-words text-xl font-bold"
               title={checklistItem.item.name}
             >
-              {checklistItem.item.name}
-            </h2>
+              {checklistItem.item.name}:
+            </h3>
           </div>
           <div>
             <p className="text-wrap">{checklistItem.observation}</p>

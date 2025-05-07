@@ -8,6 +8,8 @@ import {
 import { ModeToggle } from "@/components/mode-toggle";
 import { UserProvider } from "@/contexts/user-context";
 import { cookies } from "next/headers";
+import { getUser } from "@/lib/dal";
+import { NotActivated } from "@/components/not-activated";
 
 export default async function Layout({
   children,
@@ -18,6 +20,12 @@ export default async function Layout({
 }>) {
   const cookieStore = await cookies();
   const defaultOpen = cookieStore.get("sidebar_state")?.value === "true";
+
+  const user = await getUser();
+
+  if (user && !user.is_active) {
+    return <NotActivated />;
+  }
 
   return (
     <SidebarProvider defaultOpen={defaultOpen}>
@@ -31,7 +39,7 @@ export default async function Layout({
           <ModeToggle />
         </header>
         <div className="mx-2 h-full rounded border bg-card p-4 shadow">
-          <UserProvider>{children}</UserProvider>
+          <UserProvider user={user}>{children}</UserProvider>
         </div>
       </SidebarInset>
     </SidebarProvider>

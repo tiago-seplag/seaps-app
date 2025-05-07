@@ -1,7 +1,7 @@
 "use client";
 
 import { Checklist } from "@prisma/client";
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, { createContext, useContext, ReactNode } from "react";
 
 type TChecklist = Checklist & {
   checklistItems: {
@@ -31,7 +31,6 @@ type TChecklist = Checklist & {
 // Define the context type
 interface ChecklistContextType {
   checklist: TChecklist | null;
-  setChecklist: React.Dispatch<React.SetStateAction<TChecklist | null>>;
 }
 
 const ChecklistContext = createContext<ChecklistContextType | undefined>(
@@ -41,13 +40,15 @@ const ChecklistContext = createContext<ChecklistContextType | undefined>(
 // Create a provider component
 interface ChecklistProviderProps {
   children: ReactNode;
+  checklist: TChecklist;
 }
 
-const ChecklistProvider: React.FC<ChecklistProviderProps> = ({ children }) => {
-  const [checklist, setChecklist] = useState<TChecklist | null>(null);
-
+const ChecklistProvider: React.FC<ChecklistProviderProps> = ({
+  children,
+  checklist,
+}) => {
   return (
-    <ChecklistContext.Provider value={{ checklist, setChecklist }}>
+    <ChecklistContext.Provider value={{ checklist }}>
       {children}
     </ChecklistContext.Provider>
   );

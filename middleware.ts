@@ -51,28 +51,6 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(redirectUrl);
   }
 
-  if (path === "/not-activated" && !authToken) {
-    const redirectUrl = request.nextUrl.clone();
-
-    redirectUrl.pathname = REDIRECT_WHEN_NOT_AUTHENTICATED_ROUTE;
-
-    return NextResponse.redirect(redirectUrl);
-  }
-
-  if (path === "/not-activated" && sessionToken) {
-    const decoded: any = jwt.decode(sessionToken.value);
-
-    if (decoded.is_active) {
-      const redirectUrl = request.nextUrl.clone();
-
-      redirectUrl.pathname = "/";
-
-      return NextResponse.redirect(redirectUrl);
-    }
-
-    return NextResponse.next();
-  }
-
   if (sessionToken && !publicRoute) {
     const decoded: any = jwt.decode(sessionToken.value);
 
@@ -84,14 +62,6 @@ export async function middleware(request: NextRequest) {
       const redirectUrl = request.nextUrl.clone();
 
       redirectUrl.pathname = REDIRECT_WHEN_NOT_AUTHENTICATED_ROUTE;
-
-      return NextResponse.redirect(redirectUrl);
-    }
-
-    if (!decoded.is_active) {
-      const redirectUrl = request.nextUrl.clone();
-
-      redirectUrl.pathname = "/not-activated";
 
       return NextResponse.redirect(redirectUrl);
     }

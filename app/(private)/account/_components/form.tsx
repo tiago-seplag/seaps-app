@@ -17,9 +17,9 @@ import {
 import { Input } from "@/components/ui/input";
 
 import { Button } from "@/components/ui/button";
-import { User } from "@prisma/client";
 import axios from "axios";
 import { useState } from "react";
+import { useUser } from "@/contexts/user-context";
 
 const profileFormSchema = z.object({
   username: z.string(),
@@ -29,7 +29,9 @@ const profileFormSchema = z.object({
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
 
 // This can come from your database or API.
-export function ProfileForm({ user }: { user: Pick<User, "name" | "email"> }) {
+export function ProfileForm() {
+  const { user } = useUser();
+
   const [tempPassword, setTempPassword] = useState("");
 
   const form = useForm<ProfileFormValues>({

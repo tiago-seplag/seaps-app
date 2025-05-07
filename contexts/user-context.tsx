@@ -1,27 +1,22 @@
 "use client";
 
-import React, {
-  createContext,
-  useContext,
-  useState,
-  ReactNode,
-  useEffect,
-} from "react";
+import { $Enums } from "@prisma/client";
+import React, { createContext, useContext, ReactNode } from "react";
 
 // Define the context type
 interface UserContextType {
   user: User | null;
-  setUser: (user: User | null) => void;
 }
 
 // Define the user type
 interface User {
-  id: string;
-  role: string;
   name: string;
-  is_active: boolean;
-  is_deleted: boolean;
+  id: string;
   email: string;
+  avatar: string | null;
+  role: $Enums.ROLES;
+  created_at: Date;
+  updated_at: Date;
 }
 
 // Create the context with a default value of undefined
@@ -30,21 +25,12 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 // Create a provider component
 interface UserProviderProps {
   children: ReactNode;
+  user: User | null;
 }
 
-const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-
-  useEffect(() => {
-    fetch("/api/auth/me")
-      .then((response) => response.json())
-      .then((data) => setUser(data));
-  }, []);
-
+const UserProvider: React.FC<UserProviderProps> = ({ children, user }) => {
   return (
-    <UserContext.Provider value={{ user, setUser }}>
-      {children}
-    </UserContext.Provider>
+    <UserContext.Provider value={{ user }}>{children}</UserContext.Provider>
   );
 };
 
