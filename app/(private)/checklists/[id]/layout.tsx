@@ -57,11 +57,11 @@ export default async function Layout({
             </div>
             <div>
               <p className="text-wrap">
-                {`${checklist.property.person?.name} - ${checklist.property.person?.role || ""} - ${formatPhone(checklist.property.person?.phone)}`}
+                {`${getFirstAndLastName(checklist.property.person?.name || "ANDREIA CAROLINA DOMIGUES FUJIOKA")} - ${checklist.property.person?.role || ""} - ${formatPhone(checklist.property.person?.phone)}`}
               </p>
             </div>
           </div>
-          <div className="self-start sm:self-end">
+          <div className="w-full sm:w-auto sm:self-end">
             {checklist.status === "CLOSED" && checklist.finished_at ? (
               <div className="w-full text-nowrap">
                 <p>

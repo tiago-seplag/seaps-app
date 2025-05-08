@@ -31,7 +31,9 @@ export default async function BreadcrumbSlot({
       </BreadcrumbItem>
       <BreadcrumbSeparator />
       <BreadcrumbItem>
-        <BreadcrumbPage>{checklist?.property.name}</BreadcrumbPage>
+        <BreadcrumbPage className="line-clamp-1 max-w-40 truncate text-ellipsis">
+          {checklist?.property.name}
+        </BreadcrumbPage>
       </BreadcrumbItem>
     </BreadcrumbList>
   );

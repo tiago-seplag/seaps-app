@@ -11,6 +11,7 @@ export const GoBack = ({ href }: { href?: string }) => {
     <Button
       onClick={() => (href ? router.replace(href) : router.back())}
       variant={"outline"}
+      className="min-w-9"
       size="icon"
     >
       <ArrowLeft />

@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
 
 import jwt from "jsonwebtoken";
 import { prisma } from "@/lib/prisma";
@@ -8,7 +6,7 @@ import { prisma } from "@/lib/prisma";
 async function verifyToken(token: string | null) {
   if (!token) return null;
 
-  const decoded: any = jwt.decode(token);
+  const decoded = jwt.decode(token) as { cpf: string };
 
   const user = await prisma.user.findFirst({
     select: {
@@ -29,17 +27,15 @@ async function verifyToken(token: string | null) {
 }
 
 export async function authMiddleware(req: NextRequest) {
-  const cookieStore = await cookies();
-
-  const token = cookieStore.get("SESSION");
+  const token = req.cookies.get("SESSION")?.value;
 
   if (!token) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  const user = await verifyToken(token.value);
+  const user = await verifyToken(token);
 
-  if (!user) {
+  if (!user || !user.is_active) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

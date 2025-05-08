@@ -42,8 +42,10 @@ export const FinishButton = ({ checklist }: { checklist: Checklist }) => {
     <Dialog>
       <DialogTrigger asChild>
         <Button
-          className="self-center"
-          disabled={user?.id !== checklist.user_id || checklist.status !== "OPEN"}
+          className="w-full self-center"
+          disabled={
+            user?.id !== checklist.user_id || checklist.status !== "OPEN"
+          }
         >
           Finalizar Checklist
         </Button>
