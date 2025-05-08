@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { columns } from "./columns";
 import { DataTable } from "@/components/data-table";
+import { GoBack } from "@/components/go-back";
 
 interface Params {
   params: Promise<{
@@ -32,7 +33,8 @@ export default async function Page({ params }: Params) {
   return (
     <div className="flex flex-col gap-y-4">
       <div className="flex justify-between">
-        <div>
+        <div className="flex items-center gap-1">
+          <GoBack />
           <h2 className="text-2xl font-bold tracking-tight">
             Responsáveis - {organization.name}
           </h2>

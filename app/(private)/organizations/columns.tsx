@@ -9,6 +9,7 @@ export const columns: ColumnDef<
   {
     _count: {
       properties: number;
+      persons: number;
     };
   } & {
     id: string;
@@ -32,20 +33,31 @@ export const columns: ColumnDef<
     header: "Nome",
   },
   {
-    accessorKey: "_count",
+    accessorKey: "_count.properties",
     header: "Imóveis",
     meta: {
       headerClassName: "hidden md:table-cell",
-      cellClassName: "truncate hidden md:table-cell max-w-40",
+      cellClassName: "hidden md:table-cell max-w-40",
+      size: 150,
     },
     accessorFn: (row) => row._count.properties,
+  },
+  {
+    accessorKey: "_count.persons",
+    header: "Responsáveis",
+    meta: {
+      headerClassName: "hidden md:table-cell",
+      cellClassName: "hidden md:table-cell max-w-40",
+      size: 150,
+    },
+    accessorFn: (row) => row._count.persons,
   },
   {
     accessorKey: "actions",
     header: "Ações",
     cell({ row }) {
       return (
-        <div className="flex gap-1">
+        <div className="space-x-2">
           <Button
             title="Responsáveis"
             variant="green"
@@ -68,6 +80,9 @@ export const columns: ColumnDef<
           </Button>
         </div>
       );
+    },
+    meta: {
+      size: 150,
     },
   },
 ];

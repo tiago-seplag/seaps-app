@@ -11,6 +11,7 @@ export async function getOrganizationsPaginated(page = 1, perPage = 10) {
       _count: {
         select: {
           properties: true,
+          persons: true,
         },
       },
     },

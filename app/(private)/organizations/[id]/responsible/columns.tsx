@@ -1,8 +1,11 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { formatPhone } from "@/lib/utils";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
+import { Pen } from "lucide-react";
+import Link from "next/link";
 
 export const columns: ColumnDef<{
   id: string;
@@ -53,6 +56,21 @@ export const columns: ColumnDef<{
     header: "Criado em",
     accessorFn(row) {
       return format(new Date(row.created_at), "dd/MM/yyyy");
+    },
+  },
+  {
+    accessorKey: "actions",
+    header: "Ações",
+    cell({ row }) {
+      return (
+        <div className="flex gap-1">
+          <Button variant="yellow" className="h-6 w-6 p-2" asChild>
+            <Link href={"/responsible/" + row.original.id}>
+              <Pen size={16} />
+            </Link>
+          </Button>
+        </div>
+      );
     },
   },
 ];
