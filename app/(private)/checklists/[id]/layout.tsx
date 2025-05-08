@@ -4,7 +4,6 @@ import { ENUM_PROPERTY, PropertyBadge } from "@/components/property-badge";
 import { format } from "date-fns";
 import { formatPhone, getFirstAndLastName } from "@/lib/utils";
 import { Suspense } from "react";
-import { getUser } from "@/lib/dal";
 import { getChecklistById } from "@/models/checklist";
 import { FinishButton } from "../_components/finish-checklist-button";
 import { ChecklistProvider } from "@/contexts/checklist-context";
@@ -20,8 +19,6 @@ export default async function Layout({
   children: React.ReactNode;
 }) {
   const { id } = await params;
-
-  const user = await getUser();
 
   let checklist;
 
@@ -77,10 +74,7 @@ export default async function Layout({
                 </p>
               </div>
             ) : (
-              user &&
-              user.id === checklist.user_id && (
-                <FinishButton checklist={checklist} />
-              )
+              <FinishButton checklist={checklist} />
             )}
           </div>
         </div>

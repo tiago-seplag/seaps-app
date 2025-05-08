@@ -15,8 +15,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useUser } from "@/contexts/user-context";
 
 export const FinishButton = ({ checklist }: { checklist: Checklist }) => {
+  const { user } = useUser();
+
   const router = useRouter();
 
   const handleFInishChecklist = () => {
@@ -36,30 +39,30 @@ export const FinishButton = ({ checklist }: { checklist: Checklist }) => {
   };
 
   return (
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button
-            className="self-center"
-            disabled={checklist.status !== "OPEN"}
-          >
-            Finalizar Checklist
-          </Button>
-        </DialogTrigger>
-        <DialogContent className="w-4/5 sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Deseja finalizar o checklist?</DialogTitle>
-          </DialogHeader>
-          <DialogFooter className="flex-row items-center justify-center space-x-1 md:gap-0">
-            <DialogClose asChild>
-              <Button type="button" variant="destructive">
-                Cancelar
-              </Button>
-            </DialogClose>
-            <Button type="submit" onClick={handleFInishChecklist}>
-              Confimar
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button
+          className="self-center"
+          disabled={user?.id !== checklist.user_id || checklist.status !== "OPEN"}
+        >
+          Finalizar Checklist
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="w-4/5 sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Deseja finalizar o checklist?</DialogTitle>
+        </DialogHeader>
+        <DialogFooter className="flex-row items-center justify-center space-x-1 md:gap-0">
+          <DialogClose asChild>
+            <Button type="button" variant="destructive">
+              Cancelar
             </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </DialogClose>
+          <Button type="submit" onClick={handleFInishChecklist}>
+            Confimar
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
