@@ -68,7 +68,10 @@ export function CreatePersonForm() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     return axios
       .post("/api/responsible/", values)
-      .then(() => router.replace("/responsible"))
+      .then(() => {
+        toast.success("Responsável criado com sucesso");
+        router.back();
+      })
       .catch((e) => {
         if (e.response.data.messages?.length > 0) {
           e.response.data.messages.map((msg: string) => toast.error(msg));
