@@ -44,7 +44,8 @@ export const FinishButton = ({ checklist }: { checklist: Checklist }) => {
         <Button
           className="w-full self-center"
           disabled={
-            user?.id !== checklist.user_id || checklist.status !== "OPEN"
+            (user?.id !== checklist.user_id && user?.role !== "ADMIN") ||
+            checklist.status !== "OPEN"
           }
         >
           Finalizar Checklist

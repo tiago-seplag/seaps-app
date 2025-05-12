@@ -132,7 +132,7 @@ export function CreateCheckListForm() {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {models.map((item) => (
+                    {models?.map((item) => (
                       <SelectItem key={item.id} value={String(item.id)}>
                         {item.name}
                       </SelectItem>
@@ -198,7 +198,7 @@ export function CreateCheckListForm() {
                     onClick={() => {
                       router.push(
                         "/properties/create?organization_id=" +
-                        form.getValues("organization_id"),
+                          form.getValues("organization_id"),
                       );
                     }}
                     size="icon"

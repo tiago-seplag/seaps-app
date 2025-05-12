@@ -157,7 +157,10 @@ export async function createChecklist(
   return checklist;
 }
 
-export async function finishChecklist(id: string, userId: string) {
+export async function finishChecklist(
+  id: string,
+  user: { id: string; role: string },
+) {
   const checklist = await findChecklistById(id);
   const checklistItems = await prisma.checklistItems.findMany({
     where: { checklist_id: id },
@@ -183,7 +186,7 @@ export async function finishChecklist(id: string, userId: string) {
     });
   }
 
-  if (userId !== checklist.user_id) {
+  if (user.id !== checklist.user_id && user.role !== "ADMIN") {
     throw new ValidationError({
       message: "Apenas o responsável pode finalizar",
       action: "Pessa ao responsável para finalizar esse checklist",

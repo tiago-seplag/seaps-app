@@ -6,10 +6,13 @@ import { Pagination } from "@/components/pagination";
 import { getChecklistsPaginated } from "@/models/checklist";
 import { DataFilterForm } from "./_components/filter-form";
 import Link from "next/link";
+import { getUser } from "@/lib/dal";
 
 export default async function Page(props: {
   searchParams: Promise<SearchParams>;
 }) {
+  const user = await getUser();
+
   const { page, perPage, ...searchParams } = await props.searchParams;
 
   const { meta, data: checklists } = await getChecklistsPaginated(
@@ -25,12 +28,14 @@ export default async function Page(props: {
           <h2 className="text-2xl font-bold tracking-tight">Checklists</h2>
         </div>
         <div className="self-end">
-          <Button asChild>
-            <Link href={"checklists/create"}>
-              <Plus />
-              Criar Checklist
-            </Link>
-          </Button>
+          {user?.role !== "EVALUATOR" && (
+            <Button asChild>
+              <Link href={"checklists/create"}>
+                <Plus />
+                Criar Checklist
+              </Link>
+            </Button>
+          )}
         </div>
       </div>
 
