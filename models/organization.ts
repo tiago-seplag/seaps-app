@@ -15,7 +15,9 @@ export async function getOrganizationsPaginated(page = 1, perPage = 10) {
         },
       },
     },
-
+    orderBy: {
+      name: "asc",
+    },
     take: meta.per_page,
     skip: (meta.current_page - 1) * meta.per_page,
   });
