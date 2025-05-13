@@ -24,8 +24,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-const MOBILE_BREAKPOINT = 768;
-
 export const Actions = ({ row }: { row: Row<Column> }) => {
   const { user } = useUser();
   const router = useRouter();
@@ -44,15 +42,11 @@ export const Actions = ({ row }: { row: Row<Column> }) => {
           const blob = new Blob([data.data], { type: "text/html" });
           const _url = window.URL.createObjectURL(blob);
           if (_url) {
-            window
-              .open(
-                _url,
-                "Axios data",
-                window.innerWidth > MOBILE_BREAKPOINT
-                  ? "width=820,height=800"
-                  : "",
-              )
-              ?.focus();
+            const a = document.createElement("a");
+            a.href = _url;
+            a.download = `${row.original.sid.replace("/", "_")}.pdf`;
+            a.click();
+            window.URL.revokeObjectURL(_url);
           }
           return `Relatório gerado com sucesso`;
         },
