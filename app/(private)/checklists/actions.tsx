@@ -39,7 +39,7 @@ export const Actions = ({ row }: { row: Row<Column> }) => {
       {
         loading: "Caregando Relatório...",
         success: (data) => {
-          const blob = new Blob([data.data], { type: "text/html" });
+          const blob = new Blob([data.data], { type: "img/pdf" });
           const _url = window.URL.createObjectURL(blob);
           if (_url) {
             const a = document.createElement("a");

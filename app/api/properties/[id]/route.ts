@@ -9,7 +9,7 @@ const propertySchema = z.object({
   organization_id: z.string(),
   name: z.string().min(2),
   address: z.string().optional(),
-  type: z.string(),
+  type: z.enum(["GRANT", "OWN", "RENTED"]),
   person_id: z.string(),
 });
 
