@@ -14,18 +14,25 @@ async function getHandler(
     const checklist = await getChecklistById(id);
 
     const response = await axios.post(
-      process.env.REPORT_URL + "/reports/checklist?id=" + id,
+      process.env.REPORT_URL + "?id=" + id,
       checklist,
-      {
-        responseType: "blob",
-      },
+      { responseType: "arraybuffer" },
     );
 
     if (response.status !== 200) {
-      return new Response(response.data);
+      return Response.json(
+        { error: "Erro ao gerar o PDF" },
+        { status: response.status },
+      );
     }
 
-    return Response.json({ error: `unknown error` }, { status: 500 });
+    return new Response(response.data, {
+      status: 200,
+      headers: {
+        "Content-Type": "application/pdf",
+        "Content-Disposition": 'attachment; filename="relatorio.pdf"',
+      },
+    });
   } catch (error) {
     if (error instanceof ValidationError)
       return Response.json(error, { status: error.statusCode });
