@@ -65,24 +65,6 @@ export async function updateUserConfigs(
   userId: string,
   data: z.infer<typeof updateConfigSchema>,
 ) {
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-  });
-
-  if (user?.role === "ADMIN") {
-    throw new ValidationError({
-      message: "Você não pode alterar um usuário administrador.",
-      action: `Entre em contato com o suporte.`,
-    });
-  }
-
-  if (data.role === "ADMIN") {
-    throw new ValidationError({
-      message: "Você não pode promover um usuário a administrador.",
-      action: `Entre em contato com o suporte.`,
-    });
-  }
-
   const updateUser = await prisma.user.update({
     where: {
       id: userId,

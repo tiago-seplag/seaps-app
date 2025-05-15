@@ -171,11 +171,7 @@ export function EditUserForm({
                           { id: "EVALUATOR", name: "AVALIADOR" },
                           { id: "SUPERVISOR", name: "SUPERVISOR" },
                         ].map((item) => (
-                          <SelectItem
-                            key={item.id}
-                            value={item.id}
-                            disabled={item.id === "ADMIN"}
-                          >
+                          <SelectItem key={item.id} value={item.id}>
                             {item.name}
                           </SelectItem>
                         ))}
