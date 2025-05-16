@@ -10,6 +10,7 @@ async function postHandler(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const cookieStore = await cookies();
   const code = searchParams.get("code");
+  const redirect_uri = searchParams.get("redirect_uri");
 
   if (code) {
     const data = await fetch(config.url_token, {
@@ -21,11 +22,9 @@ async function postHandler(request: NextRequest) {
         grant_type: config.grant_type!,
         client_id: config.client_id!,
         code: code,
-        redirect_uri: config.redirect_uri,
+        redirect_uri: redirect_uri || config.redirect_uri,
       }),
-    })
-      .then((data) => data.json())
-      .catch((e) => console.log(e));
+    }).then((data) => data.json());
 
     if (data.access_token) {
       const decoded: any = jwt.decode(data.access_token);

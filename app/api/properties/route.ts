@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
+import { getPropertiesPaginated } from "@/models/property";
 import { authMiddleware } from "@/utils/authentication";
 import { withMiddlewares } from "@/utils/handler";
-import { generateMetaPagination } from "@/utils/meta-pagination";
 import { validation } from "@/utils/validate";
 import { NextRequest } from "next/server";
 import { z } from "zod";
@@ -9,31 +9,12 @@ import { z } from "zod";
 async function getHandler(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
 
-  const total = await prisma.property.count();
-
-  const meta = generateMetaPagination(
+  const { data, meta } = await getPropertiesPaginated(
     Number(searchParams.get("page") || 1),
     Number(searchParams.get("per_page") || 10),
-    total,
   );
 
-  const properties = await prisma.property.findMany({
-    include: {
-      organization: true,
-      person: {
-        select: { name: true },
-      },
-    },
-    orderBy: {
-      organization: {
-        name: "asc",
-      },
-    },
-    take: meta.per_page,
-    skip: (meta.current_page - 1) * meta.per_page,
-  });
-
-  return Response.json({ data: properties, meta });
+  return Response.json({ data, meta });
 }
 
 const propertySchema = z.object({

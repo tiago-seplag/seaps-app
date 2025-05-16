@@ -14,9 +14,7 @@ export async function getPropertiesPaginated(page = 1, perPage = 10) {
       },
     },
     orderBy: {
-      organization: {
-        name: "asc",
-      },
+      created_at: "desc",
     },
     take: meta.per_page,
     skip: (meta.current_page - 1) * meta.per_page,

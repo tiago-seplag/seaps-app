@@ -5,13 +5,15 @@ import { validation } from "@/utils/validate";
 import { NextRequest } from "next/server";
 import { z } from "zod";
 
-const propertySchema = z.object({
-  organization_id: z.string(),
-  name: z.string().min(2),
-  address: z.string().optional(),
-  type: z.enum(["GRANT", "OWN", "RENTED"]),
-  person_id: z.string(),
-});
+const propertySchema = z
+  .object({
+    organization_id: z.string(),
+    name: z.string().min(2),
+    address: z.string().optional(),
+    type: z.enum(["GRANT", "OWN", "RENTED"]),
+    person_id: z.string(),
+  })
+  .strict();
 
 async function getHandler(
   _: Request,
