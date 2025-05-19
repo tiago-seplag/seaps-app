@@ -11,6 +11,19 @@ async function postHandler(request: NextRequest) {
   const cookieStore = await cookies();
   const code = searchParams.get("code");
   const redirect_uri = searchParams.get("redirect_uri");
+  const code_verifier = searchParams.get("code_verifier");
+
+  const body: any = {
+    grant_type: config.grant_type!,
+    client_id: config.client_id!,
+    code: code,
+    redirect_uri: redirect_uri,
+  };
+
+  if (code_verifier && redirect_uri) {
+    body.redirect_uri = redirect_uri;
+    body.code_verifier = code_verifier;
+  }
 
   if (code) {
     const data = await fetch(config.url_token, {
@@ -18,12 +31,7 @@ async function postHandler(request: NextRequest) {
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
       },
-      body: new URLSearchParams({
-        grant_type: config.grant_type!,
-        client_id: config.client_id!,
-        code: code,
-        redirect_uri: redirect_uri || config.redirect_uri,
-      }),
+      body: new URLSearchParams(body),
     }).then((data) => data.json());
 
     if (data.access_token) {
