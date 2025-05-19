@@ -28,21 +28,15 @@ const postHandler = async (request: NextRequest) => {
 
 const getHandler = async (request: NextRequest) => {
   const searchParams = request.nextUrl.searchParams;
-  const userId = request.headers.get("x-user-id")!;
-  const role = request.headers.get("x-user-role")!;
 
   try {
     const checklists = await getChecklistsPaginated(
       Number(searchParams.get("page")),
       Number(searchParams.get("per_page")),
-      role === "ADMIN "
-        ? undefined
-        : {
-            user: userId,
-          },
     );
     return Response.json(checklists);
   } catch (error) {
+    console.log(error);
     if (error instanceof ValidationError)
       return Response.json(error, { status: error.statusCode });
     return Response.json({ error }, { status: 500 });
