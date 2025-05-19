@@ -9,15 +9,15 @@ import jwt from "jsonwebtoken";
 async function postHandler(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const cookieStore = await cookies();
-  const code = searchParams.get("code");
+  const code = searchParams.get("code")!;
   const redirect_uri = searchParams.get("redirect_uri");
   const code_verifier = searchParams.get("code_verifier");
 
-  const body: any = {
+  const body: Record<string, string> = {
     grant_type: config.grant_type!,
     client_id: config.client_id!,
     code: code,
-    redirect_uri: redirect_uri,
+    redirect_uri: config.redirect_uri,
   };
 
   if (code_verifier && redirect_uri) {
