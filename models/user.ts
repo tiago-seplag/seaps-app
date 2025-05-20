@@ -39,7 +39,7 @@ export async function getUsersPaginated(
 
   if (searchParams?.name) {
     filter.name = {
-      contains: searchParams?.name,
+      contains: searchParams?.name.toString().toUpperCase(),
     };
   }
 
