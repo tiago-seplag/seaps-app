@@ -18,8 +18,8 @@ const putHandler = async (
   const data: ResponsibleSchema = await request.json();
 
   try {
-    const checklist = await updateResponsible(data, id);
-    return Response.json(checklist);
+    const responsible = await updateResponsible(data, id);
+    return Response.json(responsible);
   } catch (error) {
     if (error instanceof ValidationError)
       return Response.json(error, { status: error.statusCode });

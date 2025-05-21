@@ -55,11 +55,13 @@ export default async function Layout({
                 {checklist.property.address}
               </p>
             </div>
-            <div>
-              <p className="text-wrap">
-                {`${getFirstAndLastName(checklist.property.person?.name || "ANDREIA CAROLINA DOMIGUES FUJIOKA")} - ${checklist.property.person?.role || ""} - ${formatPhone(checklist.property.person?.phone)}`}
-              </p>
-            </div>
+            {checklist.property.person && (
+              <div>
+                <p className="text-wrap">
+                  {`${getFirstAndLastName(checklist.property.person?.name)} - ${checklist.property.person?.role || ""} - ${formatPhone(checklist.property.person?.phone)}`}
+                </p>
+              </div>
+            )}
           </div>
           <div className="w-full sm:w-auto sm:self-end">
             {checklist.status === "CLOSED" && checklist.finished_at ? (

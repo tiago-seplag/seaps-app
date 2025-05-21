@@ -1,19 +1,14 @@
+import { ValidationError } from "@/errors/validation-error";
 import { prisma } from "@/lib/prisma";
+import {
+  PropertySchema,
+  propertySchema,
+  updatePropertyById,
+} from "@/models/property";
 import { authMiddleware } from "@/utils/authentication";
 import { withMiddlewares } from "@/utils/handler";
 import { validation } from "@/utils/validate";
 import { NextRequest } from "next/server";
-import { z } from "zod";
-
-const propertySchema = z
-  .object({
-    organization_id: z.string(),
-    name: z.string().min(2),
-    address: z.string().optional(),
-    type: z.enum(["GRANT", "OWN", "RENTED"]),
-    person_id: z.string(),
-  })
-  .strict();
 
 async function getHandler(
   _: Request,
@@ -37,14 +32,17 @@ const putHandler = async (
   { params }: { params: Promise<{ id: string }> },
 ) => {
   const { id } = await params;
-  const values: z.infer<typeof propertySchema> = await request.json();
+  const data: PropertySchema = await request.json();
 
-  const property = await prisma.property.update({
-    where: { id },
-    data: values,
-  });
-
-  return Response.json(property);
+  try {
+    const property = await updatePropertyById(id, data);
+    return Response.json(property);
+  } catch (error) {
+    console.log(error);
+    if (error instanceof ValidationError)
+      return Response.json(error, { status: error.statusCode });
+    return Response.json({ error }, { status: 500 });
+  }
 };
 
 export const GET = withMiddlewares([authMiddleware], getHandler);

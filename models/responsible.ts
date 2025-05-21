@@ -1,4 +1,3 @@
-import { ValidationError } from "@/errors/validation-error";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 
@@ -15,34 +14,16 @@ export const responsibleSchema = z
 export type ResponsibleSchema = z.infer<typeof responsibleSchema>;
 
 export async function updateResponsible(data: ResponsibleSchema, id: string) {
-  const verifyEmail = await getResponsibleByEmail(data.email, id);
-
-  if (verifyEmail) {
-    throw new ValidationError({
-      message: "Email já em uso.",
-      action: `Insira outro email.`,
-    });
-  }
-
-  const property = await prisma.person.update({
+  const person = await prisma.person.update({
     where: { id },
     data: data,
   });
 
-  return Response.json(property);
+  return Response.json(person);
 }
 
 export async function createResponsible(data: ResponsibleSchema) {
   const values = data;
-
-  const verifyEmail = await getResponsibleByEmail(values.email);
-
-  if (verifyEmail) {
-    throw new ValidationError({
-      message: "Email já em uso.",
-      action: `Insira outro email.`,
-    });
-  }
 
   const responsible = await prisma.person.create({
     data: values,
@@ -51,7 +32,7 @@ export async function createResponsible(data: ResponsibleSchema) {
   return responsible;
 }
 
-async function getResponsibleByEmail(email: string, id?: string) {
+export async function getResponsibleByEmail(email: string, id?: string) {
   let notFilter = {};
   if (id) {
     notFilter = {

@@ -38,7 +38,7 @@ const formSchema = z.object({
   type: z.string({
     message: "Selecione o tipo do imóvel",
   }),
-  person_id: z.string(),
+  person_id: z.string().uuid().optional(),
 });
 
 export function EditPropertyForm({ property }: { property: Property }) {
@@ -53,7 +53,7 @@ export function EditPropertyForm({ property }: { property: Property }) {
       address: property.address || "",
       name: property.name,
       organization_id: property.organization_id,
-      person_id: property.person_id || "",
+      person_id: property.person_id || undefined,
       type: property.type,
     },
   });
@@ -92,7 +92,6 @@ export function EditPropertyForm({ property }: { property: Property }) {
             <FormItem className="w-full">
               <FormLabel>Orgão</FormLabel>
               <Select
-                disabled
                 defaultValue={property.organization_id}
                 onValueChange={field.onChange}
               >
