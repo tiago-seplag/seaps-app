@@ -15,12 +15,16 @@ const putHandler = async (
   { params }: { params: Promise<{ id: string }> },
 ) => {
   const userId = request.headers.get("x-user-id")!;
+  const role = request.headers.get("x-user-role")!;
 
   const { id } = await params;
   const data = await request.json();
 
   try {
-    const finishedChecklist = await updateChecklistItem(id, userId, data);
+    const finishedChecklist = await updateChecklistItem(id, data, {
+      id: userId,
+      role,
+    });
     return Response.json(finishedChecklist);
   } catch (error) {
     if (error instanceof ValidationError)

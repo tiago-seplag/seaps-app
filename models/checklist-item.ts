@@ -47,8 +47,11 @@ export async function getChecklistItemById(id: string) {
 
 export async function updateChecklistItem(
   id: string,
-  userId: string,
   data: UpdateChecklistItemSchema,
+  user: {
+    id: string;
+    role: string;
+  },
 ) {
   const checklistItem = await prisma.checklistItems.findUnique({
     where: { id },
@@ -61,7 +64,10 @@ export async function updateChecklistItem(
     },
   });
 
-  if (checklistItem?.checklist.user_id !== userId) {
+  if (
+    checklistItem?.checklist.user_id !== user.id &&
+    user.role === "EVALUATOR"
+  ) {
     throw new ValidationError({
       message: "Apenas o responsável pode editar o item",
       action: "Pessa ao responsável para realizar o checklist",
