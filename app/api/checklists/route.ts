@@ -36,10 +36,10 @@ const getHandler = async (request: NextRequest) => {
       Number(searchParams.get("page")),
       Number(searchParams.get("per_page")),
       role !== "ADMIN"
-        ? undefined
-        : {
+        ? {
             user: userId,
-          },
+          }
+        : undefined,
     );
     return Response.json(checklists);
   } catch (error) {
