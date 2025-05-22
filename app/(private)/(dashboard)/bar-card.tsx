@@ -24,10 +24,12 @@ export function BarComponent({ data }: { data: Data[] }) {
     <Card className="border-none p-0 shadow-none">
       <CardHeader>
         <CardTitle>Total de checklist por Status</CardTitle>
-        {/* <CardDescription>January - June 2024</CardDescription> */}
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig}>
+        <ChartContainer
+          config={chartConfig}
+          className="aspect-auto h-[350px] w-full"
+        >
           <BarChart accessibilityLayer data={data}>
             <CartesianGrid vertical={false} />
             <YAxis domain={[0, "dataMax"]} />

@@ -22,7 +22,7 @@ model Organization {
 model User {
   id               String      @id @default(uuid())
   name             String
-  email            String      @unique()
+  email            String
   cpf              String      @unique()
   password         String?
   avatar           String?
@@ -41,6 +41,8 @@ enum ROLES {
   ADMIN
   SUPERVISOR
   EVALUATOR
+
+  // @@map("USER_ROLES")
 }
 
 model Person {
@@ -61,15 +63,15 @@ model Person {
 }
 
 model Property {
-  id              String   @id @default(uuid())
+  id              String        @id @default(uuid())
   organization_id String
   person_id       String?
   name            String
   address         String?
-  type            String   @default("OWN")
+  type            PROPERTY_TYPE @default(OWN)
   location        String?
-  created_at      DateTime @default(now())
-  updated_at      DateTime @default(now()) @updatedAt()
+  created_at      DateTime      @default(now())
+  updated_at      DateTime      @default(now()) @updatedAt()
 
   organization Organization @relation(fields: [organization_id], references: [id])
   person       Person?      @relation(fields: [person_id], references: [id])
@@ -77,6 +79,14 @@ model Property {
   checklist Checklist[]
 
   @@map("properties")
+}
+
+enum PROPERTY_TYPE {
+  OWN
+  RENTED
+  GRANT
+
+  @@map("PROPERTY_TYPE")
 }
 
 model Model {
@@ -95,15 +105,15 @@ model Model {
 
 model Item {
   id         String   @id @unique @default(uuid())
-  item_id    String?
+  // item_id    String?
   level      Int      @default(0)
   name       String
   is_deleted Boolean  @default(false)
   created_at DateTime @default(now())
   updated_at DateTime @default(now()) @updatedAt()
 
-  items          Item[]           @relation("items")
-  item           Item?            @relation("items", fields: [item_id], references: [id])
+  // items          Item[]           @relation("items")
+  // item           Item?            @relation("items", fields: [item_id], references: [id])
   checklistItems ChecklistItems[]
   modelItems     ModelItems[]
 
@@ -153,6 +163,8 @@ model ModelItems {
 enum STATUS {
   OPEN
   CLOSED
+
+  @@map("CHECKLIST_STATUS")
 }
 
 model ChecklistItems {
