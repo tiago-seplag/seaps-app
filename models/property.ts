@@ -15,8 +15,21 @@ export const propertySchema = z
 
 export type PropertySchema = z.infer<typeof propertySchema>;
 
-export async function getPropertiesPaginated(page = 1, perPage = 10) {
-  const total = await prisma.property.count();
+export async function getPropertiesPaginated(
+  page = 1,
+  perPage = 10,
+  searchParams: URLSearchParams,
+) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const filter: any = {};
+
+  if (searchParams.get("organization_id")) {
+    filter.organization_id = searchParams.get("organization_id");
+  }
+
+  const total = await prisma.property.count({
+    where: filter,
+  });
 
   const meta = generateMetaPagination(page, perPage, total);
 
@@ -30,6 +43,7 @@ export async function getPropertiesPaginated(page = 1, perPage = 10) {
     orderBy: {
       created_at: "desc",
     },
+    where: filter,
     take: meta.per_page,
     skip: (meta.current_page - 1) * meta.per_page,
   });

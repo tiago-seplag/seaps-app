@@ -26,7 +26,7 @@ export async function createResponsible(data: ResponsibleSchema) {
   const values = data;
 
   const responsible = await prisma.person.create({
-    data: values,
+    data: { ...values, email: values.email.toLowerCase() },
   });
 
   return responsible;

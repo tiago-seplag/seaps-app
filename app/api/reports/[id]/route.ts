@@ -26,11 +26,15 @@ async function getHandler(
       );
     }
 
-    return new Response(response.data, {
+    const body = Buffer.from(response.data, "binary");
+
+    return new Response(body, {
       status: 200,
       headers: {
         "Content-Type": "application/pdf",
-        "Content-Disposition": 'attachment; filename="relatorio.pdf"',
+        "Content-Length": String(body.byteLength),
+        "Cache-Control": "public, max-age=300",
+        "Content-Disposition": "inline; filename=generated.pdf",
       },
     });
   } catch (error) {

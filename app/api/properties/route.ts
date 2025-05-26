@@ -9,9 +9,13 @@ import { z } from "zod";
 async function getHandler(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
 
+  const page = searchParams.get("page") || "1";
+  const per_page = searchParams.get("per_page") || "10";
+
   const { data, meta } = await getPropertiesPaginated(
-    Number(searchParams.get("page") || 1),
-    Number(searchParams.get("per_page") || 10),
+    Number(page),
+    Number(per_page),
+    searchParams,
   );
 
   return Response.json({ data, meta });
