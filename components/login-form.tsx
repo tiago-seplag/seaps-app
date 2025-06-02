@@ -1,5 +1,4 @@
 "use client";
-/* eslint-disable @next/next/no-img-element */
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -10,6 +9,7 @@ import { config } from "@/utils/mt-login";
 import Link from "next/link";
 import Image from "next/image";
 import Logo from "../assets/logo-gov.png";
+import MtLoginLogo from "../public/mt-login.png";
 
 export function LoginForm() {
   const router = useRouter();
@@ -45,17 +45,18 @@ export function LoginForm() {
               </div>
               <Button
                 type="button"
-                className="h-12 w-full py-1"
+                className="h-12 w-full py-1 font-bold uppercase"
                 asChild
                 size={"lg"}
               >
                 <Link href={config.url_login}>
-                  <img
-                    alt="mt-login-logo"
-                    className="h-full"
-                    src="https://dev.login.mt.gov.br/auth/resources/3fl3k/login/mtlogin_v3/dist/assets/icon-DH2B8051.png"
+                  Entrar com
+                  <Image
+                    src={MtLoginLogo}
+                    width={40}
+                    height={40}
+                    alt={"MT Login Logo"}
                   />
-                  Entrar com MT Login
                 </Link>
               </Button>
             </div>
