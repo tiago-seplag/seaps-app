@@ -18,12 +18,12 @@ export type PropertySchema = z.infer<typeof propertySchema>;
 export async function getPropertiesPaginated(
   page = 1,
   perPage = 10,
-  searchParams: URLSearchParams,
+  searchParams?: URLSearchParams,
 ) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const filter: any = {};
 
-  if (searchParams.get("organization_id")) {
+  if (searchParams?.get("organization_id")) {
     filter.organization_id = searchParams.get("organization_id");
   }
 

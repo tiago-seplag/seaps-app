@@ -24,13 +24,15 @@ import {
 } from "@/components/ui/form";
 
 import { Organization, User } from "@prisma/client";
-import { getFirstAndLastName } from "@/lib/utils";
+import { getFirstAndLastName, toUpperCase } from "@/lib/utils";
 import axios from "axios";
+import { Input } from "@/components/ui/input";
 
 const filterSchema = z.object({
   organization: z.string().optional(),
   user: z.string().optional(),
   status: z.string().optional(),
+  property_name: z.string().optional(),
 });
 
 export function DataFilterForm() {
@@ -40,6 +42,9 @@ export function DataFilterForm() {
 
   const form = useForm<z.infer<typeof filterSchema>>({
     resolver: zodResolver(filterSchema),
+    defaultValues: {
+      property_name: searchParams.get("property_name") || "",
+    },
   });
 
   const [organizations, setOrganizations] = useState<Organization[]>([]);
@@ -50,6 +55,7 @@ export function DataFilterForm() {
       organization: "",
       user: "",
       status: "",
+      property_name: "",
     });
     replace(pathname);
   };
@@ -80,7 +86,7 @@ export function DataFilterForm() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="grid grid-cols-2 gap-2 sm:grid-cols-3"
+        className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4"
       >
         <FormField
           control={form.control}
@@ -106,6 +112,21 @@ export function DataFilterForm() {
                   ))}
                 </SelectContent>
               </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="property_name"
+          render={({ field }) => (
+            <FormItem className="w-full">
+              <FormLabel>Nome do Imóvel</FormLabel>
+              <Input
+                {...field}
+                placeholder="Insira o nome do Imóvel"
+                onBlur={(e) => field.onChange(toUpperCase(e))}
+              />
               <FormMessage />
             </FormItem>
           )}
@@ -163,7 +184,7 @@ export function DataFilterForm() {
             </FormItem>
           )}
         />
-        <div className="col-span-1 space-x-2 self-end justify-self-end sm:col-span-3">
+        <div className="col-span-full space-x-2 self-end justify-self-end">
           <Button type="submit">Filtrar</Button>
           <Button
             variant="ghost"
