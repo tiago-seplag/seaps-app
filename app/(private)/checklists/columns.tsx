@@ -20,6 +20,24 @@ const ENUM = {
   },
 };
 
+const CLASSIFICATION_ENUM = {
+  0: {
+    label: "RUIM",
+    style: "border-red-800 bg-red-200 text-red-900 hover:bg-red-200/80",
+  },
+  1: {
+    label: "REGULAR",
+    style:
+      "border-yellow-800 bg-yellow-200 text-yellow-900 hover:bg-yellow-200/80",
+  },
+  2: {
+    label: "BOM",
+    style: "border-green-800 bg-green-200 text-green-900 hover:bg-green-200/80",
+  },
+};
+
+type CLASSIFICATION = 0 | 1 | 2;
+
 export type Column = {
   user: {
     name: string;
@@ -78,6 +96,36 @@ export const columns: ColumnDef<Column>[] = [
           {ENUM[row.original.status].label}
         </Badge>
       );
+    },
+  },
+  {
+    accessorKey: "classification",
+    header: "Classificação",
+    accessorFn(row) {
+      return row.organization.name;
+    },
+    cell({ row }) {
+      return CLASSIFICATION_ENUM[
+        row.original.classification as CLASSIFICATION
+      ] ? (
+        <Badge
+          className={
+            CLASSIFICATION_ENUM[row.original.classification as CLASSIFICATION]
+              .style
+          }
+        >
+          {
+            CLASSIFICATION_ENUM[row.original.classification as CLASSIFICATION]
+              .label
+          }
+        </Badge>
+      ) : (
+        "--"
+      );
+    },
+    meta: {
+      headerClassName: "hidden md:table-cell",
+      cellClassName: "truncate hidden md:table-cell",
     },
   },
   {

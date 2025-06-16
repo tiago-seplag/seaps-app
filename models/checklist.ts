@@ -23,6 +23,15 @@ export async function getChecklistsPaginated(
     filter.status = searchParams.status;
   }
 
+  if (searchParams?.property_name) {
+    filter.property = {
+      name: {
+        contains: searchParams.property_name as string,
+        mode: 'insensitive',
+      },
+    };
+  }
+
   if (searchParams?.organization) {
     filter.organization_id = searchParams.organization;
   }

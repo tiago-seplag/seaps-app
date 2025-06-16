@@ -35,7 +35,7 @@ export async function authMiddleware(req: NextRequest) {
 
   const user = await verifyToken(token);
 
-  if (!user || !user.is_active) {
+  if (!user || (!user.is_active && req.nextUrl.pathname !== "/api/auth/me")) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
