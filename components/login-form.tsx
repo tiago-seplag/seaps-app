@@ -10,6 +10,8 @@ import Link from "next/link";
 import Image from "next/image";
 import Logo from "../assets/logo-gov.png";
 import MtLoginLogo from "../public/mt-login.png";
+import { Label } from "./ui/label";
+import { Input } from "./ui/input";
 
 export function LoginForm() {
   const router = useRouter();
@@ -43,22 +45,56 @@ export function LoginForm() {
                   Bem-vindo de volta
                 </p>
               </div>
-              <Button
-                type="button"
-                className="h-12 w-full py-1 font-bold uppercase"
-                asChild
-                size={"lg"}
-              >
-                <Link href={config.url_login}>
-                  Entrar com
-                  <Image
-                    src={MtLoginLogo}
-                    width={40}
-                    height={40}
-                    alt={"MT Login Logo"}
-                  />
-                </Link>
-              </Button>
+              <div className="flex flex-col gap-6">
+                <div className="flex flex-col gap-4">
+                  <div className="grid gap-3">
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="Insira seu email"
+                      required
+                    />
+                  </div>
+                  <div className="grid gap-3">
+                    <div className="flex items-center">
+                      <Label htmlFor="password">Senha</Label>
+                    </div>
+                    <Input
+                      id="password"
+                      type="password"
+                      placeholder="Insira sua senha"
+                      required
+                    />
+                  </div>
+                  <Button type="submit" className="w-full font-bold">
+                    ENTRAR
+                  </Button>
+                </div>
+                <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
+                  <span className="relative z-10 bg-background px-2 text-muted-foreground">
+                    Ou
+                  </span>
+                </div>
+                <div className="flex flex-col gap-3">
+                  <Button
+                    type="button"
+                    className="h-12 w-full py-1 font-bold uppercase"
+                    asChild
+                    size={"lg"}
+                  >
+                    <Link href={config.url_login}>
+                      Entrar com
+                      <Image
+                        src={MtLoginLogo}
+                        width={40}
+                        height={40}
+                        alt={"MT Login Logo"}
+                      />
+                    </Link>
+                  </Button>
+                </div>
+              </div>
             </div>
           </form>
           <div className="relative hidden bg-muted md:block">
