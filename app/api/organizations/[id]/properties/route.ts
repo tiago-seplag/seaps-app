@@ -7,6 +7,13 @@ export async function GET(
   const { id } = await params;
 
   const properties = await prisma.property.findMany({
+    include: {
+      organization: {
+        select: {
+          name: true,
+        },
+      },
+    },
     where: { organization_id: id },
   });
 
