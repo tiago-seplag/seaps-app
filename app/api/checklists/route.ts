@@ -31,15 +31,19 @@ const getHandler = async (request: NextRequest) => {
   const userId = request.headers.get("x-user-id")!;
   const role = request.headers.get("x-user-role")!;
 
+  const page = searchParams.get("page") || "1";
+  const perPage = searchParams.get("per_page") || "20";
+
+  const search = Object.fromEntries(searchParams.entries());
+
   try {
     const checklists = await getChecklistsPaginated(
-      Number(searchParams.get("page")),
-      Number(searchParams.get("per_page")),
-      role !== "ADMIN"
-        ? {
-            user: userId,
-          }
-        : undefined,
+      Number(page),
+      Number(perPage),
+      {
+        ...search,
+        user: role !== "ADMIN" ? userId : undefined,
+      },
     );
     return Response.json(checklists);
   } catch (error) {
