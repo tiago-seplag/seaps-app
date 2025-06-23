@@ -10,8 +10,8 @@ import Link from "next/link";
 import Image from "next/image";
 import Logo from "../assets/logo-gov.png";
 import MtLoginLogo from "../public/mt-login.png";
-import { Label } from "./ui/label";
-import { Input } from "./ui/input";
+// import { Label } from "./ui/label";
+// import { Input } from "./ui/input";
 
 export function LoginForm() {
   const router = useRouter();
@@ -46,7 +46,7 @@ export function LoginForm() {
                 </p>
               </div>
               <div className="flex flex-col gap-6">
-                <div className="flex flex-col gap-4">
+                {/* <div className="flex flex-col gap-4">
                   <div className="grid gap-3">
                     <Label htmlFor="email">Email</Label>
                     <Input
@@ -75,7 +75,7 @@ export function LoginForm() {
                   <span className="relative z-10 bg-background px-2 text-muted-foreground">
                     Ou
                   </span>
-                </div>
+                </div> */}
                 <div className="flex flex-col gap-3">
                   <Button
                     type="button"
