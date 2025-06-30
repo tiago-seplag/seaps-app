@@ -16,8 +16,24 @@ export type UpdateChecklistItemSchema = z.infer<
   typeof updateChecklistItemSchema
 >;
 
+export async function getChecklistItems(checklistId: string) {
+  const checklistItems = await prisma.checklistItems.findMany({
+    where: { checklist_id: checklistId },
+    include: {
+      item: true,
+    },
+    orderBy: {
+      item: {
+        name: "asc",
+      },
+    },
+  });
+
+  return checklistItems;
+}
+
 export async function getChecklistItemById(id: string) {
-  const checklist = await prisma.checklistItems.findUnique({
+  const checklistItem = await prisma.checklistItems.findUnique({
     where: { id: id },
     include: {
       item: true,
@@ -26,15 +42,10 @@ export async function getChecklistItemById(id: string) {
           created_at: "desc",
         },
       },
-      checklist: {
-        select: {
-          status: true,
-        },
-      },
     },
   });
 
-  if (!checklist) {
+  if (!checklistItem) {
     throw new ValidationError({
       message: "Esse ID de item não existe",
       action: "Verifique se o ID foi passado corretamente",
@@ -42,7 +53,7 @@ export async function getChecklistItemById(id: string) {
     });
   }
 
-  return checklist;
+  return checklistItem;
 }
 
 export async function updateChecklistItem(

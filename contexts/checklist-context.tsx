@@ -1,54 +1,56 @@
 "use client";
-
-import { Checklist } from "@prisma/client";
 import React, { createContext, useContext, ReactNode } from "react";
+import {
+  Checklist,
+  ChecklistItems,
+  Organization,
+  Person,
+  Property,
+  User,
+} from "@prisma/client";
 
-type TChecklist = Checklist & {
-  checklistItems: {
-    id: string;
-    score: number | null;
-    created_at: Date;
-    updated_at: Date;
-    checklist_id: string;
-    item_id: string;
-    observation: string | null;
-    image: string | null;
-    is_inspected: boolean;
-    item: {
-      name: string;
-      level: number;
-    };
-    images: {
-      id: string;
-      image: string;
-      created_at: Date;
-      checklist_item_id: string;
-      observation: string | null;
-    }[];
-  }[];
+type ChecklistType = Checklist & {
+  property: Property & {
+    organization: Organization;
+    person: Person | null;
+  };
+  organization: Organization;
+  user: Omit<User, "password"> | null;
 };
 
-// Define the context type
+type ChecklistItemType = ChecklistItems & {
+  item: {
+    id: string;
+    created_at: Date;
+    updated_at: Date;
+    name: string;
+    is_deleted: boolean;
+    level: number;
+  };
+};
+
 interface ChecklistContextType {
-  checklist: TChecklist | null;
+  checklist: ChecklistType | null;
+  checklistItems: ChecklistItemType[] | null;
 }
 
 const ChecklistContext = createContext<ChecklistContextType | undefined>(
   undefined,
 );
 
-// Create a provider component
 interface ChecklistProviderProps {
   children: ReactNode;
-  checklist: TChecklist;
+  checklistItems: ChecklistItemType[];
+  checklist: ChecklistType;
 }
 
 const ChecklistProvider: React.FC<ChecklistProviderProps> = ({
   children,
   checklist,
+  checklistItems,
 }) => {
   return (
-    <ChecklistContext.Provider value={{ checklist }}>
+    <ChecklistContext.Provider value={{ checklist, checklistItems }}>
       {children}
     </ChecklistContext.Provider>
   );

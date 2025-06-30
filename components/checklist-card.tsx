@@ -14,7 +14,12 @@ import { Label } from "@/components/ui/label";
 import { useModal } from "@/hooks/use-modal";
 import { ObservationDialog } from "./observation-dialog";
 import { ImageDialog } from "./image-dialog";
-import { Camera, CameraIcon, MessageSquareText } from "lucide-react";
+import {
+  Camera,
+  CameraIcon,
+  CameraOffIcon,
+  MessageSquareText,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import axios from "axios";
@@ -31,13 +36,6 @@ export const ChecklistCard = ({
       name: string;
       level: number;
     };
-    images: {
-      id: string;
-      image: string;
-      created_at: Date;
-      checklist_item_id: string;
-      observation: string | null;
-    }[];
   };
 }) => {
   const observationDialog = useModal();
@@ -59,7 +57,20 @@ export const ChecklistCard = ({
         <CardTitle>{checklistItem.item.name}</CardTitle>
       </CardHeader>
       <CardContent className="flex h-full flex-col gap-4">
-        {!checklistItem.image ? (
+        {checklistItem.score === 0 ? (
+          <div
+            className={
+              "group relative grid h-full w-full place-items-center rounded-lg border-2 bg-muted-foreground/10 px-5 py-2.5 text-center ring-offset-background transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            }
+          >
+            <div className="flex flex-col items-center justify-center gap-4 sm:px-5">
+              <CameraOffIcon
+                className="size-16 text-muted-foreground"
+                aria-hidden="true"
+              />
+            </div>
+          </div>
+        ) : !checklistItem.image ? (
           <Link href={"items/" + checklistItem.id} className="h-full">
             <div
               className={
@@ -67,12 +78,10 @@ export const ChecklistCard = ({
               }
             >
               <div className="flex flex-col items-center justify-center gap-4 sm:px-5">
-                <div className="rounded-full border border-dashed p-3">
-                  <CameraIcon
-                    className="size-7 text-muted-foreground"
-                    aria-hidden="true"
-                  />
-                </div>
+                <CameraIcon
+                  className="size-16 text-muted-foreground"
+                  aria-hidden="true"
+                />
               </div>
             </div>
           </Link>

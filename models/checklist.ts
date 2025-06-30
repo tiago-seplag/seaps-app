@@ -27,7 +27,7 @@ export async function getChecklistsPaginated(
     filter.property = {
       name: {
         contains: searchParams.property_name as string,
-        mode: 'insensitive',
+        mode: "insensitive",
       },
     };
   }
@@ -86,17 +86,9 @@ export async function getChecklistById(id: string) {
         },
       },
       organization: true,
-      person: true,
-      user: true,
-      checklistItems: {
-        include: {
-          item: true,
-          images: true,
-        },
-        orderBy: {
-          item: {
-            name: "asc",
-          },
+      user: {
+        omit: {
+          password: true,
         },
       },
     },
