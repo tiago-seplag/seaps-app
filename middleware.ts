@@ -24,14 +24,13 @@ export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
   const publicRoute = publicRoutes.find((route) => route.path === path);
 
-  const authToken = request.cookies.get("MT_ID_SESSION");
   const sessionToken = request.cookies.get("SESSION");
 
-  if (!authToken && publicRoute) {
+  if (!sessionToken && publicRoute) {
     return NextResponse.next();
   }
 
-  if (!authToken && !publicRoute) {
+  if (!sessionToken && !publicRoute) {
     const redirectUrl = request.nextUrl.clone();
 
     redirectUrl.pathname = REDIRECT_WHEN_NOT_AUTHENTICATED_ROUTE;
@@ -39,7 +38,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(redirectUrl);
   }
 
-  if (authToken && publicRoute) {
+  if (sessionToken && publicRoute) {
     const redirectUrl = request.nextUrl.clone();
 
     if (publicRoute.whenAuthenticated === "ignore") {
