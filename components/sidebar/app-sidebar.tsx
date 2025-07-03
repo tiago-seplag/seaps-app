@@ -9,7 +9,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 
-import Logo from "../../assets/logo-gov.png";
+import Logo from "../../public/logo-gov.png"
 import Image from "next/image";
 import { NavSidebar } from "./nav-sidebar";
 
