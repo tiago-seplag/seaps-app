@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
+  serverExternalPackages: ["knex"],
   images: {
     remotePatterns: [
       {
@@ -33,11 +34,7 @@ const nextConfig: NextConfig = {
     REPORT_URL: process.env.REPORT_URL,
   },
   output: "standalone",
-  logging: {
-    fetches: {
-      fullUrl: true,
-    },
-  },
+  logging: false,
 };
 
 export default nextConfig;
