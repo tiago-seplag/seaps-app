@@ -70,6 +70,7 @@ model Property {
   address         String?
   type            PROPERTY_TYPE @default(OWN)
   location        String?
+  is_deleted      Boolean       @default(false)
   created_at      DateTime      @default(now())
   updated_at      DateTime      @default(now()) @updatedAt()
 
@@ -133,6 +134,7 @@ model Checklist {
   score           Float     @default(0)
   classification  Int?
   finished_at     DateTime?
+  is_deleted      Boolean   @default(false)
   created_at      DateTime  @default(now())
   updated_at      DateTime  @default(now()) @updatedAt()
 
