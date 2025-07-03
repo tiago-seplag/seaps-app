@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { config } from "@/utils/mt-login";
 import Link from "next/link";
 import Image from "next/image";
-import Logo from "../assets/logo-gov.png";
+import Logo from "../public/logo-gov.png"
 import MtLoginLogo from "../public/mt-login.png";
 import { Input } from "./ui/input";
 import {
