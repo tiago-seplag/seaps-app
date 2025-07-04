@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 
 dotenv.config({
   path: [".env", "../.env"],
+  quiet: true,
 });
 
 const config: Knex.Config = {

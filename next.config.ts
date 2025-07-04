@@ -34,7 +34,6 @@ const nextConfig: NextConfig = {
     REPORT_URL: process.env.REPORT_URL,
   },
   output: "standalone",
-  logging: false,
 };
 
 export default nextConfig;
