@@ -7,8 +7,10 @@ export async function up(knex: Knex): Promise<void> {
     table.uuid("id", { primaryKey: true }).defaultTo(knex.fn.uuid());
     table.uuid("user_id");
     table.string("token");
+    table.string("user_agent")
+    table.enu("type", ["mt-login", "password"]);
     table.boolean("is_active").defaultTo("true");
-    table.timestamp("expires_at")
+    table.timestamp("expires_at");
     table.timestamp("created_at").defaultTo(knex.fn.now());
     table.timestamp("updated_at").notNullable().defaultTo(knex.fn.now());
 
