@@ -11,9 +11,8 @@ export function controller(middlewares: Function[], handler: Function) {
         await middleware(req, ctx);
       }
 
-      return handler(req, ctx);
+      return await handler(req, ctx);
     } catch (error) {
-      console.error("Error in controller");
       return onErrorHandler(error);
     }
   };
