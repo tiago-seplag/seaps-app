@@ -4,7 +4,7 @@
  */
 import dotenv from "dotenv";
 
-import nextJest from "next/jest";
+import nextJest from "next/jest.js";
 
 dotenv.config({
   quiet: true,
