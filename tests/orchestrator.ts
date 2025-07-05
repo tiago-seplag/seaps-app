@@ -1,5 +1,5 @@
 import { db } from "@/infra/database";
-import { hash } from "@/models/password";
+import { createSession } from "@/models/session";
 import { createUser } from "@/models/user";
 
 async function clearDatabase() {
@@ -12,8 +12,9 @@ async function runMigrations() {
 
 async function createOrganizations() {
   await db("organizations").insert([
-    { id: "org-1", name: "Organization 1" },
-    { id: "org-2", name: "Organization 2" },
+    { acronym: "SESP", name: "SEGURANCA" },
+    { acronym: "SEPLAG", name: "PLANEJAMENTO" },
+    { acronym: "SES", name: "SAUDE" },
   ]);
 }
 
@@ -29,17 +30,27 @@ async function orchestratorCreateUser({
     role: "ADMIN",
     cpf: "12345678901",
     email: email || "default-user@email.com",
-    password: await hash(password || "default-password"),
+    password: password || "default-password",
   });
 
   return user;
 }
 
+async function orchestratorCreateSession(userId: string) {
+  const session = await createSession(userId, {
+    userAgent: "orchestrator-test",
+    type: "password",
+  });
+
+  return session;
+}
+
 const orchestrator = {
   clearDatabase,
   runMigrations,
-  createUser: orchestratorCreateUser,
   createOrganizations,
+  createUser: orchestratorCreateUser,
+  createSession: orchestratorCreateSession,
 };
 
 export default orchestrator;
