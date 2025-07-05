@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import knex, { Knex } from "knex";
+import { ValidationError } from "../errors";
 
 export function paginate() {
   knex.QueryBuilder.extend(
@@ -7,14 +9,19 @@ export function paginate() {
       _currentPage = 1,
       perPage = 10,
       options?: { nest: boolean },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ): any {
       if (isNaN(perPage)) {
-        throw new Error("Paginate error: perPage must be a number.");
+        throw new ValidationError({
+          message: "Paginate error: perPage must be a number.",
+          action: "Please provide a valid number for perPage.",
+        });
       }
 
       if (isNaN(_currentPage)) {
-        throw new Error("Paginate error: currentPage must be a number.");
+        throw new ValidationError({
+          message: "Paginate error: currentPage must be a number.",
+          action: "Please provide a valid number for currentPage.",
+        });
       }
 
       let currentPage = Number(_currentPage);
@@ -59,7 +66,7 @@ export function paginate() {
             next_page: prevPage,
           };
 
-          return { pagination, data: result };
+          return { meta: pagination, data: result };
         },
         undefined,
         undefined,
