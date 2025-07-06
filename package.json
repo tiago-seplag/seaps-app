@@ -10,6 +10,7 @@
     "db:seed": "npx prisma db seed",
     "db:push": "prisma db push",
     "db:generate": "prisma generate",
+    "migrations:create": "knex migrate:make",
     "test": "jest --detectOpenHandles --runInBand --forceExit"
   },
   "prisma": {
