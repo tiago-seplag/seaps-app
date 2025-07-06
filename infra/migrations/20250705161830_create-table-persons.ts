@@ -1,20 +1,19 @@
 import type { Knex } from "knex";
 
-const TABLE_NAME = "sessions";
+const TABLE_NAME = "persons";
 
 export async function up(knex: Knex): Promise<void> {
   await knex.schema.createTable(TABLE_NAME, (table) => {
     table.uuid("id", { primaryKey: true }).defaultTo(knex.fn.uuid());
-    table.uuid("user_id");
-    table.string("token");
-    table.string("user_agent");
-    table.enu("type", ["mt-login", "password"]);
-    table.boolean("is_active").defaultTo("true");
-    table.timestamp("expires_at");
+    table.uuid("organization_id").notNullable();
+    table.string("name").notNullable();
+    table.string("email").notNullable();
+    table.string("phone");
+    table.string("role");
     table.timestamp("created_at").defaultTo(knex.fn.now());
     table.timestamp("updated_at").notNullable().defaultTo(knex.fn.now());
 
-    table.foreign("user_id").references("id").inTable("users");
+    table.foreign("organization_id").references("id").inTable("organizations");
   });
 }
 
