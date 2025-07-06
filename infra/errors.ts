@@ -45,19 +45,23 @@ export class ServiceError extends Error {
 export class ValidationError extends Error {
   action: string;
   statusCode: number;
+  messages?: string[];
   constructor({
     cause,
     message,
     action,
+    messages,
   }: {
     cause?: unknown;
     message?: string;
+    messages?: string[];
     action?: string;
   }) {
     super(message || "Um erro de validação ocorreu.", {
       cause,
     });
     this.name = "ValidationError";
+    this.messages = messages;
     this.action = action || "Ajuste os dados enviados e tente novamente.";
     this.statusCode = 400;
   }
@@ -142,6 +146,37 @@ export class UnauthorizedError extends Error {
     this.name = "UnauthorizedError";
     this.action = action || "Faça novamente o login.";
     this.statusCode = 401;
+  }
+
+  toJSON() {
+    return {
+      name: this.name,
+      message: this.message,
+      action: this.action,
+      status_code: this.statusCode,
+    };
+  }
+}
+
+export class ForbiddenError extends Error {
+  action: string;
+  statusCode: number;
+  constructor({
+    cause,
+    message,
+    action,
+  }: {
+    cause?: unknown;
+    message?: string;
+    action?: string;
+  }) {
+    super(message || "Você não possui permissão para executar esta ação.", {
+      cause,
+    });
+    this.name = "ForbiddenError";
+    this.action =
+      action || "Verifique se você possui permissão para executar esta ação.";
+    this.statusCode = 403;
   }
 
   toJSON() {
