@@ -83,23 +83,15 @@ export async function updateUserConfigs(
   userId: string,
   data: z.infer<typeof updateConfigSchema>,
 ) {
-  const updateUser = await prisma.user.update({
-    where: {
-      id: userId,
-    },
-    data: {
+  const [updateUser] = await db("users")
+    .update({
       is_active: data.is_active,
       role: data.role,
-    },
-  });
+    })
+    .where("id", userId)
+    .returning("*");
 
-  return {
-    id: updateUser.id,
-    name: updateUser.name,
-    role: updateUser.role,
-    is_active: updateUser.is_active,
-    email: updateUser.email,
-  };
+  return updateUser;
 }
 
 export async function getUserById(userId: string) {
@@ -155,3 +147,10 @@ async function hashPasswordInObject(data: TCreateUserSchema) {
   const hashedPassword = await hash(data.password!);
   data.password = hashedPassword;
 }
+
+const user = {
+  createUser,
+  updateUser: updateUserConfigs,
+};
+
+export default user;

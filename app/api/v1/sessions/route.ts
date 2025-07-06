@@ -1,4 +1,4 @@
-import { controller } from "@/infra/controller";
+import { handler } from "@/infra/controller";
 import { getAuthenticationUserByEmail } from "@/models/authentication";
 import { createSession, EXPIRATION_IN_MILLISECONDS } from "@/models/session";
 import { cookies } from "next/headers";
@@ -28,4 +28,4 @@ async function postHandler(request: NextRequest) {
   return Response.json(newSession, { status: 201 });
 }
 
-export const POST = controller([], postHandler);
+export const POST = handler([], postHandler);
