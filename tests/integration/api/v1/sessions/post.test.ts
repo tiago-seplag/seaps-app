@@ -8,7 +8,7 @@ beforeAll(async () => {
 });
 
 describe("POST /api/v1/sessions", () => {
-  it("With incorrect `email` and incorrect `password`", async () => {
+  test("With incorrect `email` and incorrect `password`", async () => {
     const response = await fetch("http://localhost:3000/api/v1/sessions", {
       method: "POST",
       headers: {

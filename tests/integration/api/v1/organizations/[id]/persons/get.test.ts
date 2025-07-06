@@ -3,11 +3,12 @@ import orchestrator from "@/tests/orchestrator";
 
 let user: any;
 let session: any;
+let organizations: any;
 
 beforeAll(async () => {
   await orchestrator.clearDatabase();
   await orchestrator.runMigrations();
-  await orchestrator.createOrganizations();
+  organizations = await orchestrator.createOrganizations();
 
   user = await orchestrator.createUser({
     email: "user@email.com",
@@ -33,7 +34,7 @@ describe("GET /api/v1/sessions", () => {
     expect(response.status).toBe(200);
 
     const responseBody = await response.json();
-    
+
     expect(Array.isArray(responseBody.data)).toBe(true);
     expect(responseBody.data.length).toBeLessThanOrEqual(1);
     expect(responseBody).toHaveProperty("meta");

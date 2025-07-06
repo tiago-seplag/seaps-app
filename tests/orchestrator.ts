@@ -1,6 +1,6 @@
 import { db } from "@/infra/database";
 import { createSession } from "@/models/session";
-import { createUser } from "@/models/user";
+import user from "@/models/user";
 
 async function clearDatabase() {
   await db.raw("drop schema public cascade; create schema public;");
@@ -11,11 +11,13 @@ async function runMigrations() {
 }
 
 async function createOrganizations() {
-  await db("organizations").insert([
+  const organizations = await db("organizations").insert([
     { acronym: "SESP", name: "SEGURANCA" },
     { acronym: "SEPLAG", name: "PLANEJAMENTO" },
     { acronym: "SES", name: "SAUDE" },
   ]);
+
+  return organizations;
 }
 
 async function orchestratorCreateUser({
@@ -25,7 +27,7 @@ async function orchestratorCreateUser({
   email?: string;
   password?: string;
 }) {
-  const user = await createUser({
+  const createdUser = await user.createUser({
     name: "Default User",
     role: "ADMIN",
     cpf: "12345678901",
@@ -33,7 +35,9 @@ async function orchestratorCreateUser({
     password: password || "default-password",
   });
 
-  return user;
+  await user.updateUser(createdUser.id, { is_active: true, role: "ADMIN" });
+
+  return createdUser;
 }
 
 async function orchestratorCreateSession(userId: string) {
