@@ -25,4 +25,13 @@ async function createSession(
   return session[0];
 }
 
-export { createSession, EXPIRATION_IN_MILLISECONDS };
+async function findSessionByToken(token: string) {
+  const session = await db("sessions")
+    .select("*")
+    .where("token", token)
+    .first();
+
+  return session;
+}
+
+export { createSession, findSessionByToken, EXPIRATION_IN_MILLISECONDS };
