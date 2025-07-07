@@ -11,7 +11,7 @@ export async function up(knex: Knex): Promise<void> {
     table.string("phone");
     table.string("role");
     table.timestamp("created_at").defaultTo(knex.fn.now());
-    table.timestamp("updated_at").notNullable().defaultTo(knex.fn.now());
+    table.timestamp("updated_at").defaultTo(knex.fn.now());
 
     table.foreign("organization_id").references("id").inTable("organizations");
   });

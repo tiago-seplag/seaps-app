@@ -18,7 +18,7 @@ export async function up(knex: Knex): Promise<void> {
       .notNullable();
     table.boolean("is_deleted").defaultTo(false);
     table.timestamp("created_at").defaultTo(knex.fn.now());
-    table.timestamp("updated_at").notNullable().defaultTo(knex.fn.now());
+    table.timestamp("updated_at").defaultTo(knex.fn.now());
 
     table.foreign("organization_id").references("id").inTable("organizations");
     table.foreign("person_id").references("id").inTable("persons");
