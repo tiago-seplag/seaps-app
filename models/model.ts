@@ -1,56 +1,122 @@
 import { db } from "@/infra/database";
-import { NotFoundError } from "@/infra/errors";
-
+import { NotFoundError, ValidationError } from "@/infra/errors";
 import { z } from "zod";
 
+import item from "@/models/item";
+
 export const createModelSchema = z.object({
-  organization_id: z
-    .string()
-    .uuid("O ID da organização deve ser um UUID válido."),
-  name: z.string().min(3, "O nome deve ter pelo menos 3 caracteres."),
-  email: z.string().email("O e-mail deve ser válido."),
-  phone: z.string().optional(),
-  role: z.string().optional(),
+  name: z
+    .string({
+      message: "Insira o nome do Modelo",
+    })
+    .min(3, "O nome deve ter pelo menos 3 caracteres."),
+  description: z.string().optional(),
+  items: z
+    .array(
+      z.object({
+        name: z.string().min(1, { message: "Insira o nome do Item" }),
+      }),
+    )
+    .min(1, {
+      message: "Insira ao menos um Item",
+    }),
 });
 
 type TCreateModelSchema = z.infer<typeof createModelSchema>;
 
+interface Model {
+  id: string;
+  name: string;
+  description?: string | null;
+  is_active: boolean;
+  created_at: Date;
+  updated_at: Date;
+}
+
 export async function paginatedModels(page = 1, perPage = 10) {
-  const persons = await db("models")
+  const models = await db("models")
     .select("models.*")
     .orderBy("models.created_at", "asc")
     .paginate(page, perPage);
 
-  return persons;
+  return models;
 }
 
 async function getModelById(id: string) {
-  const person = await db("models")
+  const model = await db("models")
     .select("models.*")
     .where("models.id", id)
     .first();
 
-  if (!person) {
+  if (!model) {
     throw new NotFoundError({
-      message: "Pessoa não encontrada.",
+      message: "Modelo não encontrado.",
       action: "Verifique o ID fornecido.",
     });
   }
 
-  return person;
+  return model;
 }
 
 async function createModel(data: TCreateModelSchema) {
-  const [person] = await db("persons").insert(data).returning("*");
+  const { items, ...model } = data;
 
-  return person;
+  const findModel = await findModelByName(model.name);
+
+  if (findModel) {
+    if (findModel.is_active) {
+      throw new ValidationError({
+        message: "Esse Modelo já existe.",
+        action: "Escolha um nome diferente para o modelo.",
+      });
+    }
+
+    throw new ValidationError({
+      message: "Esse Modelo já existe, mas está inativo.",
+      action: "Você pode reativá-lo ou escolher um nome diferente.",
+    });
+  }
+
+  const list = [];
+
+  for (const i of items) {
+    const findedItem = await item.findOrInsert(i);
+
+    list.push(findedItem.id);
+  }
+
+  const createdModel = await insertModel(model);
+
+  await db("model_items").insert(
+    list.map((itemId) => ({
+      model_id: createdModel.id,
+      item_id: itemId,
+    })),
+  );
+
+  return createdModel;
 }
 
-const person = {
+async function insertModel(data: Omit<TCreateModelSchema, "items">) {
+  const [model] = await db<Model>("models").insert(data).returning("*");
+
+  return model;
+}
+
+async function findModelByName(name: string) {
+  const model = await db<Model>("models")
+    .select("*")
+    .where("name", name)
+    .first();
+
+  return model;
+}
+
+const model = {
   paginated: paginatedModels,
   getModelById,
   createModel,
   createSchema: createModelSchema,
 };
 
-export default person;
+export default model;
