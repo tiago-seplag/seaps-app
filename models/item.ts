@@ -12,7 +12,7 @@ interface IItem {
   updated_at: string;
 }
 
-async function findOrInsert(item: IItem) {
+async function findOrInsert(item: { name: string }) {
   const name = item.name.trim().toUpperCase();
 
   const findItem = await db<IItem>("items")
