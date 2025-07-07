@@ -16,6 +16,9 @@ export const createModelSchema = z.object({
       z.object({
         name: z.string().min(1, { message: "Insira o nome do Item" }),
       }),
+      {
+        message: "Insira uma lista de Itens",
+      },
     )
     .min(1, {
       message: "Insira ao menos um Item",
@@ -28,7 +31,7 @@ interface Model {
   id: string;
   name: string;
   description?: string | null;
-  is_active: boolean;
+  is_deleted: boolean;
   created_at: Date;
   updated_at: Date;
 }
@@ -64,7 +67,7 @@ async function createModel(data: TCreateModelSchema) {
   const findModel = await findModelByName(model.name);
 
   if (findModel) {
-    if (findModel.is_active) {
+    if (!findModel.is_deleted) {
       throw new ValidationError({
         message: "Esse Modelo já existe.",
         action: "Escolha um nome diferente para o modelo.",

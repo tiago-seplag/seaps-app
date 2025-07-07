@@ -4,13 +4,24 @@ interface IItem {
   name: string;
 }
 
+interface IItem {
+  id: string;
+  name: string;
+  is_deleted: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 async function findOrInsert(item: IItem) {
   const name = item.name.trim().toUpperCase();
 
-  const findItem = await db("items").where("name", name).first();
+  const findItem = await db<IItem>("items")
+    .select("*")
+    .where("name", name)
+    .first();
 
   if (!findItem) {
-    const [createdItem] = await db("items")
+    const [createdItem] = await db<IItem>("items")
       .insert({ name: name })
       .returning("*");
 
