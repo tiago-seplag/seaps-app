@@ -70,6 +70,7 @@ export class ValidationError extends Error {
     return {
       name: this.name,
       message: this.message,
+      messages: this.messages,
       action: this.action,
       status_code: this.statusCode,
     };

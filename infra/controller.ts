@@ -83,9 +83,7 @@ function validateBody(schema: z.ZodObject<any, any>) {
       return null;
     } catch (error) {
       if (error instanceof ZodError) {
-        const messages = error.errors.map(
-          (issue: any) => `${issue.path} is ${issue.message.toLowerCase()}`,
-        );
+        const messages = error.errors.map((issue) => issue.message);
         throw new ValidationError({
           action: "Por favor, corrija os campos informados.",
           messages,
