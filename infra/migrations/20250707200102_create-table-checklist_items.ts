@@ -5,7 +5,6 @@ const TABLE_NAME = "checklist_items";
 export async function up(knex: Knex): Promise<void> {
   await knex.schema.createTable(TABLE_NAME, (table) => {
     table.uuid("id", { primaryKey: true }).defaultTo(knex.fn.uuid());
-    table.string("sid").notNullable();
     table.uuid("checklist_id").notNullable();
     table.uuid("item_id").notNullable();
     table.integer("score").nullable();

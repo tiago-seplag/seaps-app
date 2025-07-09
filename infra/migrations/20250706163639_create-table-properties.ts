@@ -6,11 +6,11 @@ export async function up(knex: Knex): Promise<void> {
   await knex.schema.createTable(TABLE_NAME, (table) => {
     table.uuid("id", { primaryKey: true }).defaultTo(knex.fn.uuid());
     table.uuid("organization_id").notNullable();
-    table.uuid("person_id").notNullable();
+    table.uuid("person_id")
     table.string("name").notNullable();
     table.string("address");
     table
-      .enu("role", ["OWN", "RENTED", "GRANT"], {
+      .enu("type", ["OWN", "RENTED", "GRANT"], {
         enumName: "property_types",
         useNative: true,
       })
