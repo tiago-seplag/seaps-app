@@ -1,13 +1,15 @@
 import { ValidationError } from "@/errors/validation-error";
+import { db } from "@/infra/database";
 import { prisma } from "@/lib/prisma";
+import { SearchParams } from "@/types/types";
 import { generateMetaPagination } from "@/utils/meta-pagination";
 import { z } from "zod";
 
 export const checklistSchema = z.object({
-  model_id: z.string(),
-  organization_id: z.string(),
-  property_id: z.string(),
-  user_id: z.string(),
+  model_id: z.string({ message: "O ID do modelo é obrigatório" }),
+  organization_id: z.string({ message: "O ID da organização é obrigatório" }),
+  property_id: z.string({ message: "O ID do imóvel é obrigatório" }),
+  user_id: z.string({ message: "O ID do usuário é obrigatório" }),
 });
 
 export type ChecklistSchema = z.infer<typeof checklistSchema>;
@@ -105,57 +107,56 @@ export async function getChecklistById(id: string) {
   return checklist;
 }
 
-export async function createChecklist(
-  data: z.infer<typeof checklistSchema>,
-  userId: string,
-) {
-  const values = data;
+export async function createChecklist(data: z.infer<typeof checklistSchema>) {
+  const checklist = await insertChecklist(data);
 
-  const lastChecklist = await prisma.checklist.findFirst({
-    orderBy: {
-      created_at: "desc",
-    },
-  });
+  const items = await db("items")
+    .select("items.*")
+    .innerJoin("model_items", "items.id", "model_items.item_id")
+    .where("model_items.model_id", data.model_id);
 
-  const year = new Date().getFullYear().toString().slice(2);
+  await db("checklist_items").insert(
+    items.map((item) => ({
+      checklist_id: checklist.id,
+      item_id: item.id,
+    })),
+  );
 
-  let sid = "0001/" + year;
+  return { ...checklist, items };
 
-  if (lastChecklist && lastChecklist.sid.slice(-2) === year) {
-    const number = Number(lastChecklist.sid.slice(0, 4)) + 1;
-    sid = number.toString().padStart(4, "0") + "/" + year;
+  async function insertChecklist(data: z.infer<typeof checklistSchema>) {
+    const SID = await generateSID();
+
+    const [createdChecklist] = await db("checklists")
+      .insert({
+        organization_id: data.organization_id,
+        user_id: data.user_id,
+        property_id: data.property_id,
+        sid: SID,
+        model_id: data.model_id,
+      })
+      .returning("*");
+
+    return createdChecklist;
   }
 
-  const checklist = await prisma.checklist.create({
-    data: {
-      organization_id: values.organization_id,
-      created_by: userId,
-      user_id: values.user_id,
-      property_id: values.property_id,
-      sid: sid,
-      model_id: values.model_id,
-    },
-  });
+  async function generateSID() {
+    const lastChecklist = await db<{ sid: string }>("checklists")
+      .select("sid")
+      .orderBy("created_at", "desc")
+      .first();
 
-  const items = await prisma.item.findMany({
-    where: {
-      modelItems: {
-        some: {
-          model_id: values.model_id,
-        },
-      },
-    },
-  });
+    const year = new Date().getFullYear().toString().slice(2);
 
-  if (items.length > 0) {
-    await prisma.checklistItems.createMany({
-      data: items.map((item) => {
-        return { item_id: item.id, checklist_id: checklist.id };
-      }),
-    });
+    let sid = "0001/" + year;
+
+    if (lastChecklist && lastChecklist.sid.slice(-2) === year) {
+      const number = Number(lastChecklist.sid.slice(0, 4)) + 1;
+      sid = number.toString().padStart(4, "0") + "/" + year;
+    }
+
+    return sid;
   }
-
-  return checklist;
 }
 
 export async function finishChecklist(
@@ -277,3 +278,28 @@ export async function findChecklistById(id: string) {
 
   return checklist;
 }
+
+async function createLog(data: {
+  action: string;
+  checklist_id: string;
+  user_id: string;
+}) {
+  await db("checklist_logs").insert({
+    action: data.action,
+    checklist_id: data.checklist_id,
+    user_id: data.user_id,
+  });
+}
+
+const checklist = {
+  getChecklistsPaginated,
+  getChecklistById,
+  createChecklist,
+  finishChecklist,
+  reOpenChecklist,
+  findChecklistById,
+  createLog,
+  createSchema: checklistSchema,
+};
+
+export default checklist;
