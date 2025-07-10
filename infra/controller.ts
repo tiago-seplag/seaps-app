@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
 
+import { validate as uuidValidate } from "uuid";
 import { NextRequest } from "next/server";
 import { onErrorHandler } from "./error-handler";
 import { db } from "./database";
@@ -96,10 +97,33 @@ function validateBody(schema: z.ZodObject<any, any>) {
   };
 }
 
+function validateUUID(...ids: string[]) {
+  return async (_: NextRequest, ctx?: { params: Promise<any> }) => {
+    const params = await ctx?.params;
+
+    for (const id of ids) {
+      if (!params[id]) {
+        throw new ValidationError({
+          message: "É necessário informar um ID.",
+          action: "Por favor, forneça um ID válido.",
+        });
+      }
+
+      if (!uuidValidate(params[id])) {
+        throw new ValidationError({
+          message: "O ID não é válido.",
+          action: "Por favor, forneça um ID válido.",
+        });
+      }
+    }
+  };
+}
+
 const controller = {
   authenticate,
   paginateValidation,
   validateBody,
+  validateUUID,
 };
 
 export default controller;
