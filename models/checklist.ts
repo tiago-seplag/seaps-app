@@ -1,5 +1,6 @@
 import { ValidationError } from "@/errors/validation-error";
 import { db } from "@/infra/database";
+import { NotFoundError } from "@/infra/errors";
 import { prisma } from "@/lib/prisma";
 import { SearchParams } from "@/types/types";
 import { generateMetaPagination } from "@/utils/meta-pagination";
@@ -78,29 +79,49 @@ export async function getChecklistsPaginated(
 }
 
 export async function getChecklistById(id: string) {
-  const checklist = await prisma.checklist.findUnique({
-    where: { id: id },
-    include: {
-      property: {
-        include: {
-          person: true,
-          organization: true,
-        },
-      },
-      organization: true,
-      user: {
-        omit: {
-          password: true,
-        },
-      },
-    },
-  });
+  const checklist = await db("checklists")
+    .select("checklists.*")
+    .select(
+      "organizations.name as organization:name",
+      "organizations.acronym as organization:acronym",
+      "organizations.id as organization:id",
+    )
+    .select(
+      "users.name as user:name",
+      "users.id as user:id",
+      "users.role as user:role",
+    )
+    .select(
+      "properties.name as property:name",
+      "properties.id as property:id",
+      "properties.address as property:address",
+      "properties.type as property:type",
+      "properties.created_at as property:created_at",
+      "properties.updated_at as property:updated_at",
+      "properties.person_id as property:person_id",
+      "properties.organization_id as property:organization_id",
+    )
+    .select(
+      "persons.name as property:person:name",
+      "persons.id as property:person:id",
+      "persons.email as property:person:email",
+      "persons.phone as property:person:phone",
+      "persons.role as property:person:role",
+      "persons.created_at as property:person:created_at",
+      "persons.updated_at as property:person:updated_at",
+    )
+    .innerJoin("properties", "properties.id", "checklists.property_id")
+    .leftJoin("persons", "persons.id", "properties.person_id")
+    .leftJoin("organizations", "organizations.id", "checklists.organization_id")
+    .innerJoin("users", "users.id", "checklists.user_id")
+    .where("checklists.id", id)
+    .first()
+    .nest();
 
   if (!checklist) {
-    throw new ValidationError({
+    throw new NotFoundError({
       message: "Esse ID de checklist não existe",
       action: "Verifique se o ID foi passado corretamente",
-      statusCode: 404,
     });
   }
 
