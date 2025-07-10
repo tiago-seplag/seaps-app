@@ -3,6 +3,7 @@ import { createSession } from "@/models/session";
 import user from "@/models/user";
 import model from "@/models/model";
 import property from "@/models/property";
+import checklist from "@/models/checklist";
 
 async function clearDatabase() {
   await db.raw("drop schema public cascade; create schema public;");
@@ -54,11 +55,22 @@ async function orchestratorCreateSession(userId: string) {
 }
 
 async function createProperty(organizationId: string) {
+  const [person] = await db("persons")
+    .insert({
+      name: "Default Person",
+      email: "default-user@email.com",
+      phone: "65984123456",
+      organization_id: organizationId,
+      role: "ADMIN",
+    })
+    .returning("*");
+
   const createdProperty = await property.createProperty({
     name: "Test Property",
     organization_id: organizationId,
     address: "123 Test St",
     type: "OWN",
+    person_id: person.id,
   });
 
   return createdProperty;
@@ -85,6 +97,17 @@ async function createModel() {
   return createdModel;
 }
 
+async function createChecklist(data: {
+  organization_id: string;
+  property_id: string;
+  model_id: string;
+  user_id: string;
+}) {
+  const createdChecklist = await checklist.createChecklist(data);
+
+  return createdChecklist;
+}
+
 const orchestrator = {
   clearDatabase,
   runMigrations,
@@ -93,6 +116,7 @@ const orchestrator = {
   createSession: orchestratorCreateSession,
   createModel,
   createProperty,
+  createChecklist,
 };
 
 export default orchestrator;
