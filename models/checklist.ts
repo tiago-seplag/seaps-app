@@ -17,7 +17,9 @@ export async function getChecklistsPaginated(
   perPage = 10,
   searchParams?: SearchParams,
 ) {
-  const filter: SearchParams = {};
+  const filter: SearchParams = {
+    is_deleted: false,
+  };
 
   if (searchParams?.status) {
     filter.status = searchParams.status;
@@ -27,7 +29,7 @@ export async function getChecklistsPaginated(
     filter.property = {
       name: {
         contains: searchParams.property_name as string,
-        mode: 'insensitive',
+        mode: "insensitive",
       },
     };
   }

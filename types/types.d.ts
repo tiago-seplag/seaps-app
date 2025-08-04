@@ -1,1 +1,3 @@
-type SearchParams = { [key: string]: string | string[] | undefined | SearchParams };
+type SearchParams = {
+  [key: string]: string | string[] | undefined | boolean | SearchParams;
+};
