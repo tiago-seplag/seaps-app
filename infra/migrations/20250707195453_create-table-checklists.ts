@@ -10,11 +10,10 @@ export async function up(knex: Knex): Promise<void> {
     table.uuid("model_id").notNullable();
     table.uuid("property_id").notNullable();
     table.uuid("user_id").notNullable();
-    table.uuid("finished_by");
     table.float("score", 3);
     table.integer("classification");
     table
-      .enu("status", ["OPEN", "CLOSED"], {
+      .enu("status", ["OPEN", "CLOSED", "APPROVED", "REJECTED"], {
         useNative: true,
         enumName: "checklist_status_enum",
       })
@@ -28,7 +27,6 @@ export async function up(knex: Knex): Promise<void> {
     table.foreign("model_id").references("id").inTable("models");
     table.foreign("property_id").references("id").inTable("properties");
     table.foreign("user_id").references("id").inTable("users");
-    table.foreign("finished_by").references("id").inTable("users");
   });
 }
 

@@ -6,9 +6,7 @@ export async function up(knex: Knex): Promise<void> {
   await knex.schema.createTable(TABLE_NAME, (table) => {
     table.uuid("id", { primaryKey: true }).defaultTo(knex.fn.uuid());
     table.uuid("organization_id").notNullable();
-    table.uuid("person_id")
-    table.string("name").notNullable();
-    table.string("address");
+    table.uuid("person_id");
     table
       .enu("type", ["OWN", "RENTED", "GRANT"], {
         enumName: "property_types",
@@ -16,6 +14,14 @@ export async function up(knex: Knex): Promise<void> {
       })
       .defaultTo("OWN")
       .notNullable();
+    table.string("name").notNullable();
+    table.string("address");
+    table.string("cep");
+    table.string("state");
+    table.string("city");
+    table.string("neighborhood");
+    table.string("street");
+    table.string("coordinates");
     table.boolean("is_deleted").defaultTo(false);
     table.timestamp("created_at").defaultTo(knex.fn.now());
     table.timestamp("updated_at").defaultTo(knex.fn.now());

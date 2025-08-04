@@ -10,6 +10,7 @@ export async function up(knex: Knex): Promise<void> {
     table.integer("score").nullable();
     table.string("observation")
     table.string("image")
+    table.boolean("is_valid").defaultTo(null).nullable();
     table.timestamp("created_at").defaultTo(knex.fn.now());
     table.timestamp("updated_at").defaultTo(knex.fn.now());
 
