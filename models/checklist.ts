@@ -128,6 +128,27 @@ export async function getChecklistById(id: string) {
   return checklist;
 }
 
+async function getChecklistItems(id: string) {
+  const checklist = await db("checklists").select("id").where("id", id).first();
+
+  if (!checklist) {
+    throw new NotFoundError({
+      message: "Esse ID de checklist não existe",
+      action: "Verifique se o ID foi passado corretamente",
+    });
+  }
+
+  const checklistItems = await db("checklist_items")
+    .select("checklist_items.*")
+    .select("items.id as item:id", "items.name as item:name")
+    .where("checklist_items.checklist_id", id)
+    .innerJoin("items", "items.id", "checklist_items.item_id")
+    .orderBy("items.name")
+    .nest();
+
+  return checklistItems;
+}
+
 export async function createChecklist(data: z.infer<typeof checklistSchema>) {
   const checklist = await insertChecklist(data);
 
@@ -320,6 +341,7 @@ const checklist = {
   reOpenChecklist,
   findChecklistById,
   createLog,
+  getChecklistItems,
   createSchema: checklistSchema,
 };
 

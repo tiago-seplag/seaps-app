@@ -1,6 +1,6 @@
 import { handler } from "@/infra/controller";
 import { getAuthenticationUserByEmail } from "@/models/authentication";
-import { createSession, EXPIRATION_IN_MILLISECONDS } from "@/models/session";
+import session, { EXPIRATION_IN_MILLISECONDS } from "@/models/session";
 import { cookies } from "next/headers";
 import { NextRequest } from "next/server";
 
@@ -13,7 +13,7 @@ async function postHandler(request: NextRequest) {
     values.password,
   );
 
-  const newSession = await createSession(authenticatedUser.id, {
+  const newSession = await session.create(authenticatedUser.id, {
     userAgent: request.headers.get("user-agent"),
     type: "password",
   });

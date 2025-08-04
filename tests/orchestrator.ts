@@ -1,9 +1,9 @@
 import { db } from "@/infra/database";
-import { createSession } from "@/models/session";
 import user from "@/models/user";
 import model from "@/models/model";
 import property from "@/models/property";
 import checklist from "@/models/checklist";
+import session from "@/models/session";
 
 async function clearDatabase() {
   await db.raw("drop schema public cascade; create schema public;");
@@ -46,12 +46,12 @@ async function createUser({
 }
 
 async function orchestratorCreateSession(userId: string) {
-  const session = await createSession(userId, {
+  const createdSession = await session.create(userId, {
     userAgent: "orchestrator-test",
     type: "password",
   });
 
-  return session;
+  return createdSession;
 }
 
 async function createProperty(organizationId: string) {

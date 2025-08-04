@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
-
 import { validate as uuidValidate } from "uuid";
 import { NextRequest } from "next/server";
 import { onErrorHandler } from "./error-handler";
-import { db } from "./database";
 import { ForbiddenError, UnauthorizedError, ValidationError } from "./errors";
 
 import { z, ZodError } from "zod";
+
+import session from "@/models/session";
 
 export function handler(middlewares: Function[], handler: Function) {
   return async (req: NextRequest, ctx?: any) => {
@@ -33,11 +33,7 @@ async function authenticate(req: NextRequest) {
     });
   }
 
-  const ahutenticatedUser = await db("users")
-    .select("users.*")
-    .innerJoin("sessions", "users.id", "sessions.user_id")
-    .where("sessions.token", token)
-    .first();
+  const ahutenticatedUser = await session.findUserByToken("users");
 
   if (!ahutenticatedUser) {
     throw new UnauthorizedError({
