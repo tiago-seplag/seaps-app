@@ -7,6 +7,7 @@ export async function up(knex: Knex): Promise<void> {
     table.uuid("id", { primaryKey: true }).defaultTo(knex.fn.uuid());
     table.uuid("organization_id").notNullable();
     table.uuid("person_id");
+    table.uuid("created_by");
     table
       .enu("type", ["OWN", "RENTED", "GRANT"], {
         enumName: "property_types",
@@ -28,6 +29,7 @@ export async function up(knex: Knex): Promise<void> {
 
     table.foreign("organization_id").references("id").inTable("organizations");
     table.foreign("person_id").references("id").inTable("persons");
+    table.foreign("created_by").references("id").inTable("users");
   });
 }
 
