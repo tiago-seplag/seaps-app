@@ -15,7 +15,7 @@ export async function up(knex: Knex): Promise<void> {
     table
       .enu("status", ["OPEN", "CLOSED", "APPROVED", "REJECTED"], {
         useNative: true,
-        enumName: "checklist_status_enum",
+        enumName: "checklist_status",
       })
       .defaultTo("OPEN");
     table.boolean("is_deleted").defaultTo(false);
