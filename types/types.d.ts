@@ -3,7 +3,7 @@
 import "knex";
 
 type SearchParams = {
-  [key: string]: string | string[] | undefined | SearchParams;
+  [key: string]: string | string[] | undefined | boolean | SearchParams;
 };
 
 interface IPaginateParams {
