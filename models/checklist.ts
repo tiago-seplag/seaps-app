@@ -1,13 +1,16 @@
 import { ValidationError } from "@/errors/validation-error";
+import { db } from "@/infra/database";
+import { NotFoundError } from "@/infra/errors";
 import { prisma } from "@/lib/prisma";
+import { SearchParams } from "@/types/types";
 import { generateMetaPagination } from "@/utils/meta-pagination";
 import { z } from "zod";
 
 export const checklistSchema = z.object({
-  model_id: z.string(),
-  organization_id: z.string(),
-  property_id: z.string(),
-  user_id: z.string(),
+  model_id: z.string({ message: "O ID do modelo é obrigatório" }),
+  organization_id: z.string({ message: "O ID da organização é obrigatório" }),
+  property_id: z.string({ message: "O ID do imóvel é obrigatório" }),
+  user_id: z.string({ message: "O ID do usuário é obrigatório" }),
 });
 
 export type ChecklistSchema = z.infer<typeof checklistSchema>;
@@ -78,94 +81,126 @@ export async function getChecklistsPaginated(
 }
 
 export async function getChecklistById(id: string) {
-  const checklist = await prisma.checklist.findUnique({
-    where: { id: id },
-    include: {
-      property: {
-        include: {
-          person: true,
-          organization: true,
-        },
-      },
-      organization: true,
-      person: true,
-      user: true,
-      checklistItems: {
-        include: {
-          item: true,
-          images: true,
-        },
-        orderBy: {
-          item: {
-            name: "asc",
-          },
-        },
-      },
-    },
-  });
+  const checklist = await db("checklists")
+    .select("checklists.*")
+    .select(
+      "organizations.name as organization:name",
+      "organizations.acronym as organization:acronym",
+      "organizations.id as organization:id",
+    )
+    .select(
+      "users.name as user:name",
+      "users.id as user:id",
+      "users.role as user:role",
+    )
+    .select(
+      "properties.name as property:name",
+      "properties.id as property:id",
+      "properties.address as property:address",
+      "properties.type as property:type",
+      "properties.created_at as property:created_at",
+      "properties.updated_at as property:updated_at",
+      "properties.person_id as property:person_id",
+      "properties.organization_id as property:organization_id",
+    )
+    .select(
+      "persons.name as property:person:name",
+      "persons.id as property:person:id",
+      "persons.email as property:person:email",
+      "persons.phone as property:person:phone",
+      "persons.role as property:person:role",
+      "persons.created_at as property:person:created_at",
+      "persons.updated_at as property:person:updated_at",
+    )
+    .innerJoin("properties", "properties.id", "checklists.property_id")
+    .leftJoin("persons", "persons.id", "properties.person_id")
+    .leftJoin("organizations", "organizations.id", "checklists.organization_id")
+    .innerJoin("users", "users.id", "checklists.user_id")
+    .where("checklists.id", id)
+    .first()
+    .nest();
 
   if (!checklist) {
-    throw new ValidationError({
+    throw new NotFoundError({
       message: "Esse ID de checklist não existe",
       action: "Verifique se o ID foi passado corretamente",
-      statusCode: 404,
     });
   }
 
   return checklist;
 }
 
-export async function createChecklist(
-  data: z.infer<typeof checklistSchema>,
-  userId: string,
-) {
-  const values = data;
+async function getChecklistItems(id: string) {
+  const checklist = await db("checklists").select("id").where("id", id).first();
 
-  const lastChecklist = await prisma.checklist.findFirst({
-    orderBy: {
-      created_at: "desc",
-    },
-  });
-
-  const year = new Date().getFullYear().toString().slice(2);
-
-  let sid = "0001/" + year;
-
-  if (lastChecklist && lastChecklist.sid.slice(-2) === year) {
-    const number = Number(lastChecklist.sid.slice(0, 4)) + 1;
-    sid = number.toString().padStart(4, "0") + "/" + year;
-  }
-
-  const checklist = await prisma.checklist.create({
-    data: {
-      organization_id: values.organization_id,
-      created_by: userId,
-      user_id: values.user_id,
-      property_id: values.property_id,
-      sid: sid,
-      model_id: values.model_id,
-    },
-  });
-
-  const items = await prisma.item.findMany({
-    where: {
-      modelItems: {
-        some: {
-          model_id: values.model_id,
-        },
-      },
-    },
-  });
-
-  if (items.length > 0) {
-    await prisma.checklistItems.createMany({
-      data: items.map((item) => {
-        return { item_id: item.id, checklist_id: checklist.id };
-      }),
+  if (!checklist) {
+    throw new NotFoundError({
+      message: "Esse ID de checklist não existe",
+      action: "Verifique se o ID foi passado corretamente",
     });
   }
 
-  return checklist;
+  const checklistItems = await db("checklist_items")
+    .select("checklist_items.*")
+    .select("items.id as item:id", "items.name as item:name")
+    .where("checklist_items.checklist_id", id)
+    .innerJoin("items", "items.id", "checklist_items.item_id")
+    .orderBy("items.name")
+    .nest();
+
+  return checklistItems;
+}
+
+export async function createChecklist(data: z.infer<typeof checklistSchema>) {
+  const checklist = await insertChecklist(data);
+
+  const items = await db("items")
+    .select("items.*")
+    .innerJoin("model_items", "items.id", "model_items.item_id")
+    .where("model_items.model_id", data.model_id);
+
+  await db("checklist_items").insert(
+    items.map((item) => ({
+      checklist_id: checklist.id,
+      item_id: item.id,
+    })),
+  );
+
+  return { ...checklist, items };
+
+  async function insertChecklist(data: z.infer<typeof checklistSchema>) {
+    const SID = await generateSID();
+
+    const [createdChecklist] = await db("checklists")
+      .insert({
+        organization_id: data.organization_id,
+        user_id: data.user_id,
+        property_id: data.property_id,
+        sid: SID,
+        model_id: data.model_id,
+      })
+      .returning("*");
+
+    return createdChecklist;
+  }
+
+  async function generateSID() {
+    const lastChecklist = await db<{ sid: string }>("checklists")
+      .select("sid")
+      .orderBy("created_at", "desc")
+      .first();
+
+    const year = new Date().getFullYear().toString().slice(2);
+
+    let sid = "0001/" + year;
+
+    if (lastChecklist && lastChecklist.sid.slice(-2) === year) {
+      const number = Number(lastChecklist.sid.slice(0, 4)) + 1;
+      sid = number.toString().padStart(4, "0") + "/" + year;
+    }
+
+    return sid;
+  }
 }
 
 export async function finishChecklist(
@@ -287,3 +322,29 @@ export async function findChecklistById(id: string) {
 
   return checklist;
 }
+
+async function createLog(data: {
+  action: string;
+  checklist_id: string;
+  user_id: string;
+}) {
+  await db("checklist_logs").insert({
+    action: data.action,
+    checklist_id: data.checklist_id,
+    user_id: data.user_id,
+  });
+}
+
+const checklist = {
+  getChecklistsPaginated,
+  getChecklistById,
+  createChecklist,
+  finishChecklist,
+  reOpenChecklist,
+  findChecklistById,
+  createLog,
+  getChecklistItems,
+  createSchema: checklistSchema,
+};
+
+export default checklist;

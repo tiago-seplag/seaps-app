@@ -3,13 +3,9 @@
 import { ChecklistImageCard } from "@/components/image-card";
 import { ImageDialog } from "@/components/image-dialog";
 import { UploadCard } from "@/components/upload-card";
+import { useChecklist } from "@/contexts/checklist-context";
 import { useModal } from "@/hooks/use-modal";
-import {
-  Checklist,
-  ChecklistItemImages,
-  ChecklistItems,
-  Item,
-} from "@prisma/client";
+import { ChecklistItemImages, ChecklistItems, Item } from "@prisma/client";
 
 export const Images = ({
   checklistItem,
@@ -17,9 +13,10 @@ export const Images = ({
   checklistItem: ChecklistItems & {
     item: Pick<Item, "name">;
     images: ChecklistItemImages[];
-    checklist: Pick<Checklist, "status">;
   };
 }) => {
+  const { checklist } = useChecklist();
+
   const imageDialog = useModal();
 
   return (
@@ -27,7 +24,7 @@ export const Images = ({
       <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
         {checklistItem.images.map((image) => (
           <ChecklistImageCard
-            status={checklistItem.checklist.status}
+            status={checklist!.status}
             key={image.id}
             checklistImage={checklistItem.image || undefined}
             image={image}
@@ -35,14 +32,13 @@ export const Images = ({
           />
         ))}
 
-        {checklistItem.images.length < 5 &&
-          checklistItem.checklist.status === "OPEN" && (
-            <UploadCard
-              maxFileCount={5 - checklistItem.images.length}
-              status={checklistItem.checklist.status}
-              checklistItemId={checklistItem.id}
-            />
-          )}
+        {checklistItem.images.length < 10 && checklist?.status === "OPEN" && (
+          <UploadCard
+            maxFileCount={10 - checklistItem.images.length}
+            status={checklist?.status}
+            checklistItemId={checklistItem.id}
+          />
+        )}
       </div>
       <ImageDialog
         item={checklistItem}

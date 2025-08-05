@@ -1,4 +1,5 @@
 import { ValidationError } from "@/errors/validation-error";
+import { db } from "@/infra/database";
 import { prisma } from "@/lib/prisma";
 import { generateMetaPagination } from "@/utils/meta-pagination";
 import { z } from "zod";
@@ -83,3 +84,23 @@ export async function getPropertyById(id: string) {
 
   return property;
 }
+
+async function createProperty(data: PropertySchema) {
+  const [property] = await db("properties")
+    .insert({
+      name: data.name,
+      organization_id: data.organization_id,
+      address: data.address,
+      type: data.type,
+      person_id: data.person_id,
+    })
+    .returning("*");
+
+  return property;
+}
+
+const property = {
+  createProperty,
+};
+
+export default property;
