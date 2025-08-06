@@ -1,21 +1,21 @@
 import type { Knex } from "knex";
 
-const TABLE_NAME = "sessions";
+const TABLE_NAME = "property_logs";
 
 export async function up(knex: Knex): Promise<void> {
   await knex.schema.createTable(TABLE_NAME, (table) => {
     table.uuid("id", { primaryKey: true }).defaultTo(knex.fn.uuid());
     table.uuid("user_id");
-    table.string("token");
-    table.string("user_agent");
-    table.enu("type", ["mt-login", "password"], {
-      enumName: "session_types",
-      useNative: true,
-    });
-    table.boolean("is_active").defaultTo("true");
-    table.timestamp("expires_at");
+    table
+      .enu("status", ["PENDING", "APPROVED", "REJECTED"], {
+        useNative: true,
+        enumName: "property_status",
+        existingType: true,
+      })
+      .defaultTo("PENDING");
+    table.string("action").notNullable();
+    table.string("observation");
     table.timestamp("created_at").defaultTo(knex.fn.now());
-    table.timestamp("updated_at").defaultTo(knex.fn.now());
 
     table.foreign("user_id").references("id").inTable("users");
   });

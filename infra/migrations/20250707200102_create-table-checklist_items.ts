@@ -8,8 +8,9 @@ export async function up(knex: Knex): Promise<void> {
     table.uuid("checklist_id").notNullable();
     table.uuid("item_id").notNullable();
     table.integer("score").nullable();
-    table.string("observation")
-    table.string("image")
+    table.string("observation");
+    table.string("image");
+    table.boolean("is_inspected").defaultTo(false);
     table.boolean("is_valid").defaultTo(null).nullable();
     table.timestamp("created_at").defaultTo(knex.fn.now());
     table.timestamp("updated_at").defaultTo(knex.fn.now());
