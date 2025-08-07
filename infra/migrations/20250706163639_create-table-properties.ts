@@ -15,12 +15,6 @@ export async function up(knex: Knex): Promise<void> {
       })
       .defaultTo("OWN")
       .notNullable();
-    table
-      .enu("status", ["PENDING", "APPROVED", "REJECTED"], {
-        useNative: true,
-        enumName: "property_status",
-      })
-      .defaultTo("PENDING");
     table.string("name").notNullable();
     table.string("name_normalized");
     table.string("address");
