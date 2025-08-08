@@ -3,18 +3,19 @@ import { Plus } from "lucide-react";
 import { columns } from "./columns";
 import { DataTable } from "@/components/data-table";
 import { Pagination } from "@/components/pagination";
-import { getPropertiesPaginated } from "@/models/property";
+import property from "@/models/property";
 import Link from "next/link";
+import { SearchParams } from "@/types/types";
 
 export default async function Page(props: {
   searchParams: Promise<SearchParams>;
 }) {
   const searchParams = await props.searchParams;
 
-  const { meta, data: properties } = await getPropertiesPaginated(
-    Number(searchParams.page || 1),
-    Number(searchParams.perPage || 10),
-  );
+  const { meta, data: properties } = await property.paginated({
+    page: Number(searchParams.page || 1),
+    per_page: Number(searchParams.perPage || 10),
+  });
 
   return (
     <div className="flex flex-col gap-y-4">
@@ -33,7 +34,7 @@ export default async function Page(props: {
       </div>
 
       <DataTable columns={columns} data={properties} />
-      {meta.total > 10 && <Pagination meta={meta} />}
+      <Pagination meta={meta} />
     </div>
   );
 }

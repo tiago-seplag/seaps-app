@@ -1,9 +1,8 @@
 import { ValidationError } from "@/errors/validation-error";
-import {
+import checklist, {
   ChecklistSchema,
   checklistSchema,
   createChecklist,
-  getChecklistsPaginated,
 } from "@/models/checklist";
 import { authMiddleware } from "@/utils/authentication";
 import { authorization } from "@/utils/authorization";
@@ -12,12 +11,12 @@ import { validation } from "@/utils/validate";
 import { NextRequest } from "next/server";
 
 const postHandler = async (request: NextRequest) => {
-  const userId = request.headers.get("x-user-id")!;
+  // const userId = request.headers.get("x-user-id")!;
 
   const values: ChecklistSchema = await request.json();
 
   try {
-    const checklist = await createChecklist(values, userId);
+    const checklist = await createChecklist(values);
     return Response.json(checklist);
   } catch (error) {
     if (error instanceof ValidationError)
@@ -36,22 +35,17 @@ const getHandler = async (request: NextRequest) => {
 
   const search = Object.fromEntries(searchParams.entries());
 
-  try {
-    const checklists = await getChecklistsPaginated(
-      Number(page),
-      Number(perPage),
-      {
-        ...search,
-        user: role !== "ADMIN" ? userId : undefined,
-      },
-    );
-    return Response.json(checklists);
-  } catch (error) {
-    console.log(error);
-    if (error instanceof ValidationError)
-      return Response.json(error, { status: error.statusCode });
-    return Response.json({ error }, { status: 500 });
-  }
+  const checklists = await checklist.paginated({
+    page: page,
+    perPage: perPage,
+    ...search,
+    user: {
+      id: userId,
+      role,
+    },
+  });
+
+  return Response.json(checklists);
 };
 
 export const POST = withMiddlewares(

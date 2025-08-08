@@ -1,5 +1,5 @@
 import { DataTable } from "@/components/data-table";
-import { getOrganizationsPaginated } from "@/models/organization";
+import organization from "@/models/organization";
 import { columns } from "./columns";
 import { Pagination } from "@/components/pagination";
 
@@ -8,7 +8,7 @@ export default async function Page(props: {
 }) {
   const searchParams = await props.searchParams;
 
-  const { meta, data: organizations } = await getOrganizationsPaginated(
+  const { meta, data: organizations } = await organization.paginated(
     Number(searchParams.page || 1),
     Number(searchParams.perPage || 10),
   );

@@ -16,6 +16,25 @@ async function postHandler(request: NextRequest) {
   return Response.json(createdChecklist, { status: 201 });
 }
 
+async function getHandler(request: NextRequest) {
+  const data = await checklist.paginated({
+    page: request.nextUrl.searchParams.get("page"),
+    per_page: request.nextUrl.searchParams.get("per_page"),
+    searchParams: request.nextUrl.searchParams,
+    user: {
+      id: request.headers.get("x-user-id"),
+      role: request.headers.get("x-user-role") || "EVALUATOR",
+    },
+  });
+
+  return Response.json(data);
+}
+
+export const GET = handler(
+  [controller.authenticate, controller.pagination],
+  getHandler,
+);
+
 export const POST = handler(
   [controller.authenticate, controller.validateBody(checklist.createSchema)],
   postHandler,

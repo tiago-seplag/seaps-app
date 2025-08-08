@@ -3,10 +3,11 @@ import { Plus } from "lucide-react";
 import { columns } from "./columns";
 import { DataTable } from "@/components/data-table";
 import { Pagination } from "@/components/pagination";
-import { getChecklistsPaginated } from "@/models/checklist";
+import checklist from "@/models/checklist";
 import { DataFilterForm } from "./_components/filter-form";
 import Link from "next/link";
 import { getUser } from "@/lib/dal";
+import { SearchParams } from "@/types/types";
 
 export default async function Page(props: {
   searchParams: Promise<SearchParams>;
@@ -15,11 +16,12 @@ export default async function Page(props: {
 
   const { page, perPage, ...searchParams } = await props.searchParams;
 
-  const { meta, data: checklists } = await getChecklistsPaginated(
-    Number(page || 1),
-    Number(perPage || 10),
+  const { meta, data: checklists } = await checklist.paginated({
+    page: Number(page || 1),
+    per_page: Number(perPage || 10),
     searchParams,
-  );
+    user,
+  });
 
   return (
     <div className="flex flex-col gap-y-4">

@@ -1,9 +1,6 @@
-import { ValidationError } from "@/errors/validation-error";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { db } from "@/infra/database";
-import { NotFoundError } from "@/infra/errors";
-import { prisma } from "@/lib/prisma";
-import { SearchParams } from "@/types/types";
-import { generateMetaPagination } from "@/utils/meta-pagination";
+import { ForbiddenError, NotFoundError, ValidationError } from "@/infra/errors";
 import { z } from "zod";
 
 export const checklistSchema = z.object({
@@ -15,69 +12,54 @@ export const checklistSchema = z.object({
 
 export type ChecklistSchema = z.infer<typeof checklistSchema>;
 
-export async function getChecklistsPaginated(
-  page = 1,
-  perPage = 10,
-  searchParams?: SearchParams,
-) {
-  const filter: SearchParams = {
-    is_deleted: false,
-  };
+async function paginated(options: any) {
+  const checklists = await db("checklists")
+    .select("checklists.*")
+    .select(
+      "organizations.name as organization:name",
+      "organizations.acronym as organization:acronym",
+    )
+    .select("users.name as user:name")
+    .select(
+      "properties.name as property:name",
+      "properties.address as property:address",
+      "properties.type as property:type",
+    )
+    .innerJoin(
+      "organizations",
+      "organizations.id",
+      "checklists.organization_id",
+    )
+    .innerJoin("users", "users.id", "checklists.user_id")
+    .innerJoin("properties", "properties.id", "checklists.property_id")
+    .where((query) => {
+      query.where("checklists.is_deleted", false);
+      if (options?.status) {
+        query.where("checklists.status", options.status as string);
+      }
+      if (options?.property_name) {
+        query.where("properties.name", "ilike", `%${options.property_name}%`);
+      }
+      if (options?.organization_id) {
+        query.where(
+          "checklists.organization_id",
+          options?.organization_id as string,
+        );
+      }
+      if (options?.user_id) {
+        query.where("checklists.user_id", options.user_id as string);
+      }
 
-  if (searchParams?.status) {
-    filter.status = searchParams.status;
-  }
+      if (options.user.role === "EVALUATOR") {
+        query.where("checklists.user_id", options.user.id);
+      }
+    })
+    .orderBy("created_at", "desc")
+    .paginate(options.page, options.per_page, {
+      nest: true,
+    });
 
-  if (searchParams?.property_name) {
-    filter.property = {
-      name: {
-        contains: searchParams.property_name as string,
-        mode: "insensitive",
-      },
-    };
-  }
-
-  if (searchParams?.organization) {
-    filter.organization_id = searchParams.organization;
-  }
-
-  if (searchParams?.user) {
-    filter.user_id = searchParams.user;
-  }
-
-  const total = await prisma.checklist.count({
-    where: filter,
-  });
-
-  const meta = generateMetaPagination(page, perPage, total);
-
-  const checklists = await prisma.checklist.findMany({
-    include: {
-      organization: {
-        select: {
-          name: true,
-        },
-      },
-      property: {
-        select: {
-          name: true,
-        },
-      },
-      user: {
-        select: {
-          name: true,
-        },
-      },
-    },
-    where: filter,
-    orderBy: {
-      created_at: "desc",
-    },
-    take: meta.per_page,
-    skip: (meta.current_page - 1) * meta.per_page,
-  });
-
-  return { data: checklists, meta };
+  return checklists;
 }
 
 export async function getChecklistById(id: string) {
@@ -207,36 +189,31 @@ export async function finishChecklist(
   id: string,
   user: { id: string; role: string },
 ) {
-  const checklist = await findChecklistById(id);
-  const checklistItems = await prisma.checklistItems.findMany({
-    where: { checklist_id: id },
-    include: {
-      item: {
-        select: {
-          name: true,
-        },
-      },
-      _count: {
-        select: {
-          images: true,
-        },
-      },
-    },
-  });
+  const checklist = await findById(id);
+
+  const checklistItems = await db("checklist_items")
+    .select("*")
+    .select("items.name as item:name")
+    .select(
+      db.raw(
+        "(SELECT COUNT(*) FROM images WHERE images.checklist_item_id = checklist_items.id) AS count:images",
+      ),
+    )
+    .innerJoin("items", "items.id", "checklist_items.item_id")
+    .where("checklist_id", id)
+    .nest();
 
   if (checklist.status === "CLOSED") {
     throw new ValidationError({
-      message: "O checklist já foi finalizado",
-      action: "",
-      statusCode: 400,
+      message: "Esse checklist já foi finalizado",
+      action: "Verifique se o checklist já foi finalizado",
     });
   }
 
   if (user.id !== checklist.user_id && user.role !== "ADMIN") {
-    throw new ValidationError({
-      message: "Apenas o responsável pode finalizar",
-      action: "Pessa ao responsável para finalizar esse checklist",
-      statusCode: 403,
+    throw new ForbiddenError({
+      message: "Você não tem permissão para finalizar esse checklist",
+      action: "Verifique se você é o avaliador desse checklist",
     });
   }
 
@@ -270,52 +247,48 @@ export async function finishChecklist(
 
   const classification = finalScore > 2.5 ? 2 : finalScore < 1.5 ? 0 : 1;
 
-  const finishedChecklist = await prisma.checklist.update({
-    where: { id },
-    data: {
+  const finishedChecklist = await db("checklists")
+    .where("id", id)
+    .update({
       classification,
       score: finalScore,
       status: "CLOSED",
       finished_at: new Date(),
-    },
-  });
+    })
+    .returning("*");
 
   return finishedChecklist;
 }
 
 export async function reOpenChecklist(id: string) {
-  const checklist = await findChecklistById(id);
+  const checklist = await findById(id);
 
   if (checklist.status !== "CLOSED") {
     throw new ValidationError({
       message: "Esse checklist não pode ser reaberto",
-      statusCode: 400,
       action: "Verifique se o checklist já foi finalizado",
     });
   }
 
-  const updatedChecklist = await prisma.checklist.update({
-    where: { id },
-    data: {
+  const updatedChecklist = await db("checklists")
+    .update({
       status: "OPEN",
       finished_at: null,
       score: 0,
       classification: null,
-    },
-  });
+    })
+    .where("id", id)
+    .returning("*");
 
   return updatedChecklist;
 }
 
-export async function findChecklistById(id: string) {
-  const checklist = await prisma.checklist.findUnique({
-    where: { id },
-  });
+export async function findById(id: string) {
+  const checklist = await db("checklists").select("*").where("id", id).first();
 
   if (!checklist) {
     throw new ValidationError({
       message: "Esse checklist não existe",
-      statusCode: 404,
       action: "Verifique se o checklist informado está correto",
     });
   }
@@ -336,12 +309,12 @@ async function createLog(data: {
 }
 
 const checklist = {
-  getChecklistsPaginated,
+  paginated,
   getChecklistById,
   createChecklist,
   finishChecklist,
   reOpenChecklist,
-  findChecklistById,
+  findById,
   createLog,
   getChecklistItems,
   createSchema: checklistSchema,

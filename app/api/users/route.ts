@@ -1,5 +1,5 @@
+import controller from "@/infra/controller";
 import { prisma } from "@/lib/prisma";
-import { authMiddleware } from "@/utils/authentication";
 import { withMiddlewares } from "@/utils/handler";
 
 async function getHandler() {
@@ -15,4 +15,4 @@ async function getHandler() {
   return Response.json(users);
 }
 
-export const GET = withMiddlewares([authMiddleware], getHandler);
+export const GET = withMiddlewares([controller.authenticate], getHandler);

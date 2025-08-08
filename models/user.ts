@@ -13,6 +13,7 @@ import { hash } from "./password";
 export const updateConfigSchema = z.object({
   is_active: z.boolean(),
   role: z.enum(["ADMIN", "SUPERVISOR", "EVALUATOR"]),
+  permissions: z.array(z.string()).optional(),
 });
 
 export const createUserSchema = z.object({
@@ -87,6 +88,7 @@ export async function updateUserConfigs(
     .update({
       is_active: data.is_active,
       role: data.role,
+      permissions: data.permissions,
     })
     .where("id", userId)
     .returning("*");

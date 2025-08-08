@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { getFirstAndLastName } from "@/lib/utils";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
-import { Pen } from "lucide-react";
+import { Pen, Trash2 } from "lucide-react";
 import Link from "next/link";
 
 type Column = {
@@ -20,6 +20,7 @@ type Column = {
   organization: {
     id: string;
     name: string;
+    acronym: string;
   };
   person?: {
     name: string;
@@ -50,7 +51,7 @@ export const columns: ColumnDef<Column>[] = [
     accessorKey: "organizationn",
     header: "Orgão",
     accessorFn(row) {
-      return row.organization.name;
+      return row.organization.acronym;
     },
     meta: {
       headerClassName: "hidden md:table-cell",
@@ -96,6 +97,19 @@ export const columns: ColumnDef<Column>[] = [
             <Link href={"/properties/" + row.original.id + "/edit"}>
               <Pen size={16} />
             </Link>
+          </Button>
+          <Button
+            variant="destructive"
+            className="h-6 w-6 p-2"
+            onClick={() => {
+              fetch(`/api/properties/` + row.original.id, {
+                method: "DELETE",
+              }).then((res) => {
+                if (res.ok) window.location.reload();
+              });
+            }}
+          >
+            <Trash2 size={16} />
           </Button>
         </div>
       );

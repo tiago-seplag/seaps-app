@@ -41,7 +41,7 @@ async function findUserByToken(token: string) {
       "users.cpf",
       "users.name",
       "users.email",
-      "users.avatar ",
+      "users.avatar",
       "users.role",
       "users.is_active",
       "users.is_deleted",
@@ -55,10 +55,51 @@ async function findUserByToken(token: string) {
   return user;
 }
 
+async function findUserAndToken(token: string) {
+  const data = await db("users")
+    .select(
+      "users.id",
+      "users.cpf",
+      "users.name",
+      "users.email",
+      "users.avatar",
+      "users.role",
+      "users.is_active",
+      "users.is_deleted",
+      "users.created_at",
+      "users.updated_at",
+      "sessions.token",
+      "sessions.expires_at",
+    )
+    .innerJoin("sessions", "sessions.user_id", "users.id")
+    .where("sessions.token", token)
+    .first();
+
+  return {
+    user: {
+      id: data.id,
+      cpf: data.cpf,
+      name: data.name,
+      email: data.email,
+      avatar: data.avatar,
+      role: data.role,
+      is_active: data.is_active,
+      is_deleted: data.is_deleted,
+      created_at: data.created_at,
+      updated_at: data.updated_at,
+    },
+    token: {
+      token: data.token,
+      expires_at: data.expires_at,
+    },
+  };
+}
+
 const session = {
   create,
   findSessionByToken,
   findUserByToken,
+  findUserAndToken,
 };
 
 export { EXPIRATION_IN_MILLISECONDS };

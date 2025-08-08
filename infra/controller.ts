@@ -33,7 +33,7 @@ async function authenticate(req: NextRequest) {
     });
   }
 
-  const ahutenticatedUser = await session.findUserByToken("users");
+  const { user: ahutenticatedUser } = await session.findUserAndToken(token);
 
   if (!ahutenticatedUser) {
     throw new UnauthorizedError({
@@ -53,7 +53,7 @@ async function authenticate(req: NextRequest) {
   req.headers.set("x-user-role", ahutenticatedUser.role);
 }
 
-async function paginateValidation(req: NextRequest) {
+async function pagination(req: NextRequest) {
   const page = req.nextUrl.searchParams.get("page");
   const perPage = req.nextUrl.searchParams.get("per_page");
 
@@ -69,6 +69,10 @@ async function paginateValidation(req: NextRequest) {
       message: "Paginate error: per_page must be a number.",
       action: "Please provide a valid number for per_page.",
     });
+  }
+
+  if (!perPage) {
+    req.nextUrl.searchParams.set("per_page", "10"); // default per_page
   }
 }
 
@@ -117,7 +121,7 @@ function validateUUID(...ids: string[]) {
 
 const controller = {
   authenticate,
-  paginateValidation,
+  pagination,
   validateBody,
   validateUUID,
 };

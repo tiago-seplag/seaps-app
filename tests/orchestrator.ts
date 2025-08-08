@@ -40,9 +40,13 @@ async function createUser({
     password: password || "default-password",
   });
 
-  await user.updateUser(createdUser.id, { is_active: true, role: "ADMIN" });
+  const updatedUser = await user.updateUser(createdUser.id, {
+    is_active: true,
+    role: "ADMIN",
+    permissions: ["*", "avaliator"],
+  });
 
-  return createdUser;
+  return updatedUser;
 }
 
 async function orchestratorCreateSession(userId: string) {
@@ -65,13 +69,14 @@ async function createProperty(organizationId: string) {
     })
     .returning("*");
 
-  const createdProperty = await property.createProperty({
+  const createdProperty = await property.create({
     name: "Test Property",
     organization_id: organizationId,
     address: "123 Test St",
     type: "OWN",
-    person_id: person.id,
   });
+
+  await property.updatePerson(createdProperty.id, person.id);
 
   return createdProperty;
 }
