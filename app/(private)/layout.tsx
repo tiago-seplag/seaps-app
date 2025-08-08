@@ -27,6 +27,11 @@ export default async function Layout({
     return <NotActivated />;
   }
 
+  if (!user) {
+    cookieStore.delete("session");
+    return <NotActivated />;
+  }
+
   return (
     <SidebarProvider defaultOpen={defaultOpen}>
       <AppSidebar />

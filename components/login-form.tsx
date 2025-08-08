@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { config } from "@/utils/mt-login";
 import Link from "next/link";
 import Image from "next/image";
-import Logo from "../public/logo-gov.png"
+import Logo from "../public/logo-gov.png";
 import MtLoginLogo from "../public/mt-login.png";
 import { Input } from "./ui/input";
 import {
@@ -23,6 +23,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeClosed } from "lucide-react";
+import { toast } from "sonner";
+
 import axios from "axios";
 
 const formSchema = z.object({
@@ -69,9 +71,19 @@ export function LoginForm() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     return axios
-      .post("api/auth/login", values)
+      .post("api/v1/sessions", values)
       .then(() => router.push("/"))
-      .catch((e) => console.log(e));
+      .catch((e) => {
+        if (e.response?.data?.messages?.length > 0) {
+          e.response.data.messages.map((msg: string) => toast.error(msg));
+        } else if (e.response?.data?.message) {
+          toast.error(e.response.data.message, {
+            description: e.response.data.action,
+          });
+        } else {
+          toast.error("Erro ao tentar logar. Tente novamente.", {});
+        }
+      });
   }
 
   return (

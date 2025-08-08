@@ -2,41 +2,28 @@ import "server-only";
 
 import { cookies } from "next/headers";
 import { cache } from "react";
-import { decrypt } from "./session";
 import { redirect } from "next/navigation";
-import { prisma } from "./prisma";
+import session from "@/models/session";
 
 export const verifySession = cache(async () => {
-  const cookie = (await cookies()).get("SESSION")?.value;
-  const session = await decrypt(cookie);
+  const cookie = (await cookies()).get("session")?.value;
 
-  if (typeof session !== "string" && !session?.id) {
+  if (!cookie) {
     redirect("/login");
   }
 
-  return session;
+  const storegedSession = await session.findUserAndToken(cookie);
+
+  return storegedSession;
 });
 
 export const getUser = cache(async () => {
-  const session = await verifySession();
-  if (!session) return null;
+  const storegedSession = await verifySession();
 
   try {
-    const user = await prisma.user.findUnique({
-      select: {
-        avatar: true,
-        email: true,
-        id: true,
-        name: true,
-        role: true,
-        is_active: true,
-        created_at: true,
-        updated_at: true,
-      },
-      where: {
-        id: session.id,
-      },
-    });
+    const user = storegedSession.user;
+
+    if (!user) return null;
 
     return user;
   } catch {
