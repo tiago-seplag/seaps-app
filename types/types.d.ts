@@ -13,7 +13,7 @@ interface IPaginateParams {
 
 interface IPagination<Data> {
   data: Data[];
-  pagination: IBasePagination;
+  meta: IBasePagination;
 }
 
 interface IBasePagination {
@@ -35,7 +35,7 @@ declare module "knex" {
       ): Knex.QueryBuilder<TRecord, IPagination<TRecord[]>>;
     }
     interface QueryBuilder<TRecord extends object = any, TResult = any> {
-      paginate<T>(
+      paginate<T = any>(
         page: number,
         perPage: number,
         options?: { nest?: boolean },
