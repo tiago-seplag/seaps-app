@@ -6,7 +6,7 @@ export async function up(knex: Knex): Promise<void> {
   await knex.schema.createTable(TABLE_NAME, (table) => {
     table.uuid("id", { primaryKey: true }).defaultTo(knex.fn.uuid());
     table.string("cpf").notNullable().unique();
-    table.string("name").notNullable()
+    table.string("name").notNullable();
     table.string("email").notNullable().unique();
     table.string("password");
     table.string("avatar");
@@ -16,6 +16,7 @@ export async function up(knex: Knex): Promise<void> {
         useNative: true,
       })
       .notNullable();
+    table.specificType("permissions", "text ARRAY");
     table.boolean("is_active").defaultTo(false);
     table.boolean("is_deleted").defaultTo(false);
     table.timestamp("created_at").defaultTo(knex.fn.now());
