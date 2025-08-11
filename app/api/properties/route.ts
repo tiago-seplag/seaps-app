@@ -1,5 +1,5 @@
 import controller from "@/infra/controller";
-import property from "@/models/property";
+import property, { propertySchema } from "@/models/property";
 import { authMiddleware } from "@/utils/authentication";
 import { withMiddlewares } from "@/utils/handler";
 import { validation } from "@/utils/validate";
@@ -22,14 +22,6 @@ async function getHandler(req: NextRequest) {
   return Response.json(data);
 }
 
-const propertySchema = z.object({
-  organization_id: z.string(),
-  name: z.string().min(2),
-  address: z.string().optional(),
-  type: z.enum(["GRANT", "OWN", "RENTED"]),
-  person_id: z.string(),
-});
-
 const postHandler = async (request: NextRequest) => {
   const values: z.infer<typeof propertySchema> = await request.json();
 
@@ -47,4 +39,3 @@ export const POST = withMiddlewares(
   [controller.authenticate, validation(propertySchema)],
   postHandler,
 );
-

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { z } from "zod";
@@ -13,8 +14,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
-import { Organization, Property } from "@prisma/client";
+import { useCallback, useEffect, useState } from "react";
+import { Organization } from "@prisma/client";
 import {
   Select,
   SelectContent,
@@ -24,8 +25,11 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
-import { Plus } from "lucide-react";
+import { Loader2Icon, Plus } from "lucide-react";
 import axios from "axios";
+import { formatCEP, toUpperCase } from "@/lib/utils";
+import debounce from "lodash.debounce";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   organization_id: z.string({
@@ -34,6 +38,21 @@ const formSchema = z.object({
   name: z.string().min(2, {
     message: "Insira o nome do imóvel",
   }),
+  cep: z.string().min(7, {
+    message: "Insira o CEP do imóvel",
+  }),
+  state: z.string().min(1, {
+    message: "Insira o estado do imóvel",
+  }),
+  city: z.string().min(1, {
+    message: "Insira a cidade do imóvel",
+  }),
+  neighborhood: z.string().min(7, {
+    message: "Insira o bairro do imóvel",
+  }),
+  street: z.string().min(7, {
+    message: "Insira a rua do imóvel",
+  }),
   address: z.string().optional(),
   type: z.string({
     message: "Selecione o tipo do imóvel",
@@ -41,17 +60,23 @@ const formSchema = z.object({
   person_id: z.string().uuid().optional(),
 });
 
-export function EditPropertyForm({ property }: { property: Property }) {
+export function EditPropertyForm({ property }: { property: any }) {
   const router = useRouter();
 
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [responsible, setResponsible] = useState<Organization[]>([]);
+  const [isChecking, setIsChecking] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      address: property.address || "",
       name: property.name,
+      cep: property.cep || "",
+      state: property.state || "",
+      city: property.city || "",
+      neighborhood: property.neighborhood || "",
+      street: property.street || "",
+      address: property.address || "",
       organization_id: property.organization_id,
       person_id: property.person_id || undefined,
       type: property.type,
@@ -78,6 +103,57 @@ export function EditPropertyForm({ property }: { property: Property }) {
       .then(() => router.replace("/properties"))
       .catch((e) => console.log(e));
   }
+
+  async function findAddressByCEP(cep: string) {
+    await axios
+      .get(`https://viacep.com.br/ws/${cep}/json/`)
+      .then((response) => {
+        if (response.data.erro) {
+          toast.error("CEP inválido ou não encontrado.");
+          return;
+        }
+        const { data } = response;
+        form.setValue("state", data.uf?.toUpperCase());
+        form.setValue("city", data.localidade?.toUpperCase());
+        form.setValue("neighborhood", data.bairro?.toUpperCase());
+        form.setValue("street", data.logradouro?.toUpperCase());
+        form.setValue("address", `${data.logradouro}, ${data.bairro}`);
+      })
+      .catch(() => toast.error("CEP inválido ou não encontrado."));
+  }
+
+  const checkNameExists = async (name: string) => {
+    if (!name) {
+      form.clearErrors("name");
+      return;
+    }
+
+    setIsChecking(true);
+    try {
+      const res = await fetch(
+        `/api/v1/properties/check?name=${encodeURIComponent(name)}`,
+      );
+      const { ok } = await res.json();
+
+      if (!ok) {
+        form.setError("name", {
+          type: "manual",
+          message: "É possivel que este imóvel já tenha sido criado",
+        });
+      } else {
+        form.clearErrors("name");
+      }
+    } catch {
+      form.setError("name", {
+        type: "manual",
+        message: "Erro ao verificar nome",
+      });
+    } finally {
+      setIsChecking(false);
+    }
+  };
+
+  const debouncedCheckName = useCallback(debounce(checkNameExists, 500), []);
 
   return (
     <Form {...form}>
@@ -185,10 +261,111 @@ export function EditPropertyForm({ property }: { property: Property }) {
           control={form.control}
           name="name"
           render={({ field }) => (
-            <FormItem className="w-full">
+            <FormItem className="relative w-full">
               <FormLabel>Nome</FormLabel>
               <FormControl>
-                <Input placeholder="Nome do imóvel ou local" {...field} />
+                <Input
+                  placeholder="Nome do imóvel ou local"
+                  {...field}
+                  onChange={(e) => {
+                    field.onChange(e);
+                    debouncedCheckName(e.target.value);
+                  }}
+                  onBlur={(e) => field.onChange(toUpperCase(e))}
+                />
+              </FormControl>
+              {isChecking && (
+                <Loader2Icon className="absolute right-0 top-0 animate-spin" />
+              )}
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="cep"
+          render={({ field }) => (
+            <FormItem className="w-full">
+              <FormLabel>CEP</FormLabel>
+              <FormControl>
+                <Input
+                  {...field}
+                  placeholder="Nome do imóvel ou local"
+                  onChange={(e) => {
+                    field.onChange(formatCEP(e));
+                    if (e.target.value.length === 9) {
+                      findAddressByCEP(e.target.value.replace("-", ""));
+                    }
+                  }}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="state"
+          render={({ field }) => (
+            <FormItem className="w-full">
+              <FormLabel>Estado</FormLabel>
+              <FormControl>
+                <Input
+                  {...field}
+                  placeholder="Nome do imóvel ou local"
+                  onBlur={(e) => field.onChange(toUpperCase(e))}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="city"
+          render={({ field }) => (
+            <FormItem className="w-full">
+              <FormLabel>Cidade</FormLabel>
+              <FormControl>
+                <Input
+                  {...field}
+                  placeholder="Nome do imóvel ou local"
+                  onBlur={(e) => field.onChange(toUpperCase(e))}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="neighborhood"
+          render={({ field }) => (
+            <FormItem className="w-full">
+              <FormLabel>Bairro</FormLabel>
+              <FormControl>
+                <Input
+                  {...field}
+                  placeholder="Nome do imóvel ou local"
+                  onBlur={(e) => field.onChange(toUpperCase(e))}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="street"
+          render={({ field }) => (
+            <FormItem className="w-full">
+              <FormLabel>Rua</FormLabel>
+              <FormControl>
+                <Input
+                  {...field}
+                  placeholder="Nome do imóvel ou local"
+                  onBlur={(e) => field.onChange(toUpperCase(e))}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

@@ -61,6 +61,16 @@ export const toUpperCase = (e: ChangeEvent<HTMLInputElement>) => {
   return e;
 };
 
+export const formatCEP = (e: ChangeEvent<HTMLInputElement>) => {
+  const value = e.target.value.replace(/\D/g, ""); // Remove caracteres não numéricos
+  if (value.length > 5) {
+    e.target.value = `${value.slice(0, 5)}-${value.slice(5, 8)}`;
+  } else {
+    e.target.value = value;
+  }
+  return e;
+};
+
 export const formatPhone = (value?: string | null) => {
   if (!value) {
     return "--";

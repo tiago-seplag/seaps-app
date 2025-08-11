@@ -35,7 +35,7 @@ async function paginated(options: any) {
       "properties.organization_id",
       "organizations.id",
     )
-    .innerJoin("persons", "properties.person_id", "persons.id")
+    .leftJoin("persons", "properties.person_id", "persons.id")
     .where((query) => {
       if (options.organizationId) {
         query.where("organization_id", options.organizationId);
@@ -66,6 +66,7 @@ export async function update(id: string, data: PropertySchema) {
 
   const updateData = {
     ...data,
+    cep: data.cep?.trim().replace(/[^0-9]/g, ""),
     name_normalized: normalizeName(data.name),
   };
 
@@ -122,6 +123,15 @@ async function findById(id: string) {
   return property;
 }
 
+async function findByName(name: string) {
+  const property = await db("properties")
+    .select("properties.id", "properties.name")
+    .where("name_normalized", normalizeName(name))
+    .first();
+
+  return property;
+}
+
 async function create(data: PropertySchema, userId?: string) {
   const normalize = normalizeName(data.name);
 
@@ -131,6 +141,7 @@ async function create(data: PropertySchema, userId?: string) {
       name: data.name.trim().toUpperCase(),
       address: data.address?.trim().toUpperCase(),
       created_by: userId,
+      cep: data.cep?.trim().replace(/[^0-9]/g, ""),
       name_normalized: normalize,
     })
     .returning("*");
@@ -166,6 +177,7 @@ const property = {
   findById,
   update,
   paginated,
+  findByName,
   delete: _delete,
 };
 
