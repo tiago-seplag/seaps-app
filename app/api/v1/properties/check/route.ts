@@ -5,6 +5,7 @@ import { NextRequest } from "next/server";
 
 async function getHandler(request: NextRequest) {
   const name = request.nextUrl.searchParams.get("name");
+  const id = request.nextUrl.searchParams.get("id") || undefined;
 
   if (!name) {
     throw new ValidationError({
@@ -13,7 +14,7 @@ async function getHandler(request: NextRequest) {
     });
   }
 
-  const findedProperty = await property.findByName(name);
+  const findedProperty = await property.findByName(name, id);
 
   if (!findedProperty) {
     return Response.json({ ok: true });

@@ -1,4 +1,5 @@
 import {
+  ForbiddenError,
   InternalServerError,
   NotFoundError,
   UnauthorizedError,
@@ -10,7 +11,8 @@ function onErrorHandler(error: any) {
   if (
     error instanceof ValidationError ||
     error instanceof NotFoundError ||
-    error instanceof UnauthorizedError
+    error instanceof UnauthorizedError ||
+    error instanceof ForbiddenError
   ) {
     return Response.json(error, { status: error.statusCode });
   }

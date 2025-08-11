@@ -1,7 +1,6 @@
-import controller from "@/infra/controller";
+import controller, { handler } from "@/infra/controller";
 import property, { PropertySchema, propertySchema } from "@/models/property";
 import { prisma } from "@/lib/prisma";
-import { authMiddleware } from "@/utils/authentication";
 import { withMiddlewares } from "@/utils/handler";
 import { validation } from "@/utils/validate";
 import { NextRequest } from "next/server";
@@ -35,10 +34,14 @@ const putHandler = async (
   return Response.json(_property);
 };
 
-export const GET = withMiddlewares([authMiddleware], getHandler);
+export const GET = handler([controller.authenticate], getHandler);
 
-export const PUT = withMiddlewares(
-  [authMiddleware, validation(propertySchema)],
+export const PUT = handler(
+  [
+    controller.authenticate,
+    controller.authorize("SUPERVISOR", "ADMIN"),
+    validation(propertySchema),
+  ],
   putHandler,
 );
 

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { randomBytes } from "node:crypto";
 
 import bcrypt from "bcrypt";
@@ -150,7 +151,30 @@ async function hashPasswordInObject(data: TCreateUserSchema) {
   data.password = hashedPassword;
 }
 
+async function paginated(options: any) {
+  const users = await db("users")
+    .select("id", "name", "email", "role", "is_active", "created_at")
+    .where((query) => {
+      if (options?.name) {
+        query.whereILike("name", `%${options?.name}%`);
+      }
+      if (options?.email) {
+        query.whereILike("email", `%${options?.email}%`);
+      }
+      if (options?.role) {
+        query
+          .orWhere("role", options?.role)
+          .orWhere("permissions", "@>", [options?.role.toLowerCase()]);
+      }
+    })
+    .orderBy("created_at", "asc")
+    .paginate(options.page, options.per_page);
+
+  return users;
+}
+
 const user = {
+  paginated,
   createUser,
   updateUser: updateUserConfigs,
 };

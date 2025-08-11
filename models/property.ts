@@ -123,10 +123,15 @@ async function findById(id: string) {
   return property;
 }
 
-async function findByName(name: string) {
+async function findByName(name: string, id?: string) {
   const property = await db("properties")
     .select("properties.id", "properties.name")
-    .where("name_normalized", normalizeName(name))
+    .where((query) => {
+      query.where("name_normalized", normalizeName(name));
+      if (id) {
+        query.andWhere("id", "!=", id);
+      }
+    })
     .first();
 
   return property;

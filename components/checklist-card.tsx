@@ -1,6 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { $Enums, ChecklistItems } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -22,33 +22,35 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import axios from "axios";
-import { toast } from "sonner";
+import { api } from "@/lib/axios";
 
 export const ChecklistCard = ({
   checklistItem,
   status,
 }: {
-  status: $Enums.STATUS;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  status: any;
   propertyId: string;
-  checklistItem: ChecklistItems & {
+  checklistItem: {
+    score?: number;
+    checklist_id: string;
+    image: string;
+    id: string;
+  } & {
     item: {
       name: string;
       level: number;
     };
-  };
+  } | any;
 }) => {
   const observationDialog = useModal();
   const imageDialog = useModal();
 
-  const handleChangeValue = (value: string, id: string) => {
-    axios.put("/api/checklist-item/" + id, { score: value }).catch((e) => {
-      if (e.response.data.messages?.length > 0) {
-        e.response.data.messages.map((msg: string) => toast.error(msg));
-      } else if (e.response.data.message) {
-        toast.error(e.response.data.message);
-      }
-    });
+  const handleChangeValue = async (value: string, id: string) => {
+    await api.put(
+      "/api/v1/checklists/" + checklistItem.checklist_id + "/items/" + id,
+      { score: value },
+    );
   };
 
   return (

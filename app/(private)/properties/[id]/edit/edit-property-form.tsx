@@ -30,6 +30,7 @@ import axios from "axios";
 import { formatCEP, toUpperCase } from "@/lib/utils";
 import debounce from "lodash.debounce";
 import { toast } from "sonner";
+import { api } from "@/lib/axios";
 
 const formSchema = z.object({
   organization_id: z.string({
@@ -98,10 +99,9 @@ export function EditPropertyForm({ property }: { property: any }) {
   }, [organization_id]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    return axios
+    return api
       .put("/api/properties/" + property.id, values)
-      .then(() => router.replace("/properties"))
-      .catch((e) => console.log(e));
+      .then(() => router.replace("/properties"));
   }
 
   async function findAddressByCEP(cep: string) {
@@ -131,7 +131,7 @@ export function EditPropertyForm({ property }: { property: any }) {
     setIsChecking(true);
     try {
       const res = await fetch(
-        `/api/v1/properties/check?name=${encodeURIComponent(name)}`,
+        `/api/v1/properties/check?name=${encodeURIComponent(name)}?id=${property.id}`, // Pass the current
       );
       const { ok } = await res.json();
 

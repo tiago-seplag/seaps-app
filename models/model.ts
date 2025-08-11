@@ -60,7 +60,7 @@ async function getModelById(id: string) {
 
   const items = await db("items")
     .select("items.id", "items.name")
-    .innerJoin("items", "items.id", "model_items.item_id")
+    .innerJoin("model_items", "items.id", "model_items.item_id")
     .where("model_items.model_id", id)
     .orderBy("items.name", "asc");
 

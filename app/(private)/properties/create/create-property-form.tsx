@@ -25,7 +25,6 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { useRouter, useSearchParams } from "next/navigation";
-// import { Plus } from "lucide-react";
 import debounce from "lodash.debounce";
 import { formatCEP, toUpperCase } from "@/lib/utils";
 import axios from "axios";
@@ -58,9 +57,6 @@ const formSchema = z.object({
   type: z.string({
     message: "Selecione o tipo do imóvel",
   }),
-  // person_id: z.string({
-  //   message: "Selecione o Responsável pelo imóvel",
-  // }),
 });
 
 export function CreatePropertyForm() {
@@ -89,7 +85,7 @@ export function CreatePropertyForm() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     return axios
       .post("/api/properties/", values)
-      .then(() => router.replace("/properties"))
+      .then(({ data }) => router.replace("/properties/" + data.id + "/edit"))
       .catch((e) => console.log(e));
   }
 
@@ -203,22 +199,26 @@ export function CreatePropertyForm() {
           control={form.control}
           name="name"
           render={({ field }) => (
-            <FormItem className="relative w-full">
+            <FormItem className="w-full">
               <FormLabel>Nome</FormLabel>
               <FormControl>
-                <Input
-                  placeholder="Nome do imóvel ou local"
-                  {...field}
-                  onChange={(e) => {
-                    field.onChange(e);
-                    debouncedCheckName(e.target.value);
-                  }}
-                  onBlur={(e) => field.onChange(toUpperCase(e))}
-                ></Input>
+                <div className="relative">
+                  <Input
+                    placeholder="Nome do imóvel ou local"
+                    {...field}
+                    onChange={(e) => {
+                      field.onChange(e);
+                      debouncedCheckName(e.target.value);
+                    }}
+                    onBlur={(e) => field.onChange(toUpperCase(e))}
+                  />
+                  {isChecking && (
+                    <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                      <Loader2Icon className="animate-spin" />
+                    </div>
+                  )}
+                </div>
               </FormControl>
-              {isChecking && (
-                <Loader2Icon className="absolute right-0 top-0 animate-spin" />
-              )}
               <FormMessage />
             </FormItem>
           )}
@@ -226,6 +226,7 @@ export function CreatePropertyForm() {
         <FormField
           control={form.control}
           name="cep"
+          defaultValue={""}
           render={({ field }) => (
             <FormItem className="w-full">
               <FormLabel>CEP</FormLabel>
@@ -248,6 +249,7 @@ export function CreatePropertyForm() {
         <FormField
           control={form.control}
           name="state"
+          defaultValue={""}
           render={({ field }) => (
             <FormItem className="w-full">
               <FormLabel>Estado</FormLabel>
@@ -265,6 +267,7 @@ export function CreatePropertyForm() {
         <FormField
           control={form.control}
           name="city"
+          defaultValue={""}
           render={({ field }) => (
             <FormItem className="w-full">
               <FormLabel>Cidade</FormLabel>
@@ -282,6 +285,7 @@ export function CreatePropertyForm() {
         <FormField
           control={form.control}
           name="neighborhood"
+          defaultValue={""}
           render={({ field }) => (
             <FormItem className="w-full">
               <FormLabel>Bairro</FormLabel>
@@ -299,6 +303,7 @@ export function CreatePropertyForm() {
         <FormField
           control={form.control}
           name="street"
+          defaultValue={""}
           render={({ field }) => (
             <FormItem className="w-full">
               <FormLabel>Rua</FormLabel>
@@ -316,6 +321,7 @@ export function CreatePropertyForm() {
         <FormField
           control={form.control}
           name="address"
+          defaultValue={""}
           render={({ field }) => (
             <FormItem className="w-full">
               <FormLabel>Endereço</FormLabel>

@@ -13,6 +13,13 @@ async function postHandler(request: NextRequest) {
     user_id: request.headers.get("x-user-id")!,
   });
 
+  await checklist.createLog({
+    action: "checklist:open",
+    checklist_id: createdChecklist.id,
+    user_id: request.headers.get("x-user-id")!,
+    status: "OPEN",
+  });
+
   return Response.json(createdChecklist, { status: 201 });
 }
 
@@ -36,6 +43,10 @@ export const GET = handler(
 );
 
 export const POST = handler(
-  [controller.authenticate, controller.validateBody(checklist.createSchema)],
+  [
+    controller.authenticate,
+    controller.authorize("ADMIN", "SUPERVISOR"),
+    controller.validateBody(checklist.createSchema),
+  ],
   postHandler,
 );

@@ -10,6 +10,14 @@ export const checklistSchema = z.object({
   user_id: z.string({ message: "O ID do usuário é obrigatório" }),
 });
 
+const ValidateSchema = z.object({
+  status: z.enum(["APPROVED", "REJECTED"], {
+    required_error: "O status é obrigatório",
+    invalid_type_error: "O status deve ser 'APPROVED' ou 'REJECTED'",
+  }),
+  observation: z.string().optional(),
+});
+
 export type ChecklistSchema = z.infer<typeof checklistSchema>;
 
 async function paginated(options: any) {
@@ -196,7 +204,7 @@ export async function finishChecklist(
     .select("items.name as item:name")
     .select(
       db.raw(
-        "(SELECT COUNT(*) FROM images WHERE images.checklist_item_id = checklist_items.id) AS count:images",
+        `(SELECT COUNT(*) FROM checklist_item_images WHERE checklist_item_images.checklist_item_id = checklist_items.id) as "_count:images"`,
       ),
     )
     .innerJoin("items", "items.id", "checklist_items.item_id")
@@ -230,7 +238,7 @@ export async function finishChecklist(
 
     const score = Math.abs(item.score);
 
-    if (score > 0 && item._count.images < 1) {
+    if (score > 0 && item?._count.images < 1) {
       throw new ValidationError({
         message: "Todos os itens devem conter ao menos uma imagem",
         action: "Insira ao menos uma imagem no item: " + item.item.name,
@@ -247,7 +255,7 @@ export async function finishChecklist(
 
   const classification = finalScore > 2.5 ? 2 : finalScore < 1.5 ? 0 : 1;
 
-  const finishedChecklist = await db("checklists")
+  const [finishedChecklist] = await db("checklists")
     .where("id", id)
     .update({
       classification,
@@ -296,15 +304,41 @@ export async function findById(id: string) {
   return checklist;
 }
 
+export async function validate(id: string, status: "APPROVED" | "REJECTED") {
+  const checklist = await findById(id);
+
+  if (checklist.status !== "CLOSED") {
+    throw new ValidationError({
+      message: "Esse checklist não pode ser validado",
+      action: "Verifique se o checklist foi finalizado",
+    });
+  }
+
+  const [validatedChecklist] = await db("checklists")
+    .where("id", id)
+    .update({
+      status: status,
+    })
+    .returning("*");
+
+  return validatedChecklist;
+}
+
 async function createLog(data: {
   action: string;
   checklist_id: string;
+  checklist_item_id?: string;
   user_id: string;
+  status?: string;
+  observation?: string;
 }) {
   await db("checklist_logs").insert({
     action: data.action,
     checklist_id: data.checklist_id,
+    checklist_item_id: data.checklist_item_id,
     user_id: data.user_id,
+    status: data.status,
+    observation: data.observation,
   });
 }
 
@@ -317,7 +351,9 @@ const checklist = {
   findById,
   createLog,
   getChecklistItems,
+  validate,
   createSchema: checklistSchema,
+  ValidateSchema,
 };
 
 export default checklist;

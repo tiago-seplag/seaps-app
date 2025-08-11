@@ -92,6 +92,7 @@ export async function updateChecklistItem(
     observation?: string;
     score?: number;
     image?: string;
+    is_inspected?: boolean;
   } = {};
 
   if (data.observation) {
@@ -100,13 +101,14 @@ export async function updateChecklistItem(
 
   if (data.score) {
     updateData.score = Number(data.score);
+    updateData.is_inspected = true;
   }
 
   if (data.image) {
     updateData.image = data.image;
   }
 
-  const updatedChecklistItem = await db("checklist_items")
+  const [updatedChecklistItem] = await db("checklist_items")
     .update(updateData)
     .where("id", id)
     .returning("*");

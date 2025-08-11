@@ -14,7 +14,7 @@ import { useEffect, useState } from "react";
 import Loading from "@/app/(private)/loading";
 
 interface ObservationDialogProps extends DialogProps {
-  item: ChecklistItems & {
+  item: any & {
     item: Pick<Item, "name">;
   };
 }

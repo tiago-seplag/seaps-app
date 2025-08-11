@@ -51,6 +51,26 @@ async function authenticate(req: NextRequest) {
 
   req.headers.set("x-user-id", ahutenticatedUser.id);
   req.headers.set("x-user-role", ahutenticatedUser.role);
+  req.headers.set(
+    "x-user-permissions",
+    ahutenticatedUser.permissions.join(","),
+  );
+}
+
+function authorize(...guards: string[]) {
+  return async (req: NextRequest) => {
+    const permissions = req.headers.get("x-user-permissions")?.split(",") || [];
+
+    if (
+      !guards.some((p) => permissions.includes(p)) &&
+      !permissions.some((p) => p === "*")
+    ) {
+      throw new ForbiddenError({
+        message: "Você não tem permissão para acessar este recurso.",
+        action: "Por favor, entre em contato com o suporte.",
+      });
+    }
+  };
 }
 
 async function pagination(req: NextRequest) {
@@ -121,6 +141,7 @@ function validateUUID(...ids: string[]) {
 
 const controller = {
   authenticate,
+  authorize,
   pagination,
   validateBody,
   validateUUID,

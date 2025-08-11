@@ -19,6 +19,8 @@ type ChecklistType = Checklist & {
 };
 
 type ChecklistItemType = ChecklistItems & {
+  is_valid: boolean | null;
+} & {
   item: {
     id: string;
     created_at: Date;
