@@ -8,13 +8,7 @@ async function postHandler(request: NextRequest) {
   const createdChecklist = await checklist.createChecklist(body);
 
   await checklist.createLog({
-    action: "create",
-    checklist_id: createdChecklist.id,
-    user_id: request.headers.get("x-user-id")!,
-  });
-
-  await checklist.createLog({
-    action: "checklist:open",
+    action: "checklist:create",
     checklist_id: createdChecklist.id,
     user_id: request.headers.get("x-user-id")!,
     status: "OPEN",

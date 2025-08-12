@@ -52,7 +52,7 @@ export function LoginForm() {
 
     if (code) {
       //obtem o token
-      fetch("/api/auth/mt-login?code=" + code, {
+      fetch("/api/v1/sessions/mt-login?code=" + code, {
         method: "POST",
         body: new URLSearchParams({ code: code }),
       })

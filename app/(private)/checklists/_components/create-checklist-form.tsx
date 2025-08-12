@@ -81,9 +81,13 @@ export function CreateCheckListForm() {
 
   useEffect(() => {
     if (organization_id) {
-      fetch("/api/organizations/" + organization_id + "/properties")
-        .then((response) => response.json())
-        .then((data) => setProperties(data));
+      api
+        .get(
+          "/api/v1/properties?organization_id=" +
+            organization_id +
+            "&per_page=1000",
+        )
+        .then(({ data }) => setProperties(data.data));
     }
   }, [organization_id]);
 

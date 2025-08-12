@@ -1,16 +1,9 @@
 "use client";
 import { DataTable } from "@/components/data-table";
-import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/status-badge";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useChecklist } from "@/contexts/checklist-context";
-
-const ENUM_SCORE = {
-  "3": "Bom",
-  "1": "Regular",
-  "-2": "Ruim",
-  "0": "Não se aplica",
-};
 
 export function ValidatePage() {
   const { checklist, checklistItems } = useChecklist();
@@ -34,22 +27,12 @@ export function ValidatePage() {
             accessorKey: "status",
             header: "Status",
             cell({ row }) {
-              return (
-                <Badge>
-                  {
-                    ENUM_SCORE[
-                      row.original.score !== null
-                        ? String(row.original.score)
-                        : "0"
-                    ]
-                  }
-                </Badge>
-              );
+              return <StatusBadge status={String(row.original.score)} />;
             },
           },
           {
             accessorKey: "comments",
-            header: "Comentários",
+            header: "",
             cell({ row }) {
               return (
                 <RadioGroup

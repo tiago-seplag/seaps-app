@@ -25,7 +25,7 @@ async function create(
   return session[0];
 }
 
-async function findSessionByToken(token: string) {
+async function find(token: string) {
   const session = await db("sessions")
     .select("*")
     .where("token", token)
@@ -34,7 +34,7 @@ async function findSessionByToken(token: string) {
   return session;
 }
 
-async function findUserByToken(token: string) {
+async function findUser(token: string) {
   const user = await db("users")
     .select(
       "users.id",
@@ -99,8 +99,8 @@ async function findUserAndToken(token: string) {
 
 const session = {
   create,
-  findSessionByToken,
-  findUserByToken,
+  find,
+  findUser,
   findUserAndToken,
 };
 

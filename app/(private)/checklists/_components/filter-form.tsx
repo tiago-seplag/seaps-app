@@ -66,8 +66,8 @@ export function DataFilterForm() {
       .then(({ data }) => setOrganizations(data))
       .catch((e) => console.log(e));
     axios
-      .get("/api/users")
-      .then(({ data }) => setUsers(data))
+      .get("/api/v1/users")
+      .then(({ data }) => setUsers(data.data))
       .catch((e) => console.log(e));
   }, []);
 

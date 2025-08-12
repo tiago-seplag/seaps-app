@@ -53,7 +53,7 @@ async function authenticate(req: NextRequest) {
   req.headers.set("x-user-role", ahutenticatedUser.role);
   req.headers.set(
     "x-user-permissions",
-    ahutenticatedUser.permissions.join(","),
+    ahutenticatedUser.permissions?.join(","),
   );
 }
 
