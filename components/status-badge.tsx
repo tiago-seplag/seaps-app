@@ -1,33 +1,32 @@
 import { Badge } from "./ui/badge";
 
 export const StatusBadge = ({ status }: { status: string }) => {
-  const ScoreMap: Record<string, string> = {
-    "3": "Bom",
-    "1": "Regular",
-    "-2": "Ruim",
-    "0": "Não se aplica",
+  const badge = {
+    label: "",
+    style: "",
   };
 
-  const ScoreColor: Record<string, string> = {
-    "3": "green",
-    "1": "yellow",
-    "-2": "red",
-    "0": "primary",
-  };
+  switch (status) {
+    case "OPEN":
+      badge.label = "ABERTO";
+      badge.style = "border-blue-800 bg-blue-500 hover:bg-blue-500/80";
+      break;
+    case "CLOSED":
+      badge.label = "FECHADO";
+      badge.style = "border-yellow-800 bg-yellow-500 hover:bg-yellow-500/80";
+      break;
+    case "REJECTED":
+      badge.label = "REJEITADO";
+      badge.style = "border-red-800 bg-red-500 hover:bg-red-500/80";
+      break;
+    case "APPROVED":
+      badge.label = "APROVADO";
+      badge.style = "border-green-800 bg-green-500 hover:bg-green-500/80";
+      break;
+    default:
+      badge.label = "ABERTO";
+      badge.style = "border-blue-800 bg-blue-500 hover:bg-blue-500/80";
+  }
 
-  return (
-    <Badge
-      variant={
-        ScoreColor[status] as
-          | "green"
-          | "default"
-          | "destructive"
-          | "secondary"
-          | "outline"
-          | "red"
-      }
-    >
-      {ScoreMap[status] || "--"}
-    </Badge>
-  );
+  return <Badge className={badge.style}>{badge.label}</Badge>;
 };

@@ -23,6 +23,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { api } from "@/lib/axios";
+import { cn } from "@/lib/utils";
 
 export const ChecklistCard = ({
   checklistItem,
@@ -31,17 +32,19 @@ export const ChecklistCard = ({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   status: any;
   propertyId: string;
-  checklistItem: {
-    score?: number;
-    checklist_id: string;
-    image: string;
-    id: string;
-  } & {
-    item: {
-      name: string;
-      level: number;
-    };
-  } | any;
+  checklistItem:
+    | ({
+        score?: number;
+        checklist_id: string;
+        image: string;
+        id: string;
+      } & {
+        item: {
+          name: string;
+          level: number;
+        };
+      })
+    | any;
 }) => {
   const observationDialog = useModal();
   const imageDialog = useModal();
@@ -53,12 +56,23 @@ export const ChecklistCard = ({
     );
   };
 
+  const IS_CLOSE = ["APPROVED", "CLOSED"].includes(status);
+
+  const IS_VALIDED = checklistItem.is_valid !== null;
+
+  console.log(checklistItem);
+
   return (
     <Card className="flex h-[400px] flex-col">
       <CardHeader>
         <CardTitle>{checklistItem.item.name}</CardTitle>
       </CardHeader>
-      <CardContent className="flex h-full flex-col gap-4">
+      <CardContent
+        className={cn(
+          "flex h-full flex-col gap-4",
+          IS_VALIDED && checklistItem.is_valid ? "opacity-50" : "",
+        )}
+      >
         {checklistItem.score === 0 ? (
           <div
             className={
@@ -104,7 +118,7 @@ export const ChecklistCard = ({
         )}
         <RadioGroup
           className="grid w-full grid-cols-3"
-          disabled={status === "CLOSED"}
+          disabled={(IS_VALIDED && checklistItem.is_valid) || IS_CLOSE}
           onValueChange={(e) => handleChangeValue(e, checklistItem.id)}
           defaultValue={String(checklistItem.score)}
         >

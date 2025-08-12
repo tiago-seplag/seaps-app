@@ -8,17 +8,7 @@ import { format } from "date-fns";
 import { Actions } from "./actions";
 
 import Link from "next/link";
-
-const ENUM = {
-  OPEN: {
-    label: "ABERTO",
-    style: "border-green-800 bg-green-500 hover:bg-green-500/80",
-  },
-  CLOSED: {
-    label: "FECHADO",
-    style: "border-red-800 bg-red-500 hover:bg-red-500/80",
-  },
-};
+import { StatusBadge } from "@/components/status-badge";
 
 const CLASSIFICATION_ENUM = {
   0: {
@@ -91,11 +81,7 @@ export const columns: ColumnDef<Column>[] = [
     accessorKey: "status",
     header: "Status",
     cell({ row }) {
-      return (
-        <Badge className={ENUM[row.original.status].style}>
-          {ENUM[row.original.status].label}
-        </Badge>
-      );
+      return <StatusBadge status={row.original.status!} />;
     },
   },
   {
@@ -143,7 +129,7 @@ export const columns: ColumnDef<Column>[] = [
     accessorKey: "created_at",
     header: "Criado em",
     accessorFn(row) {
-      return format(new Date(row.created_at), "dd/MM/yyyy");
+      return format(new Date(row.created_at || ""), "dd/MM/yyyy");
     },
     meta: {
       headerClassName: "hidden md:table-cell",
