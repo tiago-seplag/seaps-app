@@ -13,10 +13,11 @@ api.interceptors.response.use(
         description: error.response.data.action,
       });
     } else {
-      toast.error(
-        "Erro ao tentar processar a requisição. Tente novamente.",
-        {},
-      );
+      toast.error("Erro ao tentar processar a requisição. Tente novamente.");
+    }
+
+    if (error.response?.status === 401) {
+      window.location.replace("/login");
     }
 
     return Promise.reject(error);

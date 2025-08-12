@@ -14,6 +14,15 @@ function onErrorHandler(error: any) {
     error instanceof UnauthorizedError ||
     error instanceof ForbiddenError
   ) {
+    if (error instanceof UnauthorizedError) {
+      return Response.json(error, {
+        status: error.statusCode,
+        headers: {
+          "set-cookie": `session=; max-age=0; path=/; HttpOnly; SameSite=Strict`,
+        },
+      });
+    }
+
     return Response.json(error, { status: error.statusCode });
   }
 
