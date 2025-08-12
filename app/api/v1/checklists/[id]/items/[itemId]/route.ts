@@ -48,7 +48,7 @@ export const PUT = handler(
   [
     controller.authenticate,
     controller.validateUUID("id", "itemId"),
-    controller.validateBody(checklistItem.updateSchema),
+    controller.validateBody(checklistItem.schemas.update),
   ],
   putHandler,
 );

@@ -12,10 +12,10 @@ async function putHandler(
 
   const { id } = await params;
 
-  const validatedChecklist = await checklist.validate(id, body.status);
+  const validatedChecklist = await checklist.validate(id);
 
   await checklist.createLog({
-    action: "checklist:" + body.status.toLowerCase(),
+    action: "checklist:" + validatedChecklist.status.toLowerCase(),
     checklist_id: id,
     user_id: userId,
     status: validatedChecklist.status,
@@ -29,7 +29,8 @@ export const PUT = handler(
   [
     controller.authenticate,
     controller.authorize("SUPERVISOR"),
-    controller.validateBody(checklist.ValidateSchema),
+    controller.validateUUID("id"),
+    controller.validateBody(checklist.schemas.validate),
   ],
   putHandler,
 );

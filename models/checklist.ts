@@ -2,6 +2,7 @@
 import { db } from "@/infra/database";
 import { ForbiddenError, NotFoundError, ValidationError } from "@/infra/errors";
 import { z } from "zod";
+import checklistItem from "./checklist-item";
 
 export const checklistSchema = z.object({
   model_id: z.string({ message: "O ID do modelo é obrigatório" }),
@@ -10,13 +11,17 @@ export const checklistSchema = z.object({
   user_id: z.string({ message: "O ID do usuário é obrigatório" }),
 });
 
-const ValidateSchema = z.object({
-  status: z.enum(["APPROVED", "REJECTED"], {
-    required_error: "O status é obrigatório",
-    invalid_type_error: "O status deve ser 'APPROVED' ou 'REJECTED'",
+const schemas = {
+  validate: z.object({
+    observation: z.string().optional(),
   }),
-  observation: z.string().optional(),
-});
+  create: z.object({
+    model_id: z.string({ message: "O ID do modelo é obrigatório" }),
+    organization_id: z.string({ message: "O ID da organização é obrigatório" }),
+    property_id: z.string({ message: "O ID do imóvel é obrigatório" }),
+    user_id: z.string({ message: "O ID do usuário é obrigatório" }),
+  }),
+};
 
 export type ChecklistSchema = z.infer<typeof checklistSchema>;
 
@@ -238,12 +243,12 @@ export async function finishChecklist(
 
     const score = Math.abs(item.score);
 
-    if (score > 0 && item?._count.images < 1) {
-      throw new ValidationError({
-        message: "Todos os itens devem conter ao menos uma imagem",
-        action: "Insira ao menos uma imagem no item: " + item.item.name,
-      });
-    }
+    // if (score > 0 && item?._count.images < 1) {
+    //   throw new ValidationError({
+    //     message: "Todos os itens devem conter ao menos uma imagem",
+    //     action: "Insira ao menos uma imagem no item: " + item.item.name,
+    //   });
+    // }
 
     if (score > 0) {
       COUNT_ITEMS += 1;
@@ -304,7 +309,7 @@ export async function findById(id: string) {
   return checklist;
 }
 
-export async function validate(id: string, status: "APPROVED" | "REJECTED") {
+export async function validate(id: string) {
   const checklist = await findById(id);
 
   if (checklist.status !== "CLOSED") {
@@ -314,11 +319,26 @@ export async function validate(id: string, status: "APPROVED" | "REJECTED") {
     });
   }
 
+  const checklistItems = await checklistItem.findAll(id);
+
+  let status = "APPROVED";
+
+  for (const item of checklistItems) {
+    if (item.is_valid === null) {
+      throw new ValidationError({
+        message: "Todos os itens devem ser validados.",
+        action: `O item '${item.item.name}' não foi validado`,
+      });
+    }
+
+    if (item.is_valid === false) {
+      status = "REJECTED";
+    }
+  }
+
   const [validatedChecklist] = await db("checklists")
     .where("id", id)
-    .update({
-      status: status,
-    })
+    .update({ status })
     .returning("*");
 
   return validatedChecklist;
@@ -353,7 +373,9 @@ const checklist = {
   getChecklistItems,
   validate,
   createSchema: checklistSchema,
-  ValidateSchema,
+  schemas: {
+    validate: schemas.validate,
+  },
 };
 
 export default checklist;

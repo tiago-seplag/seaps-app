@@ -2,7 +2,7 @@ import { db } from "@/infra/database";
 import { ForbiddenError, NotFoundError } from "@/infra/errors";
 import { z } from "zod";
 
-export const updateChecklistItemSchema = z
+export const updateSchema = z
   .object({
     score: z
       .string()
@@ -13,9 +13,13 @@ export const updateChecklistItemSchema = z
   })
   .strict();
 
-export type UpdateChecklistItemSchema = z.infer<
-  typeof updateChecklistItemSchema
->;
+export const validateSchema = z
+  .object({
+    is_valid: z.boolean(),
+  })
+  .strict();
+
+export type UpdateChecklistItemSchema = z.infer<typeof updateSchema>;
 
 export async function getChecklistItems(checklistId: string) {
   const checklistItems = await db("checklist_items")
@@ -116,11 +120,38 @@ export async function updateChecklistItem(
   return updatedChecklistItem;
 }
 
+async function validate(
+  data: z.infer<typeof validateSchema>,
+  { itemId, checklistId }: { itemId: string; checklistId: string },
+) {
+  const checklistItem = await db("checklist_items")
+    .where({ id: itemId, checklist_id: checklistId })
+    .first();
+
+  if (!checklistItem) {
+    throw new NotFoundError({
+      message: "Esse item de checklist não existe",
+      action: "Verifique se o ID foi passado corretamente",
+    });
+  }
+
+  const updatedChecklistItem = await db("checklist_items")
+    .update({ is_valid: data.is_valid })
+    .where({ id: itemId, checklist_id: checklistId })
+    .returning("*");
+
+  return updatedChecklistItem[0];
+}
+
 const checklistItem = {
   findAll: getChecklistItems,
   findById: getChecklistItemById,
   update: updateChecklistItem,
-  updateSchema: updateChecklistItemSchema,
+  validate,
+  schemas: {
+    validate: validateSchema,
+    update: updateSchema,
+  },
 };
 
 export default checklistItem;
