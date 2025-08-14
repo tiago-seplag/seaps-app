@@ -9,10 +9,6 @@ const publicRoutes = [
     path: "/privacy-policy",
     whenAuthenticated: "ignore",
   },
-  {
-    path: "/manifest.webmanifest",
-    whenAuthenticated: "ignore",
-  },
 ];
 
 const REDIRECT_WHEN_NOT_AUTHENTICATED_ROUTE = "/login";
@@ -55,5 +51,7 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api|.*\\.ico|_next/static|_next/image|.*\\.png$).*)"],
+  matcher: [
+    "/((?!api|.*\\.ico|manifest.webmanifest|_next/static|_next/image|.*\\.png$).*)",
+  ],
 };
