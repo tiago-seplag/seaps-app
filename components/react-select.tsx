@@ -73,7 +73,7 @@ function buildClassNames(size: RSSelectSize, invalid: boolean) {
     indicatorSeparator: () => "hidden",
     clearIndicator: () =>
       cn(
-        "rounded-md p-1 hover:bg-accent hover:text-accent-foreground",
+        "rounded-md p-1 hover:bg-destructive hover:text-accent-foreground",
         "active:scale-95",
       ),
     dropdownIndicator: () =>
@@ -168,7 +168,7 @@ function BaseWrapper<
     filterOption: createFilter({ matchFrom: "start" }),
     isClearable: true,
     classNames,
-    getOptionValue: (option: { id: string }) => `${option["id"]}`,
+    getOptionValue: (option: { id: string }) => option["id"],
     getOptionLabel: (option: { name: string }) => option["name"],
   } as ReactSelectProps;
 

@@ -15,6 +15,7 @@ type Column = {
   type: string;
   address: string | null;
   name: string;
+  city: string;
   organization_id: string;
   location: string | null;
   organization: {
@@ -41,10 +42,14 @@ export const columns: ColumnDef<Column>[] = [
     },
   },
   {
-    accessorKey: "property",
+    accessorKey: "name",
     header: "Imóvel",
+  },
+  {
+    accessorKey: "city",
+    header: "Cidade",
     accessorFn(row) {
-      return row.name;
+      return row.city ? row.city : "--";
     },
   },
   {
