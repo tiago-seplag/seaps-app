@@ -5,6 +5,7 @@ import { NextRequest } from "next/server";
 
 async function getHandler(request: NextRequest) {
   const name = request.nextUrl.searchParams.get("name");
+  const organization_id = request.nextUrl.searchParams.get("organization_id");
   const id = request.nextUrl.searchParams.get("id") || undefined;
 
   if (!name) {
@@ -14,7 +15,18 @@ async function getHandler(request: NextRequest) {
     });
   }
 
-  const findedProperty = await property.findByName(name, id);
+  if (!organization_id) {
+    throw new ValidationError({
+      message: "O parâmetro de organization_id é obrigatório",
+      action: "Por favor, forneça um organization_id para verificar",
+    });
+  }
+
+  const findedProperty = await property.findByName({
+    name: decodeURIComponent(name),
+    id,
+    organization_id,
+  });
 
   if (!findedProperty) {
     return Response.json({ ok: true });
