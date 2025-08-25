@@ -33,14 +33,16 @@ async function authenticate(req: NextRequest) {
     });
   }
 
-  const { user, token } = await session.findUserAndToken(cookie.value);
+  const data = await session.findUserAndToken(cookie.value);
 
-  if (!user || !token) {
+  if (!data) {
     throw new UnauthorizedError({
       message: "Sessão inválida ou expirada.",
       action: "Por favor, faça login novamente.",
     });
   }
+
+  const { user, token } = data;
 
   if (new Date(token.expires_at) < new Date()) {
     throw new UnauthorizedError({

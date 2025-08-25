@@ -143,11 +143,32 @@ async function validate(
   return updatedChecklistItem[0];
 }
 
+async function saveImages(
+  checklistItemId: string,
+  images: {
+    image: string;
+    size: number;
+    format: string;
+  }[],
+) {
+  await db("checklist_items")
+    .update({ image: images[0].image })
+    .where("id", checklistItemId);
+
+  await db("checklist_item_images").insert(
+    images.map((image) => ({
+      checklist_item_id: checklistItemId,
+      ...image,
+    })),
+  );
+}
+
 const checklistItem = {
   findAll: getChecklistItems,
   findById: getChecklistItemById,
   update: updateChecklistItem,
   validate,
+  saveImages,
   schemas: {
     validate: validateSchema,
     update: updateSchema,

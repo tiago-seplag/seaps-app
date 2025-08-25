@@ -42,6 +42,7 @@ async function findUser(token: string) {
       "users.name",
       "users.email",
       "users.avatar",
+      "users.permissions",
       "users.role",
       "users.is_active",
       "users.is_deleted",
@@ -76,6 +77,10 @@ async function findUserAndToken(token: string) {
     .where("sessions.token", token)
     .first();
 
+  if (!data) {
+    return null;
+  }
+
   return {
     user: {
       id: data.id,
@@ -97,9 +102,16 @@ async function findUserAndToken(token: string) {
   };
 }
 
+async function _delete(token: string) {
+  await db("sessions")
+    .where("token", token)
+    .update({ is_active: false });
+}
+
 const session = {
   create,
   find,
+  delete: _delete,
   findUser,
   findUserAndToken,
 };

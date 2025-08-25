@@ -21,7 +21,7 @@ export const getUser = cache(async () => {
   const storegedSession = await verifySession();
 
   try {
-    const user = storegedSession.user;
+    const user = storegedSession?.user;
 
     if (!user) return null;
 

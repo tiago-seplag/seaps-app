@@ -16,6 +16,7 @@ export const propertySchema = z
     neighborhood: z.string().optional(),
     street: z.string().optional(),
     coordinates: z.string().optional(),
+    person_id: z.string().nullable().optional(),
   })
   .strict();
 
@@ -118,7 +119,27 @@ export async function updatePerson(
 }
 
 async function findById(id: string) {
-  const property = await db("properties").where({ id }).first();
+  const property = await db("properties")
+    .select("properties.*")
+    .select(
+      "organizations.name as organization:name",
+      "organizations.acronym as organization:acronym",
+      "organizations.id as organization:id",
+    )
+    .select(
+      "persons.name as person:name",
+      "persons.id as person:id",
+      "persons.email as person:email",
+      "persons.phone as person:phone",
+      "persons.role as person:role",
+      "persons.created_at as person:created_at",
+      "persons.updated_at as person:updated_at",
+    )
+    .leftJoin("persons", "persons.id", "properties.person_id")
+    .leftJoin("organizations", "organizations.id", "properties.organization_id")
+    .where("properties.id", id)
+    .first()
+    .nest();
 
   return property;
 }

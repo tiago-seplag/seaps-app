@@ -5,10 +5,10 @@ import checklistItem from "@/models/checklist-item";
 
 async function get(
   _: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string; itemId: string }> },
 ) {
-  const { id } = await params;
-  const checklistItems = await checklist.getChecklistItems(id);
+  const { itemId } = await params;
+  const checklistItems = await checklistItem.findById(itemId);
 
   return Response.json(checklistItems);
 }

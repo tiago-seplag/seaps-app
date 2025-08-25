@@ -19,7 +19,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
 import { useState } from "react";
-import { useUser } from "@/contexts/user-context";
+import { useAuth } from "@/contexts/auht-context";
 
 const profileFormSchema = z.object({
   username: z.string(),
@@ -30,7 +30,7 @@ type ProfileFormValues = z.infer<typeof profileFormSchema>;
 
 // This can come from your database or API.
 export function ProfileForm() {
-  const { user } = useUser();
+  const { user } = useAuth();
 
   const [tempPassword, setTempPassword] = useState("");
 

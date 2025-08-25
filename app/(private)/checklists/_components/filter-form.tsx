@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/form";
 
 import { Organization, User } from "@prisma/client";
-import { toUpperCase } from "@/lib/utils";
+import { getFirstAndLastName, toUpperCase } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { RSSelect } from "@/components/react-select";
 import { api } from "@/lib/axios";
@@ -32,7 +32,7 @@ import { Label } from "@/components/ui/label";
 
 const filterSchema = z.object({
   organization: z.string().optional(),
-  user: z.string().optional(),
+  user: z.string().optional().nullable(),
   status: z.string().optional(),
   property_name: z.string().optional(),
 });
@@ -67,7 +67,14 @@ export function DataFilterForm() {
   useEffect(() => {
     try {
       api.get("/api/organizations").then(({ data }) => setOrganizations(data));
-      api.get("/api/v1/users").then(({ data }) => setUsers(data.data));
+      api.get("/api/v1/users").then(({ data }) =>
+        setUsers(
+          data.data.map((user: User) => ({
+            ...user,
+            name: getFirstAndLastName(user.name),
+          })),
+        ),
+      );
     } catch (err) {
       console.error("Error fetching filter data:", err);
     } finally {

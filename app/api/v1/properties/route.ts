@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import controller, { handler } from "@/infra/controller";
-import properties from "@/models/property";
+import properties, { propertySchema } from "@/models/property";
+import property from "@/models/property";
 
 async function getHandler(request: NextRequest) {
   const data = await properties.paginated({
@@ -15,4 +16,24 @@ async function getHandler(request: NextRequest) {
 export const GET = handler(
   [controller.authenticate, controller.pagination],
   getHandler,
+);
+
+const postHandler = async (request: NextRequest) => {
+  const values = await request.json();
+
+  const createdProperty = await property.create(
+    values,
+    request.headers.get("x-user-id")!,
+  );
+
+  return Response.json(createdProperty);
+};
+
+export const POST = handler(
+  [
+    controller.authenticate,
+    controller.authorize("SUPERVISOR", "ADMIN"),
+    controller.validateBody(propertySchema),
+  ],
+  postHandler,
 );

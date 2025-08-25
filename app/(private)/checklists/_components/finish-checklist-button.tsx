@@ -14,11 +14,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useUser } from "@/contexts/user-context";
+import { useAuth } from "@/contexts/auht-context";
 import { api } from "@/lib/axios";
 
 export const FinishButton = ({ checklist }: { checklist: Checklist }) => {
-  const { user } = useUser();
+  const { user } = useAuth();
 
   const router = useRouter();
 

@@ -173,8 +173,39 @@ async function paginated(options: any) {
   return users;
 }
 
+async function findById(id: string) {
+  const user = await db("users")
+    .select(
+      "id",
+      "name",
+      "email",
+      "role",
+      "is_active",
+      "created_at",
+      "updated_at",
+    )
+    .where("id", id)
+    .first();
+
+  return user;
+}
+
+async function findOrThrow(id: string) {
+  const user = await findById(id);
+
+  if (!user) {
+    throw new ValidationError({
+      message: "Usuário não encontrado.",
+      action: `Entre em contato com o suporte.`,
+    });
+  }
+  return user;
+}
+
 const user = {
   paginated,
+  findById,
+  findOrThrow,
   createUser,
   updateUser: updateUserConfigs,
 };
