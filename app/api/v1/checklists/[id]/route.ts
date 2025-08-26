@@ -16,3 +16,30 @@ export const GET = handler(
   [controller.authenticate, controller.validateUUID("id")],
   get,
 );
+
+async function deleteHandler(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const userId = request.headers.get("x-user-id")!;
+  const { id } = await params;
+  const data = await checklist.delete(id);
+
+  await checklist.createLog({
+    action: "checklist:deleted",
+    checklist_id: id,
+    user_id: userId,
+    status: data.status,
+  });
+
+  return Response.json(data);
+}
+
+export const DELETE = handler(
+  [
+    controller.authenticate,
+    controller.validateUUID("id"),
+    controller.authorize("checklists:delete"),
+  ],
+  deleteHandler,
+);

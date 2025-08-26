@@ -49,6 +49,9 @@ const deleteHandler = async (
 };
 
 export const DELETE = handler(
-  [controller.authenticate, controller.authorize("SUPERVISOR", "ADMIN")],
+  [
+    controller.authenticate,
+    controller.authorize("SUPERVISOR", "ADMIN", "properties:delete"),
+  ],
   deleteHandler,
 );

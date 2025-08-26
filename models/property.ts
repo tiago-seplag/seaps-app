@@ -202,7 +202,9 @@ async function _delete(id: string) {
     });
   }
 
-  await db("properties").where({ id }).update({ is_deleted: true });
+  await db("properties")
+    .where({ id })
+    .update({ is_deleted: true, updated_at: new Date() });
 }
 
 const property = {

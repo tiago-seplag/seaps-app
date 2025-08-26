@@ -362,6 +362,17 @@ async function createLog(data: {
   });
 }
 
+async function _delete(id: string) {
+  await findById(id);
+
+  const [data] = await db("checklists")
+    .where("id", id)
+    .update({ is_deleted: true })
+    .returning("*");
+
+  return data;
+}
+
 const checklist = {
   paginated,
   getChecklistById,
@@ -372,6 +383,7 @@ const checklist = {
   createLog,
   getChecklistItems,
   validate,
+  delete: _delete,
   createSchema: checklistSchema,
   schemas: {
     validate: schemas.validate,
