@@ -8,6 +8,10 @@ async function getHandler(request: NextRequest) {
     page: request.nextUrl.searchParams.get("page"),
     per_page: request.nextUrl.searchParams.get("per_page"),
     organization_id: request.nextUrl.searchParams.get("organization_id"),
+    type: request.nextUrl.searchParams.get("type"),
+    name: request.nextUrl.searchParams.get("name"),
+    city: request.nextUrl.searchParams.get("city"),
+    created_by: request.nextUrl.searchParams.get("created_by"),
   });
 
   return Response.json(data);

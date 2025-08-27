@@ -38,11 +38,20 @@ async function paginated(options: any) {
     )
     .leftJoin("persons", "properties.person_id", "persons.id")
     .where((query) => {
-      if (options.organizationId) {
-        query.where("organization_id", options.organizationId);
+      if (options.organization_id) {
+        query.where("properties.organization_id", options.organization_id);
+      }
+      if (options.type) {
+        query.where("properties.type", options.type);
+      }
+      if (options.name) {
+        query.where("properties.name", options.name);
+      }
+      if (options.city) {
+        query.where("properties.city", options.city);
       }
       if (options.created_by) {
-        query.where("created_by", options.created_by);
+        query.where("properties.created_by", options.created_by);
       }
 
       query.where("properties.is_deleted", false);
@@ -55,15 +64,8 @@ async function paginated(options: any) {
   return properties;
 }
 
-export async function update(id: string, data: PropertySchema) {
-  const _property = await findById(id);
-
-  if (!_property) {
-    throw new NotFoundError({
-      message: "Esse ID de imóvel não existe",
-      action: "Verifique se o ID foi passado corretamente",
-    });
-  }
+async function update(id: string, data: PropertySchema) {
+  await findById(id);
 
   const updateData = {
     ...data,
@@ -79,18 +81,8 @@ export async function update(id: string, data: PropertySchema) {
   return updatedProperty;
 }
 
-export async function updatePerson(
-  propertyId: string,
-  personId: string | null,
-) {
+async function updatePerson(propertyId: string, personId: string | null) {
   const _property = await findById(propertyId);
-
-  if (!_property) {
-    throw new NotFoundError({
-      message: "Esse ID de imóvel não existe",
-      action: "Verifique se o ID foi passado corretamente",
-    });
-  }
 
   if (personId) {
     const _person = await person.getPersonById(personId);
@@ -140,6 +132,13 @@ async function findById(id: string) {
     .where("properties.id", id)
     .first()
     .nest();
+
+  if (!property) {
+    throw new NotFoundError({
+      message: "Esse ID de imóvel não existe",
+      action: "Verifique se o ID foi passado corretamente",
+    });
+  }
 
   return property;
 }
