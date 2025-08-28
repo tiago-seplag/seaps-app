@@ -373,6 +373,25 @@ async function _delete(id: string) {
   return data;
 }
 
+async function history(id: string) {
+  const checklist = await findById(id);
+  const history = await db("checklist_logs")
+    .select("checklist_logs.*", "items.name as item:name")
+    .select("users.name as user:name", "users.email as user:email")
+    .leftJoin(
+      "checklist_items",
+      "checklist_items.id",
+      "checklist_logs.checklist_item_id",
+    )
+    .leftJoin("items", "items.id", "checklist_items.item_id")
+    .leftJoin("users", "users.id", "checklist_logs.user_id")
+    .where("checklist_logs.checklist_id", checklist.id)
+    .orderBy("checklist_logs.created_at", "desc")
+    .nest();
+
+  return history;
+}
+
 const checklist = {
   paginated,
   getChecklistById,
@@ -384,6 +403,7 @@ const checklist = {
   getChecklistItems,
   validate,
   delete: _delete,
+  history,
   createSchema: checklistSchema,
   schemas: {
     validate: schemas.validate,

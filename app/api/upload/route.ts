@@ -1,14 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from "next/server";
-import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { randomUUID } from "node:crypto";
-import { withMiddlewares } from "@/utils/handler";
-import { authMiddleware } from "@/utils/authentication";
-import { s3Client } from "@/lib/s3-client";
 
 import formidable from "formidable";
 import { Readable } from "stream";
 import fs from "fs/promises";
+import upload from "@/models/upload";
+import controller, { handler } from "@/infra/controller";
 
 export const config = {
   api: {
@@ -33,26 +31,6 @@ function generateFileName(type: string) {
   const uuid = randomUUID().replace(/\-/g, "");
 
   return uuid + "." + type.split("/")[1];
-}
-
-async function uploadFileToS3(file: Buffer, fileName: string) {
-  try {
-    const fileBuffer = file;
-
-    const params = {
-      Bucket: process.env.S3_BUCKET_NAME!,
-      Key: `${fileName}`,
-      Body: fileBuffer,
-      ContentType: "image/jpg",
-    };
-
-    const command = new PutObjectCommand({ ...params, ACL: "public-read" });
-    await s3Client.send(command);
-    return fileName;
-  } catch (error) {
-    console.log("err->", error);
-    throw new Error("erro ao fazer upload");
-  }
 }
 
 async function postHandler(req: NextRequest) {
@@ -103,7 +81,7 @@ async function postHandler(req: NextRequest) {
       const buffer = await fs.readFile(image.filepath);
       const fileName = generateFileName(image.mimetype);
 
-      const uploadedFile = await uploadFileToS3(
+      const uploadedFile = await upload.uploadFileToS3(
         buffer,
         folder + "/" + fileName,
       );
@@ -117,4 +95,4 @@ async function postHandler(req: NextRequest) {
   }
 }
 
-export const POST = withMiddlewares([authMiddleware], postHandler);
+export const POST = handler([controller.authenticate], postHandler);

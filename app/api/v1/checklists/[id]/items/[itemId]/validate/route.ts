@@ -19,7 +19,7 @@ const putHandler = async (
   });
 
   await checklist.createLog({
-    action: "checklist_items:validated",
+    action: "checklist_item:validated",
     checklist_item_id: validated.id,
     checklist_id: validated.checklist_id,
     user_id: userId,
