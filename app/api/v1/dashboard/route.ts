@@ -1,12 +1,14 @@
 import controller, { handler } from "@/infra/controller";
-import { getCountByRange, getOrganizationsIGM } from "@/models/dashboard";
+import dashboard from "@/models/dashboard";
 
 async function getHandler() {
-  const ranges = await getCountByRange();
+  const ranges = await dashboard.getCountByRange();
 
-  const irm = await getOrganizationsIGM();
+  const irm = await dashboard.getOrganizationsIGM();
 
-  return Response.json({ ranges, irm });
+  const properties = await dashboard.properties();
+
+  return Response.json({ ranges, irm, properties });
 }
 
 export const GET = handler([controller.authenticate], getHandler);
