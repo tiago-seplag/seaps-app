@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { withMiddlewares } from "@/utils/handler";
 import { cookies } from "next/headers";
 import { NextRequest } from "next/server";
 import { config } from "@/utils/mt-login";
@@ -7,6 +6,7 @@ import jwt from "jsonwebtoken";
 import authentication from "@/models/authentication";
 import user from "@/models/user";
 import session, { EXPIRATION_IN_MILLISECONDS } from "@/models/session";
+import { handler } from "@/infra/controller";
 
 async function postHandler(request: NextRequest) {
   const cookie = await cookies();
@@ -28,13 +28,19 @@ async function postHandler(request: NextRequest) {
   }
 
   if (code) {
-    const data = await fetch(config.url_token, {
+    const response = await fetch(config.url_token, {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
       },
       body: new URLSearchParams(body),
-    }).then((data) => data.json());
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return Response.json({ error: data || "unknown error" }, { status: 500 });
+    }
 
     if (data.access_token) {
       const decoded: any = jwt.decode(data.access_token);
@@ -69,4 +75,4 @@ async function postHandler(request: NextRequest) {
   return Response.json({ error: `unknown error` }, { status: 500 });
 }
 
-export const POST = withMiddlewares([], postHandler);
+export const POST = handler([], postHandler);

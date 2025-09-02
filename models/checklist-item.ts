@@ -1,5 +1,5 @@
 import { db } from "@/infra/database";
-import { ForbiddenError, NotFoundError } from "@/infra/errors";
+import { ForbiddenError, NotFoundError, ValidationError } from "@/infra/errors";
 import { z } from "zod";
 
 export const updateSchema = z
@@ -32,6 +32,13 @@ export async function getChecklistItems(checklistId: string) {
     .innerJoin("items", "items.id", "checklist_items.item_id")
     .orderBy("items.name")
     .nest();
+
+  if (checklistItems.length === 0) {
+    throw new NotFoundError({
+      message: "Nenhum item de checklist encontrado",
+      action: "Verifique se o ID do checklist está correto",
+    });
+  }
 
   return checklistItems;
 }
@@ -69,6 +76,7 @@ export async function updateChecklistItem(
   user: {
     id: string;
     role: string;
+    permissions?: string[];
   },
 ) {
   const checklistItem = await db("checklist_items")
@@ -76,15 +84,24 @@ export async function updateChecklistItem(
     .select(
       "checklists.id as checklist:id",
       "checklists.user_id as checklist:user_id",
+      "checklists.status as checklist:status",
     )
     .where("checklist_items.id", id)
     .innerJoin("checklists", "checklists.id", "checklist_items.checklist_id")
     .first()
     .nest();
 
+  if (checklistItem.checklist.status === "CLOSED") {
+    throw new ValidationError({
+      message: "Esse checklist está fechado",
+      action: "Verifique o status do checklist",
+    });
+  }
+
   if (
     checklistItem?.checklist.user_id !== user.id &&
-    user.role === "EVALUATOR"
+    !user.permissions?.includes("checklist_items:edit_all") &&
+    !user.permissions?.includes("*")
   ) {
     throw new ForbiddenError({
       message: "Apenas o responsável pode editar o item",

@@ -5,7 +5,6 @@ import bcrypt from "bcrypt";
 import { prisma } from "@/lib/prisma";
 import { generateMetaPagination } from "@/utils/meta-pagination";
 import { z } from "zod";
-// import { ValidationError } from "@/errors/validation-error";
 import { db } from "@/infra/database";
 import { ValidationError } from "@/errors/validation-error";
 import { SearchParams } from "@/types/types";
@@ -37,14 +36,7 @@ export async function generateTempPassword(userId: string) {
   const salt = await bcrypt.genSalt();
   const hashPassword = await bcrypt.hash(password, salt);
 
-  await prisma.user.update({
-    data: {
-      password: hashPassword,
-    },
-    where: {
-      id: userId,
-    },
-  });
+  await db("users").update({ password: hashPassword }).where("id", userId);
 
   return password;
 }
@@ -54,7 +46,6 @@ export async function getUsersPaginated(
   perPage = 10,
   searchParams?: SearchParams,
 ) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const filter: any = {};
 
   if (searchParams?.name) {
@@ -81,7 +72,7 @@ export async function getUsersPaginated(
   return { data: checklists, meta };
 }
 
-export async function updateUserConfigs(
+export async function updateConfigs(
   userId: string,
   data: z.infer<typeof updateConfigSchema>,
 ) {
@@ -162,9 +153,7 @@ async function paginated(options: any) {
         query.whereILike("email", `%${options?.email}%`);
       }
       if (options?.role) {
-        query
-          .orWhere("role", options?.role)
-          .orWhere("permissions", "@>", [options?.role.toLowerCase()]);
+        query.where("permissions", "@>", [options?.role]);
       }
     })
     .orderBy("created_at", "asc")
@@ -180,6 +169,7 @@ async function findById(id: string) {
       "name",
       "email",
       "role",
+      "permissions",
       "is_active",
       "created_at",
       "updated_at",
@@ -207,7 +197,8 @@ const user = {
   findById,
   findOrThrow,
   createUser,
-  updateUser: updateUserConfigs,
+  updateUser: updateConfigs,
+  updateConfigs,
 };
 
 export default user;
