@@ -36,7 +36,7 @@ const postHandler = async (request: NextRequest) => {
 export const POST = handler(
   [
     controller.authenticate,
-    controller.authorize("SUPERVISOR", "ADMIN"),
+    controller.authorize("properties:create"),
     controller.validateBody(propertySchema),
   ],
   postHandler,
