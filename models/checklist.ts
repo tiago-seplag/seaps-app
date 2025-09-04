@@ -4,12 +4,18 @@ import { ForbiddenError, NotFoundError, ValidationError } from "@/infra/errors";
 import { z } from "zod";
 import checklistItem from "./checklist-item";
 
-export const checklistSchema = z.object({
-  model_id: z.string({ message: "O ID do modelo é obrigatório" }),
-  organization_id: z.string({ message: "O ID da organização é obrigatório" }),
-  property_id: z.string({ message: "O ID do imóvel é obrigatório" }),
-  user_id: z.string({ message: "O ID do usuário é obrigatório" }),
-});
+export const checklistSchema = z
+  .object({
+    model_id: z.string({ message: "O ID do modelo é obrigatório" }),
+    organization_id: z.string({ message: "O ID da organização é obrigatório" }),
+    property_id: z.string({ message: "O ID do imóvel é obrigatório" }),
+    user_id: z.string({ message: "O ID do usuário é obrigatório" }),
+    is_returned: z.boolean({
+      message: "Informe se é um checklist de retorno",
+    }),
+    return: z.number().optional(),
+  })
+  .strict();
 
 const schemas = {
   validate: z.object({
@@ -173,6 +179,8 @@ export async function createChecklist(data: z.infer<typeof checklistSchema>) {
         property_id: data.property_id,
         sid: SID,
         model_id: data.model_id,
+        is_returned: data.is_returned,
+        return: data.return,
       })
       .returning("*");
 

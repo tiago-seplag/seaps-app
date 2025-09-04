@@ -18,6 +18,8 @@ export async function up(knex: Knex): Promise<void> {
         enumName: "checklist_status",
       })
       .defaultTo("OPEN");
+    table.integer("return").defaultTo(0);
+    table.boolean("is_returned").defaultTo(false);
     table.boolean("is_deleted").defaultTo(false);
     table.timestamp("finished_at");
     table.timestamp("created_at").defaultTo(knex.fn.now());
