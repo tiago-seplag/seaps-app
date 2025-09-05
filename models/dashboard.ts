@@ -91,6 +91,8 @@ async function properties() {
         checklists c
     WHERE
         c.status = 'CLOSED'
+    AND
+        c.is_deleted = false
     `);
 
   return ranges.rows;
