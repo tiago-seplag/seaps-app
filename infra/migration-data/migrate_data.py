@@ -451,15 +451,15 @@ def main():
     """Função principal"""
     # Configurações dos bancos - ajuste conforme necessário
     source_db_config = {
-        'host': '172.24.155.34',
+        'host': 'localhost',
         'port': '5432',
-        'database': 'seap_db',  # Nome do banco com o dump
+        'database': 'local_bkp',  # Nome do banco com o dump
         'user': 'local_user',
         'password': 'root'
     }
     
     target_db_config = {
-        'host': '172.24.155.34',
+        'host': 'localhost',
         'port': '5432',
         'database': 'local_db',  # Nome do novo banco
         'user': 'local_user',
