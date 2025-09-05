@@ -169,7 +169,7 @@ async function saveImages(
   }[],
 ) {
   await db("checklist_items")
-    .update({ image: images[0].image })
+    .update({ image: images[0].image, updated_at: new Date() })
     .where("id", checklistItemId);
 
   await db("checklist_item_images").insert(
