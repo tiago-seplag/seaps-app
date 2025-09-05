@@ -25,12 +25,14 @@ import {
 
 import { Organization, User } from "@prisma/client";
 import { getFirstAndLastName, toUpperCase } from "@/lib/utils";
-import axios from "axios";
 import { Input } from "@/components/ui/input";
+import { RSSelect } from "@/components/react-select";
+import { api } from "@/lib/axios";
+import { Label } from "@/components/ui/label";
 
 const filterSchema = z.object({
   organization: z.string().optional(),
-  user: z.string().optional(),
+  user: z.string().optional().nullable(),
   status: z.string().optional(),
   property_name: z.string().optional(),
 });
@@ -44,11 +46,13 @@ export function DataFilterForm() {
     resolver: zodResolver(filterSchema),
     defaultValues: {
       property_name: searchParams.get("property_name") || "",
+      user: searchParams.get("user") || "",
     },
   });
 
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const handleClearSearch = () => {
     form.reset({
@@ -61,14 +65,21 @@ export function DataFilterForm() {
   };
 
   useEffect(() => {
-    axios
-      .get("/api/organizations")
-      .then(({ data }) => setOrganizations(data))
-      .catch((e) => console.log(e));
-    axios
-      .get("/api/users")
-      .then(({ data }) => setUsers(data))
-      .catch((e) => console.log(e));
+    try {
+      api.get("/api/organizations").then(({ data }) => setOrganizations(data));
+      api.get("/api/v1/users").then(({ data }) =>
+        setUsers(
+          data.data.map((user: User) => ({
+            ...user,
+            name: getFirstAndLastName(user.name),
+          })),
+        ),
+      );
+    } catch (err) {
+      console.error("Error fetching filter data:", err);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   async function onSubmit(values: z.infer<typeof filterSchema>) {
@@ -80,6 +91,10 @@ export function DataFilterForm() {
     });
 
     replace(`${pathname}?${params.toString()}`);
+  }
+
+  if (loading) {
+    return <LoadingSkeleton />;
   }
 
   return (
@@ -137,24 +152,17 @@ export function DataFilterForm() {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Responsável</FormLabel>
-              <Select
-                onValueChange={field.onChange}
-                defaultValue={searchParams.get("responsible") || undefined}
-                value={field.value}
-              >
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione o Responsável" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {users.map((item) => (
-                    <SelectItem key={item.id} value={String(item.id)}>
-                      {getFirstAndLastName(item.name)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <RSSelect
+                {...field}
+                placeholder="Selecione o Responsável"
+                options={users}
+                onChange={(val) => {
+                  field.onChange(val ? val.id : null);
+                }}
+                value={
+                  users.find((user) => user.id === field.value) || undefined
+                }
+              />
               <FormMessage />
             </FormItem>
           )}
@@ -172,7 +180,7 @@ export function DataFilterForm() {
               >
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecione o Responsável" />
+                    <SelectValue placeholder="Selecione o Status" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -199,3 +207,43 @@ export function DataFilterForm() {
     </Form>
   );
 }
+
+export const LoadingSkeleton = () => {
+  return (
+    <div className="grid animate-pulse grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
+      <div className="w-full space-y-2">
+        <Label>Orgão</Label>
+        <Select>
+          <SelectTrigger>
+            <SelectValue placeholder="Selecione o Orgão" />
+          </SelectTrigger>
+          <SelectContent></SelectContent>
+        </Select>
+      </div>
+      <div className="w-full space-y-2">
+        <Label>Nome do Imóvel</Label>
+        <Input placeholder="Insira o nome do Imóvel" />
+      </div>
+      <div className="w-full space-y-2">
+        <Label>Responsável</Label>
+        <RSSelect placeholder="Selecione o Responsável" options={[]} />
+      </div>
+      <div className="w-full space-y-2">
+        <Label>Status</Label>
+        <Select>
+          <SelectTrigger>
+            <SelectValue placeholder="Selecione o Status" />
+          </SelectTrigger>
+        </Select>
+      </div>
+      <div className="col-span-full space-x-2 self-end justify-self-end">
+        <Button type="submit" disabled>
+          Filtrar
+        </Button>
+        <Button variant="ghost" type="button" className="px-2 lg:px-3" disabled>
+          Limpar
+        </Button>
+      </div>
+    </div>
+  );
+};

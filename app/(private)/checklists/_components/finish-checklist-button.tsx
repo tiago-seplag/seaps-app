@@ -2,7 +2,6 @@
 
 import { Button } from "@/components/ui/button";
 import { Checklist } from "@prisma/client";
-import axios from "axios";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
@@ -15,27 +14,19 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useUser } from "@/contexts/user-context";
+import { useAuth } from "@/contexts/auht-context";
+import { api } from "@/lib/axios";
 
 export const FinishButton = ({ checklist }: { checklist: Checklist }) => {
-  const { user } = useUser();
+  const { user } = useAuth();
 
   const router = useRouter();
 
   const handleFInishChecklist = () => {
-    axios
-      .put("/api/checklists/" + checklist.id + "/finish")
-      .then(() => {
-        toast.success("Checklist finalizado e assinado.");
-        router.refresh();
-      })
-      .catch((e) => {
-        if (e.response.data.messages?.length > 0) {
-          e.response.data.messages.map((msg: string) => toast.error(msg));
-        } else if (e.response.data.message) {
-          toast.error(e.response.data.message);
-        }
-      });
+    api.put("/api/v1/checklists/" + checklist.id + "/finish").then(() => {
+      toast.success("Checklist finalizado e assinado.");
+      router.refresh();
+    });
   };
 
   return (

@@ -25,7 +25,7 @@ async function create(
   return session[0];
 }
 
-async function findSessionByToken(token: string) {
+async function find(token: string) {
   const session = await db("sessions")
     .select("*")
     .where("token", token)
@@ -34,14 +34,15 @@ async function findSessionByToken(token: string) {
   return session;
 }
 
-async function findUserByToken(token: string) {
+async function findUser(token: string) {
   const user = await db("users")
     .select(
       "users.id",
       "users.cpf",
       "users.name",
       "users.email",
-      "users.avatar ",
+      "users.avatar",
+      "users.permissions",
       "users.role",
       "users.is_active",
       "users.is_deleted",
@@ -55,10 +56,64 @@ async function findUserByToken(token: string) {
   return user;
 }
 
+async function findUserAndToken(token: string) {
+  const data = await db("users")
+    .select(
+      "users.id",
+      "users.cpf",
+      "users.name",
+      "users.email",
+      "users.avatar",
+      "users.role",
+      "users.permissions",
+      "users.is_active",
+      "users.is_deleted",
+      "users.created_at",
+      "users.updated_at",
+      "sessions.token",
+      "sessions.expires_at",
+    )
+    .innerJoin("sessions", "sessions.user_id", "users.id")
+    .where("sessions.token", token)
+    .first();
+
+  if (!data) {
+    return null;
+  }
+
+  return {
+    user: {
+      id: data.id,
+      cpf: data.cpf,
+      name: data.name,
+      email: data.email,
+      avatar: data.avatar,
+      role: data.role,
+      permissions: data.permissions,
+      is_active: data.is_active,
+      is_deleted: data.is_deleted,
+      created_at: data.created_at,
+      updated_at: data.updated_at,
+    },
+    token: {
+      token: data.token,
+      expires_at: data.expires_at,
+    },
+  };
+}
+
+async function _delete(token: string) {
+  await db("sessions")
+    .where("token", token)
+    .update({ is_active: false });
+}
+
 const session = {
   create,
-  findSessionByToken,
-  findUserByToken,
+  find,
+  delete: _delete,
+  findUser,
+  findUserAndToken,
 };
 
 export { EXPIRATION_IN_MILLISECONDS };

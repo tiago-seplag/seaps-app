@@ -16,6 +16,7 @@ export async function up(knex: Knex): Promise<void> {
       .defaultTo("OWN")
       .notNullable();
     table.string("name").notNullable();
+    table.string("name_normalized");
     table.string("address");
     table.string("cep");
     table.string("state");

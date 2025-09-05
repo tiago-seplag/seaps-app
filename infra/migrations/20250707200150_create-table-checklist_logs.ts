@@ -8,11 +8,18 @@ export async function up(knex: Knex): Promise<void> {
     table.uuid("checklist_id");
     table.uuid("checklist_item_id");
     table.uuid("user_id");
+    table
+      .enu("status", ["OPEN", "CLOSED", "APPROVED", "REJECTED"], {
+        useNative: true,
+        enumName: "checklist_status",
+        existingType: true,
+      })
+      .defaultTo("OPEN");
     table.string("action").notNullable();
+    table.string("observation");
     table.string("old_value");
     table.string("new_value");
     table.timestamp("created_at").defaultTo(knex.fn.now());
-
     table.foreign("checklist_id").references("id").inTable("checklists");
     table
       .foreign("checklist_item_id")

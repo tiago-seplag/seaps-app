@@ -1,7 +1,7 @@
 import { GoBack } from "@/components/go-back";
 import { EditPropertyForm } from "./edit-property-form";
-import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
+import property from "@/models/property";
 
 type PageParams = {
   params: Promise<{
@@ -12,13 +12,9 @@ type PageParams = {
 export default async function EditProperty({ params }: PageParams) {
   const { id } = await params;
 
-  const property = await prisma.property.findFirst({
-    where: {
-      id,
-    },
-  });
+  const findedProperty = await property.findById(id);
 
-  if (!property) {
+  if (!findedProperty) {
     return notFound();
   }
 
@@ -28,7 +24,7 @@ export default async function EditProperty({ params }: PageParams) {
         <GoBack />
         <h2 className="text-2xl font-bold tracking-tight">Editar Imóvel</h2>
       </div>
-      <EditPropertyForm property={property} />
+      <EditPropertyForm property={findedProperty} />
     </div>
   );
 }

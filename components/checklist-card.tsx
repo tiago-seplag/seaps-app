@@ -1,6 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { $Enums, ChecklistItems } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -22,41 +22,56 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import axios from "axios";
-import { toast } from "sonner";
+import { api } from "@/lib/axios";
+import { cn } from "@/lib/utils";
 
 export const ChecklistCard = ({
   checklistItem,
   status,
 }: {
-  status: $Enums.STATUS;
+  status: any;
   propertyId: string;
-  checklistItem: ChecklistItems & {
-    item: {
-      name: string;
-      level: number;
-    };
-  };
+  checklistItem:
+    | ({
+        score?: number;
+        checklist_id: string;
+        image: string;
+        id: string;
+      } & {
+        item: {
+          name: string;
+          level: number;
+        };
+      })
+    | any;
 }) => {
   const observationDialog = useModal();
   const imageDialog = useModal();
 
-  const handleChangeValue = (value: string, id: string) => {
-    axios.put("/api/checklist-item/" + id, { score: value }).catch((e) => {
-      if (e.response.data.messages?.length > 0) {
-        e.response.data.messages.map((msg: string) => toast.error(msg));
-      } else if (e.response.data.message) {
-        toast.error(e.response.data.message);
-      }
-    });
+  const handleChangeValue = async (value: string, id: string) => {
+    await api.put(
+      "/api/v1/checklists/" + checklistItem.checklist_id + "/items/" + id,
+      { score: value },
+    );
   };
+
+  const IS_CLOSE = ["APPROVED", "CLOSED"].includes(status);
+
+  const IS_VALIDED = checklistItem.is_valid !== null;
+
+  console.log(checklistItem);
 
   return (
     <Card className="flex h-[400px] flex-col">
       <CardHeader>
         <CardTitle>{checklistItem.item.name}</CardTitle>
       </CardHeader>
-      <CardContent className="flex h-full flex-col gap-4">
+      <CardContent
+        className={cn(
+          "flex h-full flex-col gap-4",
+          IS_VALIDED && checklistItem.is_valid ? "opacity-50" : "",
+        )}
+      >
         {checklistItem.score === 0 ? (
           <div
             className={
@@ -102,7 +117,7 @@ export const ChecklistCard = ({
         )}
         <RadioGroup
           className="grid w-full grid-cols-3"
-          disabled={status === "CLOSED"}
+          disabled={(IS_VALIDED && checklistItem.is_valid) || IS_CLOSE}
           onValueChange={(e) => handleChangeValue(e, checklistItem.id)}
           defaultValue={String(checklistItem.score)}
         >

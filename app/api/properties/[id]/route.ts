@@ -1,11 +1,6 @@
-import { ValidationError } from "@/errors/validation-error";
+import controller, { handler } from "@/infra/controller";
+import property, { PropertySchema, propertySchema } from "@/models/property";
 import { prisma } from "@/lib/prisma";
-import {
-  PropertySchema,
-  propertySchema,
-  updatePropertyById,
-} from "@/models/property";
-import { authMiddleware } from "@/utils/authentication";
 import { withMiddlewares } from "@/utils/handler";
 import { validation } from "@/utils/validate";
 import { NextRequest } from "next/server";
@@ -16,7 +11,7 @@ async function getHandler(
 ) {
   const { id } = await params;
 
-  const property = await prisma.property.findFirst({
+  const _property = await prisma.property.findFirst({
     where: { id: id },
     include: {
       organization: true,
@@ -24,7 +19,7 @@ async function getHandler(
     },
   });
 
-  return Response.json(property);
+  return Response.json(_property);
 }
 
 const putHandler = async (
@@ -34,20 +29,31 @@ const putHandler = async (
   const { id } = await params;
   const data: PropertySchema = await request.json();
 
-  try {
-    const property = await updatePropertyById(id, data);
-    return Response.json(property);
-  } catch (error) {
-    console.log(error);
-    if (error instanceof ValidationError)
-      return Response.json(error, { status: error.statusCode });
-    return Response.json({ error }, { status: 500 });
-  }
+  const _property = await property.update(id, data);
+
+  return Response.json(_property);
 };
 
-export const GET = withMiddlewares([authMiddleware], getHandler);
+export const GET = handler([controller.authenticate], getHandler);
 
-export const PUT = withMiddlewares(
-  [authMiddleware, validation(propertySchema)],
+export const PUT = handler(
+  [
+    controller.authenticate,
+    controller.authorize("SUPERVISOR", "ADMIN"),
+    validation(propertySchema),
+  ],
   putHandler,
 );
+
+const deleteHandler = async (
+  _: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) => {
+  const { id } = await params;
+
+  await property.delete(id);
+
+  return Response.json({ message: "Imóvel deletado com sucesso" });
+};
+
+export const DELETE = withMiddlewares([controller.authenticate], deleteHandler);

@@ -3,6 +3,7 @@ import { DataTable } from "@/components/data-table";
 import { Pagination } from "@/components/pagination";
 import { DataFilterForm } from "./_components/filter-form";
 import { getUsersPaginated } from "@/models/user";
+import { SearchParams } from "@/types/types";
 
 export default async function Page(props: {
   searchParams: Promise<SearchParams>;

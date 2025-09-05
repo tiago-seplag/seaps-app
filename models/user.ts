@@ -1,10 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { randomBytes } from "node:crypto";
 
 import bcrypt from "bcrypt";
 import { prisma } from "@/lib/prisma";
 import { generateMetaPagination } from "@/utils/meta-pagination";
 import { z } from "zod";
-// import { ValidationError } from "@/errors/validation-error";
 import { db } from "@/infra/database";
 import { ValidationError } from "@/errors/validation-error";
 import { SearchParams } from "@/types/types";
@@ -13,6 +13,7 @@ import { hash } from "./password";
 export const updateConfigSchema = z.object({
   is_active: z.boolean(),
   role: z.enum(["ADMIN", "SUPERVISOR", "EVALUATOR"]),
+  permissions: z.array(z.string()).optional(),
 });
 
 export const createUserSchema = z.object({
@@ -35,14 +36,7 @@ export async function generateTempPassword(userId: string) {
   const salt = await bcrypt.genSalt();
   const hashPassword = await bcrypt.hash(password, salt);
 
-  await prisma.user.update({
-    data: {
-      password: hashPassword,
-    },
-    where: {
-      id: userId,
-    },
-  });
+  await db("users").update({ password: hashPassword }).where("id", userId);
 
   return password;
 }
@@ -52,7 +46,6 @@ export async function getUsersPaginated(
   perPage = 10,
   searchParams?: SearchParams,
 ) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const filter: any = {};
 
   if (searchParams?.name) {
@@ -79,7 +72,7 @@ export async function getUsersPaginated(
   return { data: checklists, meta };
 }
 
-export async function updateUserConfigs(
+export async function updateConfigs(
   userId: string,
   data: z.infer<typeof updateConfigSchema>,
 ) {
@@ -87,6 +80,7 @@ export async function updateUserConfigs(
     .update({
       is_active: data.is_active,
       role: data.role,
+      permissions: data.permissions,
     })
     .where("id", userId)
     .returning("*");
@@ -148,9 +142,63 @@ async function hashPasswordInObject(data: TCreateUserSchema) {
   data.password = hashedPassword;
 }
 
+async function paginated(options: any) {
+  const users = await db("users")
+    .select("id", "name", "email", "role", "is_active", "created_at")
+    .where((query) => {
+      if (options?.name) {
+        query.whereILike("name", `%${options?.name}%`);
+      }
+      if (options?.email) {
+        query.whereILike("email", `%${options?.email}%`);
+      }
+      if (options?.role) {
+        query.where("permissions", "@>", [options?.role]);
+      }
+    })
+    .orderBy("created_at", "asc")
+    .paginate(options.page, options.per_page);
+
+  return users;
+}
+
+async function findById(id: string) {
+  const user = await db("users")
+    .select(
+      "id",
+      "name",
+      "email",
+      "role",
+      "permissions",
+      "is_active",
+      "created_at",
+      "updated_at",
+    )
+    .where("id", id)
+    .first();
+
+  return user;
+}
+
+async function findOrThrow(id: string) {
+  const user = await findById(id);
+
+  if (!user) {
+    throw new ValidationError({
+      message: "Usuário não encontrado.",
+      action: `Entre em contato com o suporte.`,
+    });
+  }
+  return user;
+}
+
 const user = {
+  paginated,
+  findById,
+  findOrThrow,
   createUser,
-  updateUser: updateUserConfigs,
+  updateUser: updateConfigs,
+  updateConfigs,
 };
 
 export default user;

@@ -50,4 +50,22 @@ async function findUserByEmail(email: string) {
   return user;
 }
 
+async function findUserByCpf(cpf: string) {
+  const user = await db("users").select("*").where("cpf", cpf).first();
+
+  if (!user) {
+    return null;
+  }
+
+  return user;
+}
+
 export { getAuthenticationUserByEmail };
+
+const authentication = {
+  getAuthenticationUserByEmail,
+  findUserByEmail,
+  findUserByCpf,
+};
+
+export default authentication;

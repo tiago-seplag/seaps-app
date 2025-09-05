@@ -12,6 +12,6 @@ async function getHandler(request: NextRequest) {
 }
 
 export const GET = handler(
-  [controller.authenticate, controller.paginateValidation],
+  [controller.authenticate, controller.pagination],
   getHandler,
 );

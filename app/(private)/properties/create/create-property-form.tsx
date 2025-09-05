@@ -22,11 +22,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Plus } from "lucide-react";
-import { toUpperCase } from "@/lib/utils";
-import axios from "axios";
+import { AddressForm } from "../_components/address-form";
+import { api } from "@/lib/axios";
+import { NameForm } from "../_components/name-form";
 
 const formSchema = z.object({
   organization_id: z.string({
@@ -35,12 +34,24 @@ const formSchema = z.object({
   name: z.string().min(2, {
     message: "Insira o nome do imóvel",
   }),
+  cep: z.string().min(7, {
+    message: "Insira o CEP do imóvel",
+  }),
+  state: z.string().min(1, {
+    message: "Insira o estado do imóvel",
+  }),
+  city: z.string().min(1, {
+    message: "Insira a cidade do imóvel",
+  }),
+  neighborhood: z.string().min(7, {
+    message: "Insira o bairro do imóvel",
+  }),
+  street: z.string().min(7, {
+    message: "Insira a rua do imóvel",
+  }),
   address: z.string().optional(),
   type: z.string({
     message: "Selecione o tipo do imóvel",
-  }),
-  person_id: z.string({
-    message: "Selecione o Responsável pelo imóvel",
   }),
 });
 
@@ -49,18 +60,13 @@ export function CreatePropertyForm() {
   const searhParams = useSearchParams();
 
   const [organizations, setOrganizations] = useState<Organization[]>([]);
-  const [responsible, setResponsible] = useState<Organization[]>([]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       organization_id: searhParams.get("organization_id") || undefined,
-      address: "",
-      name: "",
     },
   });
-
-  const [organization_id] = form.watch(["organization_id"]);
 
   useEffect(() => {
     fetch("/api/organizations")
@@ -68,18 +74,10 @@ export function CreatePropertyForm() {
       .then((data) => setOrganizations(data));
   }, []);
 
-  useEffect(() => {
-    if (organization_id) {
-      fetch("/api/organizations/" + organization_id + "/responsible")
-        .then((response) => response.json())
-        .then((data) => setResponsible(data));
-    }
-  }, [organization_id]);
-
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    return axios
+    return api
       .post("/api/properties/", values)
-      .then(() => router.replace("/properties"))
+      .then(({ data }) => router.replace("/properties/" + data.id + "/edit"))
       .catch((e) => console.log(e));
   }
 
@@ -96,6 +94,7 @@ export function CreatePropertyForm() {
             <FormItem className="w-full">
               <FormLabel>Orgão</FormLabel>
               <Select
+                disabled={!!form.getValues("name") && field.value !== undefined}
                 onValueChange={field.onChange}
                 defaultValue={searhParams.get("organization_id") || undefined}
               >
@@ -112,47 +111,6 @@ export function CreatePropertyForm() {
                   ))}
                 </SelectContent>
               </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="person_id"
-          render={({ field }) => (
-            <FormItem className="w-full">
-              <FormLabel>Responsável</FormLabel>
-              <div className="flex w-full items-center gap-2">
-                <Select onValueChange={field.onChange}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione o Responsável pelo Imóvel" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {responsible.map((person) => (
-                      <SelectItem key={person.id} value={String(person.id)}>
-                        {person.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Button
-                  type="button"
-                  disabled={!form.getValues("organization_id")}
-                  variant={"default"}
-                  onClick={() => {
-                    router.push(
-                      "/responsible/create?organization_id=" +
-                        form.getValues("organization_id"),
-                    );
-                  }}
-                  size="icon"
-                >
-                  <Plus />
-                </Button>
-              </div>
-
               <FormMessage />
             </FormItem>
           )}
@@ -179,40 +137,8 @@ export function CreatePropertyForm() {
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem className="w-full">
-              <FormLabel>Nome</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="Nome do imóvel ou local"
-                  {...field}
-                  onBlur={(e) => field.onChange(toUpperCase(e))}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="address"
-          render={({ field }) => (
-            <FormItem className="w-full">
-              <FormLabel>Endereço</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="ex.: R. C, S/N - Centro Político Administrativo..."
-                  {...field}
-                  onBlur={(e) => field.onChange(toUpperCase(e))}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <NameForm form={form} />
+        <AddressForm form={form} />
         <Button type="submit" className="self-end">
           Criar
         </Button>

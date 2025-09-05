@@ -1,45 +1,31 @@
-import { prisma } from "@/lib/prisma";
+import { db } from "@/infra/database";
 
 export async function getCountByRange() {
-  const ranges: { status: string; total: number }[] = await prisma.$queryRaw`
-    SELECT
-        t.status,
-        count(*)::integer as total
-    FROM 
-        (
-        SELECT 
+  const ranges = await db.raw(`
+        SELECT
             CASE
-                WHEN classification = 2 THEN 'BOM'
-                WHEN classification = 1 THEN 'REGULAR'
-                ELSE 'RUIM'
-            END AS 
-                status
+                c.classification
+                WHEN 0 THEN 'RUIM'
+                WHEN 1 THEN 'REGULAR'
+                WHEN 2 THEN 'BOM'
+                ELSE 'DESCONHECIDO'
+            END AS status,
+            COUNT(c.classification) AS total
         FROM
-            checklists
+            checklists c
         WHERE
-            status = 'CLOSED'
-        ) t
-    GROUP BY
-	    t.status
-    ORDER BY 
-        t.status;
-    ;
-    `;
+            c.status = 'CLOSED'
+        GROUP BY
+            c.classification
+        ORDER BY
+            c.classification;
+    `);
 
-  return ranges;
+  return ranges.rows;
 }
 
 export async function getOrganizationsIGM() {
-  const result: {
-    organization_id: string;
-    name: string;
-    qtd_bom: number;
-    qtd_regular: number;
-    qtd_ruim: number;
-    total_imoveis: number;
-    irm: number;
-    classificacao_igmi: number;
-  }[] = await prisma.$queryRaw`
+  const result = await db.raw(`
     WITH classificacao_por_orgao AS (
     SELECT
         organization_id,
@@ -92,7 +78,30 @@ export async function getOrganizationsIGM() {
     classificacao_igmi desc,
     irm DESC
     ;
-    `;
+    `);
 
-  return result;
+  return result.rows;
 }
+
+async function properties() {
+  const ranges = await db.raw(`
+    SELECT
+	    count(DISTINCT(c.property_id)) as total
+    FROM
+        checklists c
+    WHERE
+        c.status = 'CLOSED'
+    AND
+        c.is_deleted = false
+    `);
+
+  return ranges.rows;
+}
+
+const dashboard = {
+  getCountByRange,
+  getOrganizationsIGM,
+  properties,
+};
+
+export default dashboard;

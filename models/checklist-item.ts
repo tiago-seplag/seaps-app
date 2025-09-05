@@ -1,8 +1,8 @@
 import { db } from "@/infra/database";
-import { ForbiddenError, NotFoundError } from "@/infra/errors";
+import { ForbiddenError, NotFoundError, ValidationError } from "@/infra/errors";
 import { z } from "zod";
 
-export const updateChecklistItemSchema = z
+export const updateSchema = z
   .object({
     score: z
       .string()
@@ -13,9 +13,13 @@ export const updateChecklistItemSchema = z
   })
   .strict();
 
-export type UpdateChecklistItemSchema = z.infer<
-  typeof updateChecklistItemSchema
->;
+export const validateSchema = z
+  .object({
+    is_valid: z.boolean(),
+  })
+  .strict();
+
+export type UpdateChecklistItemSchema = z.infer<typeof updateSchema>;
 
 export async function getChecklistItems(checklistId: string) {
   const checklistItems = await db("checklist_items")
@@ -28,6 +32,13 @@ export async function getChecklistItems(checklistId: string) {
     .innerJoin("items", "items.id", "checklist_items.item_id")
     .orderBy("items.name")
     .nest();
+
+  if (checklistItems.length === 0) {
+    throw new NotFoundError({
+      message: "Nenhum item de checklist encontrado",
+      action: "Verifique se o ID do checklist está correto",
+    });
+  }
 
   return checklistItems;
 }
@@ -65,6 +76,7 @@ export async function updateChecklistItem(
   user: {
     id: string;
     role: string;
+    permissions?: string[];
   },
 ) {
   const checklistItem = await db("checklist_items")
@@ -72,15 +84,24 @@ export async function updateChecklistItem(
     .select(
       "checklists.id as checklist:id",
       "checklists.user_id as checklist:user_id",
+      "checklists.status as checklist:status",
     )
     .where("checklist_items.id", id)
     .innerJoin("checklists", "checklists.id", "checklist_items.checklist_id")
     .first()
     .nest();
 
+  if (checklistItem.checklist.status === "CLOSED") {
+    throw new ValidationError({
+      message: "Esse checklist está fechado",
+      action: "Verifique o status do checklist",
+    });
+  }
+
   if (
     checklistItem?.checklist.user_id !== user.id &&
-    user.role === "EVALUATOR"
+    !user.permissions?.includes("checklist_items:edit_all") &&
+    !user.permissions?.includes("*")
   ) {
     throw new ForbiddenError({
       message: "Apenas o responsável pode editar o item",
@@ -92,6 +113,7 @@ export async function updateChecklistItem(
     observation?: string;
     score?: number;
     image?: string;
+    is_inspected?: boolean;
   } = {};
 
   if (data.observation) {
@@ -100,13 +122,14 @@ export async function updateChecklistItem(
 
   if (data.score) {
     updateData.score = Number(data.score);
+    updateData.is_inspected = true;
   }
 
   if (data.image) {
     updateData.image = data.image;
   }
 
-  const updatedChecklistItem = await db("checklist_items")
+  const [updatedChecklistItem] = await db("checklist_items")
     .update(updateData)
     .where("id", id)
     .returning("*");
@@ -114,11 +137,59 @@ export async function updateChecklistItem(
   return updatedChecklistItem;
 }
 
+async function validate(
+  data: z.infer<typeof validateSchema>,
+  { itemId, checklistId }: { itemId: string; checklistId: string },
+) {
+  const checklistItem = await db("checklist_items")
+    .where({ id: itemId, checklist_id: checklistId })
+    .first();
+
+  if (!checklistItem) {
+    throw new NotFoundError({
+      message: "Esse item de checklist não existe",
+      action: "Verifique se o ID foi passado corretamente",
+    });
+  }
+
+  const updatedChecklistItem = await db("checklist_items")
+    .update({ is_valid: data.is_valid })
+    .where({ id: itemId, checklist_id: checklistId })
+    .returning("*");
+
+  return updatedChecklistItem[0];
+}
+
+async function saveImages(
+  checklistItemId: string,
+  images: {
+    image: string;
+    size: number;
+    format: string;
+  }[],
+) {
+  await db("checklist_items")
+    .update({ image: images[0].image, updated_at: new Date() })
+    .where("id", checklistItemId);
+
+  await db("checklist_item_images").insert(
+    images.map((image) => ({
+      checklist_item_id: checklistItemId,
+      ...image,
+    })),
+  );
+}
+
 const checklistItem = {
   findAll: getChecklistItems,
   findById: getChecklistItemById,
   update: updateChecklistItem,
-  updateSchema: updateChecklistItemSchema,
+  validate,
+  saveImages,
+  schemas: {
+    validate: validateSchema,
+    update: updateSchema,
+  },
 };
 
 export default checklistItem;

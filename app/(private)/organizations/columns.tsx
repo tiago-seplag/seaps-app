@@ -40,7 +40,7 @@ export const columns: ColumnDef<
       cellClassName: "hidden md:table-cell max-w-40",
       size: 150,
     },
-    accessorFn: (row) => row._count.properties,
+    accessorFn: (row) => row._count?.properties,
   },
   {
     accessorKey: "_count.persons",
@@ -50,7 +50,7 @@ export const columns: ColumnDef<
       cellClassName: "hidden md:table-cell max-w-40",
       size: 150,
     },
-    accessorFn: (row) => row._count.persons,
+    accessorFn: (row) => row._count?.persons,
   },
   {
     accessorKey: "actions",

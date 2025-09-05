@@ -5,6 +5,7 @@ import { Plus } from "lucide-react";
 import { columns } from "./columns";
 import Link from "next/link";
 import { DataTable } from "@/components/data-table";
+import { SearchParams } from "@/types/types";
 
 export default async function Page(props: {
   searchParams: Promise<SearchParams>;

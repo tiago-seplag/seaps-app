@@ -24,36 +24,62 @@ export function handler(middlewares: Function[], handler: Function) {
 }
 
 async function authenticate(req: NextRequest) {
-  const token = req.cookies.get("session")?.value;
+  const cookie = req.cookies.get("session");
 
-  if (!token) {
+  if (!cookie?.value) {
     throw new UnauthorizedError({
       message: "Você não está autorizado a acessar este recurso.",
       action: "Por favor, faça login para continuar.",
     });
   }
 
-  const ahutenticatedUser = await session.findUserByToken("users");
+  const data = await session.findUserAndToken(cookie.value);
 
-  if (!ahutenticatedUser) {
+  if (!data) {
     throw new UnauthorizedError({
       message: "Sessão inválida ou expirada.",
       action: "Por favor, faça login novamente.",
     });
   }
 
-  if (!ahutenticatedUser.is_active) {
+  const { user, token } = data;
+
+  if (new Date(token.expires_at) < new Date()) {
+    throw new UnauthorizedError({
+      message: "Sessão inválida ou expirada.",
+      action: "Por favor, faça login novamente.",
+    });
+  }
+
+  if (!user.is_active) {
     throw new ForbiddenError({
       message: "Sua conta está inativa.",
       action: "Por favor, entre em contato com o suporte.",
     });
   }
 
-  req.headers.set("x-user-id", ahutenticatedUser.id);
-  req.headers.set("x-user-role", ahutenticatedUser.role);
+  req.headers.set("x-user-id", user.id);
+  req.headers.set("x-user-role", user.role);
+  req.headers.set("x-user-permissions", user.permissions?.join(","));
 }
 
-async function paginateValidation(req: NextRequest) {
+function authorize(...guards: string[]) {
+  return async (req: NextRequest) => {
+    const permissions = req.headers.get("x-user-permissions")?.split(",") || [];
+
+    if (
+      !guards.some((p) => permissions.includes(p)) &&
+      !permissions.some((p) => p === "*")
+    ) {
+      throw new ForbiddenError({
+        message: "Você não tem permissão para acessar este recurso.",
+        action: "Por favor, entre em contato com o suporte.",
+      });
+    }
+  };
+}
+
+function pagination(req: NextRequest) {
   const page = req.nextUrl.searchParams.get("page");
   const perPage = req.nextUrl.searchParams.get("per_page");
 
@@ -69,6 +95,10 @@ async function paginateValidation(req: NextRequest) {
       message: "Paginate error: per_page must be a number.",
       action: "Please provide a valid number for per_page.",
     });
+  }
+
+  if (!perPage) {
+    req.nextUrl.searchParams.set("per_page", "10"); // default per_page
   }
 }
 
@@ -117,7 +147,8 @@ function validateUUID(...ids: string[]) {
 
 const controller = {
   authenticate,
-  paginateValidation,
+  authorize,
+  pagination,
   validateBody,
   validateUUID,
 };

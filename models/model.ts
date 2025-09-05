@@ -58,7 +58,13 @@ async function getModelById(id: string) {
     });
   }
 
-  return model;
+  const items = await db("items")
+    .select("items.id", "items.name")
+    .innerJoin("model_items", "items.id", "model_items.item_id")
+    .where("model_items.model_id", id)
+    .orderBy("items.name", "asc");
+
+  return { ...model, items };
 }
 
 async function createModel(data: TCreateModelSchema) {
@@ -115,10 +121,65 @@ async function findModelByName(name: string) {
   return model;
 }
 
+async function update(id: string, data: TCreateModelSchema) {
+  const { items, ...modelData } = data;
+
+  const model = await getModelById(id);
+
+  if (!model) {
+    throw new NotFoundError({
+      message: "Modelo não encontrado.",
+      action: "Verifique o ID fornecido.",
+    });
+  }
+
+  const findModel = await findModelByName(modelData.name);
+
+  if (findModel && findModel.id !== id) {
+    if (!findModel.is_deleted) {
+      throw new ValidationError({
+        message: "Esse Modelo já existe.",
+        action: "Escolha um nome diferente para o modelo.",
+      });
+    }
+
+    throw new ValidationError({
+      message: "Esse Modelo já existe, mas está inativo.",
+      action: "Você pode reativá-lo ou escolher um nome diferente.",
+    });
+  }
+
+  const list = [];
+
+  for (const i of items) {
+    const findedItem = await item.findOrInsert(i);
+
+    list.push(findedItem.id);
+  }
+
+  const updatedModel = await db<Model>("models")
+    .update(modelData)
+    .where("id", id)
+    .returning("*")
+    .then((res) => res[0]);
+
+  await db("model_items").where("model_id", id).delete();
+
+  await db("model_items").insert(
+    list.map((itemId) => ({
+      model_id: updatedModel.id,
+      item_id: itemId,
+    })),
+  );
+
+  return updatedModel;
+}
+
 const model = {
   paginated: paginatedModels,
   getModelById,
   createModel,
+  update,
   createSchema: createModelSchema,
 };
 

@@ -62,8 +62,8 @@ export function paginate() {
             current_page: Number(currentPage),
             per_page: Number(perPage),
             last_page: lastPage,
-            prev_page: nextPage,
-            next_page: prevPage,
+            prev_page: prevPage,
+            next_page: nextPage,
           };
 
           return { meta: pagination, data: result };

@@ -1,4 +1,4 @@
-FROM node:20-alpine AS base
+FROM node:24-alpine AS base
 
 FROM base AS deps
 RUN apk add --no-cache libc6-compat
@@ -39,15 +39,9 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
 USER nextjs
 
-EXPOSE 3000
+EXPOSE 3002
 
-ENV PORT=3000
-
-# ARG DATABASE_URL= ${DATABASE_URL}
-# ARG JWT_SECRET=${JWT_SECRET}
-# ARG REPORT_URL=${REPORT_URL}
-# ARG BUCKET_URL=${BUCKET_URL}
-# ARG BASE_URL=${BASE_URL}
+ENV PORT=3002
 
 ENV HOSTNAME="0.0.0.0"
 CMD ["node", "server.js"]

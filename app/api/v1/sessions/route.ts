@@ -1,4 +1,4 @@
-import { handler } from "@/infra/controller";
+import controller, { handler } from "@/infra/controller";
 import { getAuthenticationUserByEmail } from "@/models/authentication";
 import session, { EXPIRATION_IN_MILLISECONDS } from "@/models/session";
 import { cookies } from "next/headers";
@@ -28,4 +28,18 @@ async function postHandler(request: NextRequest) {
   return Response.json(newSession, { status: 201 });
 }
 
+async function deleteHandler() {
+  const cookie = await cookies();
+
+  const token = cookie.get("session")?.value || "";
+
+  cookie.delete("session");
+
+  await session.delete(token);
+
+  return Response.json({ success: true }, { status: 200 });
+}
+
 export const POST = handler([], postHandler);
+
+export const DELETE = handler([controller.authenticate], deleteHandler);

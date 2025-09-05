@@ -8,7 +8,10 @@ export async function up(knex: Knex): Promise<void> {
     table.uuid("user_id");
     table.string("token");
     table.string("user_agent");
-    table.enu("type", ["mt-login", "password"]);
+    table.enu("type", ["mt-login", "password"], {
+      enumName: "session_types",
+      useNative: true,
+    });
     table.boolean("is_active").defaultTo("true");
     table.timestamp("expires_at");
     table.timestamp("created_at").defaultTo(knex.fn.now());

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { DialogProps } from "@radix-ui/react-dialog";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,7 +11,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useEffect, useState } from "react";
-import { $Enums, ChecklistItems } from "@prisma/client";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -28,8 +28,8 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 interface ObservationDialogProps extends DialogProps {
-  status: $Enums.STATUS;
-  item: ChecklistItems & {
+  status: any;
+  item: any & {
     item: {
       name: string;
     };

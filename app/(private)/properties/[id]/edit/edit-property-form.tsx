@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { z } from "zod";
@@ -14,7 +15,7 @@ import {
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
-import { Organization, Property } from "@prisma/client";
+import { Organization } from "@prisma/client";
 import {
   Select,
   SelectContent,
@@ -22,10 +23,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
-import axios from "axios";
+import { api } from "@/lib/axios";
+import { RSSelect } from "@/components/react-select";
+import { AddressForm } from "../../_components/address-form";
+import { NameForm } from "../../_components/name-form";
 
 const formSchema = z.object({
   organization_id: z.string({
@@ -34,6 +37,21 @@ const formSchema = z.object({
   name: z.string().min(2, {
     message: "Insira o nome do imóvel",
   }),
+  cep: z.string().min(7, {
+    message: "Insira o CEP do imóvel",
+  }),
+  state: z.string({
+    message: "Selecione o estado do imóvel",
+  }),
+  city: z.string({
+    message: "Selecione a cidade do imóvel",
+  }),
+  neighborhood: z.string().min(7, {
+    message: "Insira o bairro do imóvel",
+  }),
+  street: z.string().min(7, {
+    message: "Insira a rua do imóvel",
+  }),
   address: z.string().optional(),
   type: z.string({
     message: "Selecione o tipo do imóvel",
@@ -41,7 +59,7 @@ const formSchema = z.object({
   person_id: z.string().uuid().optional(),
 });
 
-export function EditPropertyForm({ property }: { property: Property }) {
+export function EditPropertyForm({ property }: { property: any }) {
   const router = useRouter();
 
   const [organizations, setOrganizations] = useState<Organization[]>([]);
@@ -50,8 +68,13 @@ export function EditPropertyForm({ property }: { property: Property }) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      address: property.address || "",
       name: property.name,
+      cep: property.cep || "",
+      state: property.state || "",
+      city: property.city || "",
+      neighborhood: property.neighborhood || "",
+      street: property.street || "",
+      address: property.address || "",
       organization_id: property.organization_id,
       person_id: property.person_id || undefined,
       type: property.type,
@@ -73,10 +96,9 @@ export function EditPropertyForm({ property }: { property: Property }) {
   }, [organization_id]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    return axios
+    return api
       .put("/api/properties/" + property.id, values)
-      .then(() => router.replace("/properties"))
-      .catch((e) => console.log(e));
+      .then(() => router.replace("/properties"));
   }
 
   return (
@@ -119,23 +141,18 @@ export function EditPropertyForm({ property }: { property: Property }) {
             <FormItem className="w-full">
               <FormLabel>Responsável</FormLabel>
               <div className="flex w-full items-center gap-2">
-                <Select
-                  defaultValue={property.person_id || ""}
-                  onValueChange={field.onChange}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione o Responsável pelo Imóvel" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {responsible.map((person) => (
-                      <SelectItem key={person.id} value={String(person.id)}>
-                        {person.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <RSSelect
+                  {...field}
+                  placeholder="Selecione o Responsável pelo Imóvel"
+                  options={responsible}
+                  onChange={(val) => {
+                    field.onChange(val ? val.id : undefined);
+                  }}
+                  value={
+                    responsible.find((user) => user.id === field.value) ||
+                    undefined
+                  }
+                />
                 <Button
                   type="button"
                   disabled={!form.getValues("organization_id")}
@@ -151,7 +168,6 @@ export function EditPropertyForm({ property }: { property: Property }) {
                   <Plus />
                 </Button>
               </div>
-
               <FormMessage />
             </FormItem>
           )}
@@ -181,35 +197,8 @@ export function EditPropertyForm({ property }: { property: Property }) {
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem className="w-full">
-              <FormLabel>Nome</FormLabel>
-              <FormControl>
-                <Input placeholder="Nome do imóvel ou local" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="address"
-          render={({ field }) => (
-            <FormItem className="w-full">
-              <FormLabel>Endereço</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="ex.: R. C, S/N - Centro Político Administrativo..."
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <NameForm form={form} />
+        <AddressForm form={form} />
         <Button type="submit" className="self-end">
           Salvar
         </Button>

@@ -26,7 +26,7 @@ import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import axios from "axios";
+import { api } from "@/lib/axios";
 
 const formSchema = z.object({
   model_id: z.string({
@@ -43,18 +43,10 @@ const formSchema = z.object({
   }),
 });
 
-type ModelResponse = Model & {
-  modelItems: ({
-    item: {
-      name: string;
-    };
-  } & {
-    id: string;
-    created_at: Date;
-    item_id: string;
-    model_id: string;
-    order: number;
-  })[];
+type ModelResponse = {
+  items: {
+    name: string;
+  }[];
 };
 
 export function CreateCheckListForm() {
@@ -78,36 +70,38 @@ export function CreateCheckListForm() {
   ]);
 
   useEffect(() => {
-    fetch("/api/organizations")
-      .then((response) => response.json())
-      .then((data) => setOrganizations(data));
-    fetch("/api/models")
-      .then((response) => response.json())
-      .then((data) => setModels(data));
-    fetch("/api/users")
-      .then((response) => response.json())
-      .then((data) => setUsers(data));
+    api
+      .get("/api/v1/models?per_page=1000")
+      .then(({ data }) => setModels(data.data));
+    api.get("/api/organizations").then(({ data }) => setOrganizations(data));
+    api
+      .get("/api/v1/users?per_page=1000&role=EVALUATOR")
+      .then(({ data }) => setUsers(data.data));
   }, []);
 
   useEffect(() => {
     if (organization_id) {
-      fetch("/api/organizations/" + organization_id + "/properties")
-        .then((response) => response.json())
-        .then((data) => setProperties(data));
+      api
+        .get(
+          "/api/v1/properties?organization_id=" +
+            organization_id +
+            "&per_page=1000",
+        )
+        .then(({ data }) => setProperties(data.data));
     }
   }, [organization_id]);
 
   useEffect(() => {
     if (model_id) {
-      fetch("/api/models/" + model_id)
+      fetch("/api/v1/models/" + model_id)
         .then((response) => response.json())
         .then((data) => setModel(data));
     }
   }, [model_id]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    return axios
-      .post("/api/checklists/", values)
+    return api
+      .post("/api/v1/checklists/", values)
       .then(() => router.replace("/checklists"))
       .catch((e) => console.log(e));
   }
@@ -241,14 +235,14 @@ export function CreateCheckListForm() {
         <FormItem className="w-full">
           <FormLabel>Preview do modelo</FormLabel>
           {model &&
-            model.modelItems?.map((field, index) => {
+            model.items?.map((field, index) => {
               return (
                 <div
                   key={index}
                   className="w-full rounded border border-dashed p-2"
                 >
                   <FormItem className="w-full">
-                    <FormLabel>{field.item.name}</FormLabel>
+                    <FormLabel>{field.name}</FormLabel>
                     <RadioGroup className="flex w-full" disabled>
                       <div className="flex w-full flex-row items-center justify-center gap-2 rounded bg-red-300 px-1 py-2 dark:bg-red-800">
                         <RadioGroupItem value="0" id={"0"} />

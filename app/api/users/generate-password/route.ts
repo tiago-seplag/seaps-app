@@ -1,7 +1,6 @@
 import { ValidationError } from "@/errors/validation-error";
+import controller, { handler } from "@/infra/controller";
 import { generateTempPassword } from "@/models/user";
-import { authMiddleware } from "@/utils/authentication";
-import { withMiddlewares } from "@/utils/handler";
 import { NextRequest } from "next/server";
 
 const putHandler = async (request: NextRequest) => {
@@ -18,4 +17,4 @@ const putHandler = async (request: NextRequest) => {
   }
 };
 
-export const PUT = withMiddlewares([authMiddleware], putHandler);
+export const PUT = handler([controller.authenticate], putHandler);

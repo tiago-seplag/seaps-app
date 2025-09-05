@@ -1,6 +1,5 @@
-// import { s3Client } from "@/lib/s3-client";
-// import { GetObjectCommand } from "@aws-sdk/client-s3";
-import axios from "axios";
+import { s3Client } from "@/lib/s3-client";
+import { GetObjectCommand } from "@aws-sdk/client-s3";
 import { NextRequest, NextResponse } from "next/server";
 import sharp from "sharp";
 
@@ -19,46 +18,39 @@ export async function GET(
   }
 
   try {
-    // const command = new GetObjectCommand({
-    //   Bucket: process.env.S3_BUCKET_NAME!,
-    //   Key: image.toString().replaceAll(",", "/"),
-    // });
+    const command = new GetObjectCommand({
+      Bucket: process.env.S3_BUCKET_NAME!,
+      Key: image.toString().replaceAll(",", "/"),
+    });
 
-    // const s3Response = await s3Client.send(command);
+    const s3Response = await s3Client.send(command);
 
-    // const stream = s3Response.Body as ReadableStream;
+    const stream = s3Response.Body as ReadableStream;
 
-    const response = await axios.get(
-      `http://172.24.155.34:3334/images/image${Math.floor(Math.random() * 15) + 1}.webp`,
-      {
-        responseType: "arraybuffer",
-      },
-    );
+    const body = await new Response(stream).arrayBuffer();
 
-    const imageData = Buffer.from(response.data, "binary");
-
-    // const contentType = s3Response.ContentType || "application/octet-stream";
+    const contentType = s3Response.ContentType || "application/octet-stream";
 
     if (compress) {
-      const body = Buffer.from(response.data, "binary");
       const compressedImageBuffer = await sharp(body)
         .resize({ width: 240, height: 200 }) // Example: Resize the image
         .jpeg({ quality: 70 })
         .toBuffer();
 
-      return new NextResponse(compressedImageBuffer, {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      return new NextResponse(compressedImageBuffer as any, {
         headers: {
-          "Content-Type": "application/octet-stream",
+          "Content-Type": contentType,
           "Content-Length": String(compressedImageBuffer.byteLength),
           "Cache-Control": "public, max-age=300",
         },
       });
     }
 
-    return new NextResponse(imageData, {
+    return new NextResponse(body, {
       headers: {
-        "Content-Type": "application/octet-stream",
-        "Content-Length": String(imageData.byteLength),
+        "Content-Type": contentType,
+        "Content-Length": String(body.byteLength),
         "Cache-Control": "public, max-age=300",
       },
     });

@@ -1,8 +1,8 @@
-import { ValidationError } from "@/errors/validation-error";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import person from "./persons";
 import { db } from "@/infra/database";
-import { prisma } from "@/lib/prisma";
-import { generateMetaPagination } from "@/utils/meta-pagination";
 import { z } from "zod";
+import { NotFoundError, ValidationError } from "@/infra/errors";
 
 export const propertySchema = z
   .object({
@@ -10,97 +10,210 @@ export const propertySchema = z
     name: z.string().min(2),
     address: z.string().optional(),
     type: z.enum(["GRANT", "OWN", "RENTED"]),
-    person_id: z.string().optional(),
+    cep: z.string().optional(),
+    state: z.string().optional(),
+    city: z.string().optional(),
+    neighborhood: z.string().optional(),
+    street: z.string().optional(),
+    coordinates: z.string().optional(),
+    person_id: z.string().nullable().optional(),
   })
   .strict();
 
 export type PropertySchema = z.infer<typeof propertySchema>;
 
-export async function getPropertiesPaginated(
-  page = 1,
-  perPage = 10,
-  searchParams?: URLSearchParams,
-) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const filter: any = {};
+async function paginated(options: any) {
+  const properties = await db("properties")
+    .select("properties.*")
+    .select("persons.name as person:name")
+    .select(
+      "organizations.id as organization:id",
+      "organizations.name as organization:name",
+      "organizations.acronym as organization:acronym",
+    )
+    .innerJoin(
+      "organizations",
+      "properties.organization_id",
+      "organizations.id",
+    )
+    .leftJoin("persons", "properties.person_id", "persons.id")
+    .where((query) => {
+      if (options.organization_id) {
+        query.where("properties.organization_id", options.organization_id);
+      }
+      if (options.type) {
+        query.where("properties.type", options.type);
+      }
+      if (options.name) {
+        query.where("properties.name", options.name);
+      }
+      if (options.city) {
+        query.where("properties.city", options.city);
+      }
+      if (options.created_by) {
+        query.where("properties.created_by", options.created_by);
+      }
 
-  if (searchParams?.get("organization_id")) {
-    filter.organization_id = searchParams.get("organization_id");
-  }
+      query.where("properties.is_deleted", false);
+    })
+    .orderBy("created_at", "desc")
+    .paginate(options.page, options.per_page, {
+      nest: true,
+    });
 
-  const total = await prisma.property.count({
-    where: filter,
-  });
-
-  const meta = generateMetaPagination(page, perPage, total);
-
-  const properties = await prisma.property.findMany({
-    include: {
-      organization: true,
-      person: {
-        select: { name: true },
-      },
-    },
-    orderBy: {
-      created_at: "desc",
-    },
-    where: filter,
-    take: meta.per_page,
-    skip: (meta.current_page - 1) * meta.per_page,
-  });
-
-  return { data: properties, meta };
+  return properties;
 }
 
-export async function updatePropertyById(id: string, data: PropertySchema) {
-  const _property = await getPropertyById(id);
+async function update(id: string, data: PropertySchema) {
+  await findById(id);
 
-  if (!_property) {
-    throw new ValidationError({
+  const updateData = {
+    ...data,
+    cep: data.cep?.trim().replace(/[^0-9]/g, ""),
+    name_normalized: normalizeName(data.name),
+  };
+
+  const updatedProperty = await db("properties")
+    .where({ id })
+    .update(updateData)
+    .returning("*");
+
+  return updatedProperty;
+}
+
+async function updatePerson(propertyId: string, personId: string | null) {
+  const _property = await findById(propertyId);
+
+  if (personId) {
+    const _person = await person.getPersonById(personId);
+
+    if (personId && !_person) {
+      throw new NotFoundError({
+        message: "Esse ID de pessoa não existe",
+        action: "Verifique se o ID foi passado corretamente",
+      });
+    }
+
+    if (_property.organization_id !== _person?.organization_id) {
+      throw new ValidationError({
+        message: "Essa pessoa não pertence a organização do imóvel",
+        action: "Verifique se o ID da organização e da pessoa estão corretos",
+      });
+    }
+  }
+
+  const updatedProperty = await db("properties")
+    .where({ id: propertyId })
+    .update({ person_id: personId })
+    .returning("*");
+
+  return updatedProperty;
+}
+
+async function findById(id: string) {
+  const property = await db("properties")
+    .select("properties.*")
+    .select(
+      "organizations.name as organization:name",
+      "organizations.acronym as organization:acronym",
+      "organizations.id as organization:id",
+    )
+    .select(
+      "persons.name as person:name",
+      "persons.id as person:id",
+      "persons.email as person:email",
+      "persons.phone as person:phone",
+      "persons.role as person:role",
+      "persons.created_at as person:created_at",
+      "persons.updated_at as person:updated_at",
+    )
+    .leftJoin("persons", "persons.id", "properties.person_id")
+    .leftJoin("organizations", "organizations.id", "properties.organization_id")
+    .where("properties.id", id)
+    .first()
+    .nest();
+
+  if (!property) {
+    throw new NotFoundError({
       message: "Esse ID de imóvel não existe",
       action: "Verifique se o ID foi passado corretamente",
-      statusCode: 404,
     });
   }
 
-  const property = await prisma.property.update({
-    data: {
-      ...data,
-      person_id:
-        _property.organization_id !== data.organization_id
-          ? null
-          : data.person_id,
-    },
-    where: { id },
-  });
+  return property;
+}
+
+async function findByName(data: {
+  name: string;
+  id?: string;
+  organization_id: string;
+}) {
+  const { id, name, organization_id } = data;
+
+  const property = await db("properties")
+    .select("properties.id", "properties.name")
+    .where((query) => {
+      query
+        .where("name_normalized", normalizeName(name))
+        .where("organization_id", organization_id);
+      if (id) {
+        query.andWhere("id", "!=", id);
+      }
+    })
+    .first();
 
   return property;
 }
 
-export async function getPropertyById(id: string) {
-  const property = await prisma.property.findFirst({
-    where: { id },
-  });
+async function create(data: PropertySchema, userId?: string) {
+  const normalize = normalizeName(data.name);
 
-  return property;
-}
-
-async function createProperty(data: PropertySchema) {
   const [property] = await db("properties")
     .insert({
-      name: data.name,
-      organization_id: data.organization_id,
-      address: data.address,
-      type: data.type,
-      person_id: data.person_id,
+      ...data,
+      name: data.name.trim().toUpperCase(),
+      address: data.address?.trim().toUpperCase(),
+      created_by: userId,
+      cep: data.cep?.trim().replace(/[^0-9]/g, ""),
+      name_normalized: normalize,
     })
     .returning("*");
 
   return property;
 }
 
+function normalizeName(name: string) {
+  return name
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]/g, "")
+    .trim();
+}
+
+async function _delete(id: string) {
+  const findedProperty = await findById(id);
+
+  if (!findedProperty) {
+    throw new NotFoundError({
+      message: "Esse ID de imóvel não existe",
+      action: "Verifique se o ID foi passado corretamente",
+    });
+  }
+
+  await db("properties")
+    .where({ id })
+    .update({ is_deleted: true, updated_at: new Date() });
+}
+
 const property = {
-  createProperty,
+  create,
+  updatePerson,
+  findById,
+  update,
+  paginated,
+  findByName,
+  delete: _delete,
 };
 
 export default property;

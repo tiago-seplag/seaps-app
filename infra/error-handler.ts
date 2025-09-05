@@ -1,4 +1,5 @@
 import {
+  ForbiddenError,
   InternalServerError,
   NotFoundError,
   UnauthorizedError,
@@ -10,8 +11,18 @@ function onErrorHandler(error: any) {
   if (
     error instanceof ValidationError ||
     error instanceof NotFoundError ||
-    error instanceof UnauthorizedError
+    error instanceof UnauthorizedError ||
+    error instanceof ForbiddenError
   ) {
+    if (error instanceof UnauthorizedError) {
+      return Response.json(error, {
+        status: error.statusCode,
+        headers: {
+          "set-cookie": `session=; max-age=0; path=/; HttpOnly; SameSite=Strict`,
+        },
+      });
+    }
+
     return Response.json(error, { status: error.statusCode });
   }
 

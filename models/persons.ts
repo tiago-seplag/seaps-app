@@ -15,8 +15,11 @@ export const createPersonSchema = z.object({
 
 type TCreatePersonSchema = z.infer<typeof createPersonSchema>;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function paginatedPersons(page = 1, perPage = 10, search?: any) {
+export async function paginatedPersons(
+  page = 1,
+  perPage = 10,
+  search?: Record<string, string | null>,
+) {
   const persons = await db("persons")
     .select("persons.*")
     .where((builder) => {
