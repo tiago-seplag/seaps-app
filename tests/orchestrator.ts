@@ -108,7 +108,11 @@ async function createChecklist(data: {
   model_id: string;
   user_id: string;
 }) {
-  const createdChecklist = await checklist.createChecklist(data);
+  const createdChecklist = await checklist.createChecklist({
+    ...data,
+    is_returned: false,
+    return: 0,
+  });
 
   return createdChecklist;
 }

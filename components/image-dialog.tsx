@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { DialogProps } from "@radix-ui/react-dialog";
@@ -8,7 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { ChecklistItemImages, ChecklistItems, Item } from "@prisma/client";
+import { ChecklistItemImages, Item } from "@prisma/client";
 import EmblaCarousel from "./carousel/embla-carousel";
 import { useEffect, useState } from "react";
 import Loading from "@/app/(private)/loading";

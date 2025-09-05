@@ -2,12 +2,10 @@ import {
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
-  BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { Fragment } from "react";
 
 export default async function BreadcrumbSlot({
   params,
@@ -46,24 +44,6 @@ export default async function BreadcrumbSlot({
           </Link>
         </BreadcrumbLink>
       </BreadcrumbItem>
-      {checklist?.checklistItems.map((item, index) => {
-        return (
-          <Fragment key={index}>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              {index === checklist.checklistItems.length - 1 ? (
-                <BreadcrumbPage>{item.item.name}</BreadcrumbPage>
-              ) : (
-                <BreadcrumbLink asChild>
-                  <Link href={item.id} replace>
-                    {item.item.name}
-                  </Link>
-                </BreadcrumbLink>
-              )}
-            </BreadcrumbItem>
-          </Fragment>
-        );
-      })}
     </BreadcrumbList>
   );
 }

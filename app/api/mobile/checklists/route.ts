@@ -1,5 +1,5 @@
 import { ValidationError } from "@/errors/validation-error";
-import { getChecklistsPaginated } from "@/models/checklist";
+import checklist from "@/models/checklist";
 import { authMiddleware } from "@/utils/authentication";
 import { withMiddlewares } from "@/utils/handler";
 import { NextRequest } from "next/server";
@@ -15,14 +15,12 @@ const getHandler = async (request: NextRequest) => {
   const search = Object.fromEntries(searchParams.entries());
 
   try {
-    const checklists = await getChecklistsPaginated(
-      Number(page),
-      Number(perPage),
-      {
-        user: role !== "ADMIN" ? userId : undefined,
-        ...search,
-      },
-    );
+    const checklists = await checklist.paginated({
+      page: Number(page),
+      per_page: Number(perPage),
+      user: role !== "ADMIN" ? userId : undefined,
+      ...search,
+    });
     return Response.json(checklists);
   } catch (error) {
     if (error instanceof ValidationError)

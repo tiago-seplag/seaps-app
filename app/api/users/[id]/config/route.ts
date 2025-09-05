@@ -1,5 +1,5 @@
 import { ValidationError } from "@/errors/validation-error";
-import { updateConfigSchema, updateUserConfigs } from "@/models/user";
+import user, { updateConfigSchema } from "@/models/user";
 import { authMiddleware } from "@/utils/authentication";
 import { authorization } from "@/utils/authorization";
 import { withMiddlewares } from "@/utils/handler";
@@ -15,7 +15,7 @@ async function putHandler(
   const values = await request.json();
 
   try {
-    const finishedChecklist = await updateUserConfigs(id, values);
+    const finishedChecklist = await user.updateConfigs(id, values);
     return Response.json(finishedChecklist);
   } catch (error) {
     if (error instanceof ValidationError)

@@ -29,7 +29,6 @@ export const ChecklistCard = ({
   checklistItem,
   status,
 }: {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   status: any;
   propertyId: string;
   checklistItem:

@@ -2,6 +2,7 @@ import { DataTable } from "@/components/data-table";
 import organization from "@/models/organization";
 import { columns } from "./columns";
 import { Pagination } from "@/components/pagination";
+import { SearchParams } from "@/types/types";
 
 export default async function Page(props: {
   searchParams: Promise<SearchParams>;

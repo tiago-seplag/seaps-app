@@ -1,6 +1,6 @@
 import { LoginForm } from "@/components/login-form";
 import { ModeToggle } from "@/components/mode-toggle";
-import { version } from "@/package.json";
+// import { version } from "@/package.json";
 import Link from "next/link";
 
 export default function LoginPage() {
@@ -13,7 +13,7 @@ export default function LoginPage() {
         <Link href={"/privacy-policy"} className="text-sky-600 hover:underline">
           Politica de Privacidade
         </Link>
-        <p className="text-sm">Versão: {version}</p>
+        <p className="text-sm">Versão: 0.1.0</p>
       </div>
       <div className="absolute bottom-4 right-4">
         <ModeToggle />

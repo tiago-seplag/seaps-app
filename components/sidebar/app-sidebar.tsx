@@ -13,7 +13,6 @@ import Logo from "../../public/logo-gov.png"
 import Image from "next/image";
 import { NavSidebar } from "./nav-sidebar";
 
-import { version } from "@/package.json";
 import { getUser } from "@/lib/dal";
 
 export async function AppSidebar({
@@ -49,7 +48,7 @@ export async function AppSidebar({
               email: user.email,
               name: user.name,
             }}
-            version={version}
+            version={'0.1.0'}
           />
         )}
       </SidebarFooter>
