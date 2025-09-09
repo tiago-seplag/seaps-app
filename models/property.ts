@@ -45,7 +45,12 @@ async function paginated(options: any) {
         query.where("properties.type", options.type);
       }
       if (options.name) {
-        query.where("properties.name", options.name);
+        query
+          .whereILike("properties.name", `%${options.name}%`)
+          .orWhereILike(
+            "properties.name_normalized",
+            `%${normalizeName(options.name)}%`,
+          );
       }
       if (options.city) {
         query.where("properties.city", options.city);

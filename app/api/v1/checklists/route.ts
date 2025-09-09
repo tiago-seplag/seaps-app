@@ -18,14 +18,28 @@ async function postHandler(request: NextRequest) {
 }
 
 async function getHandler(request: NextRequest) {
+  const permissions =
+    request.headers.get("x-user-permissions")?.split(",") || [];
+
+  const userId = request.headers.get("x-user-id");
+
+  const query: Record<string, string> = {};
+
+  if (
+    !permissions.some((p: string) => p === "*" || p === "checklists:view_all")
+  ) {
+    query.user_id = userId!;
+  }
+
   const data = await checklist.paginated({
     page: request.nextUrl.searchParams.get("page"),
     per_page: request.nextUrl.searchParams.get("per_page"),
-    organization: request.nextUrl.searchParams.get("organization"),
-    user: {
-      id: request.headers.get("x-user-id"),
-      role: request.headers.get("x-user-role") || "EVALUATOR",
-    },
+    organization_id: request.nextUrl.searchParams.get("organization_id"),
+    user_id: query.user_id
+      ? query.user_id
+      : request.nextUrl.searchParams.get("user_id"),
+    property_name: request.nextUrl.searchParams.get("property_name"),
+    status: request.nextUrl.searchParams.get("status"),
   });
 
   return Response.json(data);
