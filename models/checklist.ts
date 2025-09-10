@@ -66,18 +66,14 @@ async function paginated(options: any) {
       if (options?.property_name) {
         query.where("properties.name", "ilike", `%${options.property_name}%`);
       }
-      if (options?.organization) {
+      if (options?.organization_id) {
         query.where(
           "checklists.organization_id",
-          options?.organization as string,
+          options?.organization_id as string,
         );
       }
       if (options?.user_id) {
         query.where("checklists.user_id", options.user_id as string);
-      }
-
-      if (options.user.role === "EVALUATOR") {
-        query.where("checklists.user_id", options.user.id);
       }
     })
     .orderBy("created_at", "desc")

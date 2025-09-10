@@ -156,7 +156,7 @@ async function paginated(options: any) {
         query.where("permissions", "@>", [options?.role]);
       }
     })
-    .orderBy("created_at", "asc")
+    .orderBy("name", "asc")
     .paginate(options.page, options.per_page);
 
   return users;

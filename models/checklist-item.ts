@@ -8,7 +8,7 @@ export const updateSchema = z
       .string()
       .optional()
       .transform((value) => typeof value === "number" && isFinite(value)),
-    observation: z.string().optional(),
+    observation: z.string().optional().nullable(),
     image: z.string().optional(),
   })
   .strict();
@@ -110,17 +110,17 @@ export async function updateChecklistItem(
   }
 
   const updateData: {
-    observation?: string;
+    observation?: string | null;
     score?: number;
     image?: string;
     is_inspected?: boolean;
   } = {};
 
-  if (data.observation) {
+  if (data.observation !== undefined) {
     updateData.observation = data.observation;
   }
 
-  if (data.score) {
+  if (data.score !== undefined) {
     updateData.score = Number(data.score);
     updateData.is_inspected = true;
   }
@@ -130,7 +130,7 @@ export async function updateChecklistItem(
   }
 
   const [updatedChecklistItem] = await db("checklist_items")
-    .update(updateData)
+    .update({ ...updateData, updated_at: new Date() })
     .where("id", id)
     .returning("*");
 
