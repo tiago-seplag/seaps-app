@@ -27,6 +27,13 @@ const schemas = {
     property_id: z.string({ message: "O ID do imóvel é obrigatório" }),
     user_id: z.string({ message: "O ID do usuário é obrigatório" }),
   }),
+  update: z
+    .object({
+      user_id: z
+        .string({ message: "O ID do usuário é obrigatório" })
+        .uuid({ message: "O ID do usuário deve ser um UUID válido" }),
+    })
+    .strict(),
 };
 
 export type ChecklistSchema = z.infer<typeof checklistSchema>;
@@ -251,12 +258,12 @@ export async function finishChecklist(
 
     const score = Math.abs(item.score);
 
-    // if (score > 0 && item?._count.images < 1) {
-    //   throw new ValidationError({
-    //     message: "Todos os itens devem conter ao menos uma imagem",
-    //     action: "Insira ao menos uma imagem no item: " + item.item.name,
-    //   });
-    // }
+    if (score > 0 && item?._count.images < 1) {
+      throw new ValidationError({
+        message: "Todos os itens devem conter ao menos uma imagem",
+        action: "Insira ao menos uma imagem no item: " + item.item.name,
+      });
+    }
 
     if (score > 0) {
       COUNT_ITEMS += 1;
@@ -370,6 +377,17 @@ async function createLog(data: {
   });
 }
 
+async function update(id: string, data: { user_id: string }) {
+  await findById(id);
+
+  const [updatedChecklist] = await db("checklists")
+    .where("id", id)
+    .update({ user_id: data.user_id })
+    .returning("*");
+
+  return updatedChecklist;
+}
+
 async function _delete(id: string) {
   await findById(id);
 
@@ -411,10 +429,12 @@ const checklist = {
   getChecklistItems,
   validate,
   delete: _delete,
+  update,
   history,
   createSchema: checklistSchema,
   schemas: {
     validate: schemas.validate,
+    update: schemas.update,
   },
 };
 

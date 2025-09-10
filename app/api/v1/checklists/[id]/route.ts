@@ -17,6 +17,36 @@ export const GET = handler(
   get,
 );
 
+const putHandler = async (
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) => {
+  const userId = request.headers.get("x-user-id")!;
+  const { id } = await params;
+  const values = await request.json();
+
+  const _checklist = await checklist.update(id, values);
+
+  await checklist.createLog({
+    action: "checklist:updated",
+    checklist_id: id,
+    user_id: userId,
+    status: _checklist.status,
+  });
+
+  return Response.json(_checklist);
+};
+
+export const PUT = handler(
+  [
+    controller.authenticate,
+    controller.authorize("checklists:edit"),
+    controller.validateUUID("id"),
+    controller.validateBody(checklist.schemas.update),
+  ],
+  putHandler,
+);
+
 async function deleteHandler(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
