@@ -9,6 +9,8 @@ import { Readable } from "stream";
 import fs from "fs/promises";
 import controller, { handler } from "@/infra/controller";
 import checklistItem from "@/models/checklist-item";
+import checklist from "@/models/checklist";
+import { ValidationError } from "@/infra/errors";
 
 export const config = {
   api: {
@@ -57,7 +59,7 @@ async function uploadFileToS3(file: Buffer, fileName: string) {
 
 async function postHandler(
   req: NextRequest,
-  { params }: { params: Promise<{ itemId: string }> },
+  { params }: { params: Promise<{ itemId: string; id: string }> },
 ) {
   await params;
   try {
@@ -92,16 +94,16 @@ async function postHandler(
 
     for (const image of images) {
       if (!image.mimetype?.startsWith("image/")) {
-        return NextResponse.json(
-          { error: "accept only images" },
-          { status: 422 },
-        );
+        throw new ValidationError({
+          message: "Arquivo inválido",
+          action: "Envie apenas imagens",
+        });
       }
       if (image.size > 20 * 1024 * 1024) {
-        return NextResponse.json(
-          { error: "max file size is 10MB" },
-          { status: 422 },
-        );
+        throw new ValidationError({
+          message: "Arquivo muito grande",
+          action: "O tamanho máximo do arquivo é 20MB",
+        });
       }
 
       const buffer = await fs.readFile(image.filepath);
@@ -119,7 +121,17 @@ async function postHandler(
       });
     }
 
-    await checklistItem.saveImages((await params).itemId, responseFiles);
+    const { itemId, id } = await params;
+
+    await checklistItem.saveImages(itemId, responseFiles);
+
+    await checklist.createLog({
+      action: "checklist_item_images:uploaded",
+      checklist_item_id: itemId,
+      checklist_id: id,
+      user_id: req.headers.get("x-user-id")!,
+      value: { images: responseFiles },
+    });
 
     return NextResponse.json({ success: true, files: responseFiles });
   } catch (error) {

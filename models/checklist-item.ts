@@ -75,7 +75,7 @@ export async function updateChecklistItem(
   data: UpdateChecklistItemSchema,
   user: {
     id: string;
-    role: string;
+    role?: string;
     permissions?: string[];
   },
 ) {

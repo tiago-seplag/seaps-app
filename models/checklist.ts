@@ -363,6 +363,7 @@ async function createLog(data: {
   action: string;
   checklist_id: string;
   checklist_item_id?: string;
+  value?: Record<any, any>;
   user_id: string;
   status?: string;
   observation?: string;
@@ -373,6 +374,7 @@ async function createLog(data: {
     checklist_item_id: data.checklist_item_id,
     user_id: data.user_id,
     status: data.status,
+    value: data.value,
     observation: data.observation,
   });
 }

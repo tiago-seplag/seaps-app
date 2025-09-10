@@ -11,6 +11,7 @@ async function postHandler(request: NextRequest) {
     action: "checklist:create",
     checklist_id: createdChecklist.id,
     user_id: request.headers.get("x-user-id")!,
+    value: body,
     status: "OPEN",
   });
 

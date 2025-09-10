@@ -23,6 +23,7 @@ const putHandler = async (
     checklist_item_id: validated.id,
     checklist_id: validated.checklist_id,
     user_id: userId,
+    value: data,
   });
 
   return Response.json(validated);

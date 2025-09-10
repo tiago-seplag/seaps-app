@@ -17,8 +17,7 @@ export async function up(knex: Knex): Promise<void> {
       .defaultTo("OPEN");
     table.string("action").notNullable();
     table.string("observation");
-    table.string("old_value");
-    table.string("new_value");
+    table.jsonb("value").defaultTo({});
     table.timestamp("created_at").defaultTo(knex.fn.now());
     table.foreign("checklist_id").references("id").inTable("checklists");
     table

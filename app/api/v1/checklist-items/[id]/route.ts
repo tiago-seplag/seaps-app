@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import controller, { handler } from "@/infra/controller";
 import checklistItem, { updateSchema } from "@/models/checklist-item";
+import checklist from "@/models/checklist";
 
 const putHandler = async (
   request: NextRequest,
@@ -13,12 +14,21 @@ const putHandler = async (
   const { id } = await params;
   const data = await request.json();
 
-  const finishedChecklist = await checklistItem.update(id, data, {
+  const updatedItem = await checklistItem.update(id, data, {
     id: userId,
     role,
     permissions: permissions ? permissions.split(",") : [],
   });
-  return Response.json(finishedChecklist);
+
+  await checklist.createLog({
+    action: "checklist_item:update",
+    checklist_item_id: id,
+    checklist_id: updatedItem.checklist_id,
+    user_id: userId,
+    value: data,
+  });
+
+  return Response.json(updatedItem);
 };
 
 const getHandler = async (

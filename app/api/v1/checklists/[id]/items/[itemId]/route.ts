@@ -35,10 +35,11 @@ const putHandler = async (
   });
 
   await checklist.createLog({
-    action: "checklist_item:updated",
+    action: "checklist_item:update",
     checklist_item_id: updatedChecklistItem.id,
     checklist_id: updatedChecklistItem.checklist_id,
     user_id: userId,
+    value: data,
   });
 
   return Response.json(updatedChecklistItem);

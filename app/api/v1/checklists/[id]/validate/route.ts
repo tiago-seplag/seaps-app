@@ -19,7 +19,7 @@ async function putHandler(
     checklist_id: id,
     user_id: userId,
     status: validatedChecklist.status,
-    observation: body.observation,
+    value: body,
   });
 
   return Response.json(validatedChecklist);

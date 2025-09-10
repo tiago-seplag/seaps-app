@@ -32,6 +32,7 @@ const putHandler = async (
     checklist_id: id,
     user_id: userId,
     status: _checklist.status,
+    value: values,
   });
 
   return Response.json(_checklist);
@@ -56,7 +57,7 @@ async function deleteHandler(
   const data = await checklist.delete(id);
 
   await checklist.createLog({
-    action: "checklist:deleted",
+    action: "checklist:delete",
     checklist_id: id,
     user_id: userId,
     status: data.status,
