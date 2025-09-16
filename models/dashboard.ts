@@ -86,14 +86,42 @@ export async function getOrganizationsIGM() {
 async function properties() {
   const ranges = await db.raw(`
     SELECT
-	    count(DISTINCT(c.property_id)) as total
+	    count(p.id) as total
     FROM
-        checklists c
+        properties p
     WHERE
-        c.status = 'CLOSED'
-    AND
-        c.is_deleted = false
+        p.is_deleted = false
     `);
+
+  return ranges.rows;
+}
+
+async function checklists() {
+  const ranges = await db.raw(`
+        SELECT
+            count(c.id) as total
+        FROM
+            checklists c
+        WHERE
+            c.status = 'CLOSED'
+        AND
+            c.is_deleted = false
+        `);
+
+  return ranges.rows;
+}
+
+async function inspected() {
+  const ranges = await db.raw(`
+        SELECT
+            count(distinct(c.property_id)) as total
+        FROM
+            checklists c
+        WHERE
+            c.status = 'CLOSED'
+        AND
+            c.is_deleted = false;
+        `);
 
   return ranges.rows;
 }
@@ -102,6 +130,8 @@ const dashboard = {
   getCountByRange,
   getOrganizationsIGM,
   properties,
+  checklists,
+  inspected,
 };
 
 export default dashboard;
