@@ -6,9 +6,9 @@ import { prisma } from "@/lib/prisma";
 import { generateMetaPagination } from "@/utils/meta-pagination";
 import { z } from "zod";
 import { db } from "@/infra/database";
-import { ValidationError } from "@/errors/validation-error";
 import { SearchParams } from "@/types/types";
 import { hash } from "./password";
+import { ValidationError } from "@/infra/errors";
 
 export const updateConfigSchema = z.object({
   is_active: z.boolean(),
